@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    card_view:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!--<ImageView
+            android:id="@+id/product_IV"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            tools:background="@drawable/bazo" />-->
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/product_IV"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/bazo"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="0dp" />
+
+        <RelativeLayout
+            android:id="@+id/info_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@+id/product_IV"
+            android:layout_toRightOf="@id/product_IV"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/text_info_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/companyName_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Company Name"
+                    android:textStyle="bold"
+                    android:ellipsize="end"
+                    android:maxLines="1"/>
+
+                <TextView
+                    android:id="@+id/prize_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:text = "Prize description mpla mpla mpla mpla"
+                    tools:text = "Prize description mpla mpla mpla mpla ree"
+                    android:textStyle="bold"
+                    android:ellipsize="end"
+                    android:maxLines="1"/>
+
+                <TextView
+                    android:id="@+id/ending_date_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="15-6-2016"
+                    tools:text="Start Date"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/ic_photo_camera_red_18dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/facebook_logo_128" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

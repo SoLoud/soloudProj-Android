@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_advertisements"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.android.soloud.activities.ContestsActivity"
+    android:background="#ebebeb">
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dividerHeight="6dp"
+        android:divider="#ebebeb"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
+        android:paddingRight="8dp"
+        android:paddingEnd="8dp"/>
+
+    <com.pnikosis.materialishprogress.ProgressWheel
+        android:id="@+id/progress_wheel"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true"
+        wheel:matProg_barColor="@color/colorPrimary"
+        wheel:matProg_progressIndeterminate="true"
+        android:visibility="gone"/>
+
+</RelativeLayout>

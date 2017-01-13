@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    tools:ignore="MissingPrefix">
+
+    <TextView
+        android:id="@+id/logout_title"
+        fontPath="OpenSans-Semibold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/logout"
+        android:textColor="#000000"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/confirmation_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logout_title"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:text="@string/are_you_sure_you_want_to_logout"
+        android:textColor="#000000"
+        android:textSize="16sp" />
+
+</RelativeLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <ImageView
+        android:id="@+id/tutorialImage1"
+        android:layout_width="match_parent"
+        android:layout_height="420dp"
+        android:background="@drawable/kommeno_bazo3"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Πάντα να προτιμάς την στιγμή που το φυσικό φώς είναι χαμηλό, πιο ‘γλυκό’ και ‘ζεστό’."
+        android:textSize="16sp"
+        android:textColor="#ffffff"
+        android:layout_below="@+id/tutorialImage1"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        />
+
+
+
+</RelativeLayout>

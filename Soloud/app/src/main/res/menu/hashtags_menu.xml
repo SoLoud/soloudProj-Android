@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.HashTagsActivity">
+    <item android:id="@+id/action_proceed"
+        android:title="@string/proceed"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_arrow_forward_white_24dp"/>
+</menu>

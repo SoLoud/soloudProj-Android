@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <RelativeLayout
+        android:id="@+id/activity_hash_tags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin"
+        tools:context="com.android.soloud.activities.HashTagsActivity">
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/hashTag_ET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_your_hashtag"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLength="26"
+            android:maxLines="1"
+            android:text="#"
+            android:textColor="#000000"
+            android:textCursorDrawable="@drawable/text_cursor_red"
+            app:met_clearButton="true"
+            app:met_floatingLabel="highlight"
+            app:met_primaryColor="@color/colorPrimary"
+            app:met_underlineColor="#b2b2b2" />
+
+        <TextView
+            android:id="@+id/suggested_hashtags_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hashTag_ET"
+            android:layout_marginTop="16dp"
+            android:text="@string/suggested_hashtags"
+            android:textSize="18sp" />
+
+            <com.cunoraz.tagview.TagView
+                android:id="@+id/tag_group"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/suggested_hashtags_TV"
+                android:layout_margin="10dp" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/description_ET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@+id/tag_group"
+                android:gravity="top|start"
+                android:hint="@string/description"
+                tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in turpis viverra, elementum sapien eget, consequat felis"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine"
+                android:maxLength="500"
+                android:minLines="1"
+                android:lines="3"
+                android:scrollbars="vertical"
+                android:textColor="#000000"
+                android:textCursorDrawable="@drawable/text_cursor_red"
+                app:met_clearButton="true"
+                app:met_floatingLabel="highlight"
+                app:met_primaryColor="@color/colorPrimary"
+                app:met_underlineColor="#b2b2b2"
+                />
+
+    </RelativeLayout>
+</ScrollView>

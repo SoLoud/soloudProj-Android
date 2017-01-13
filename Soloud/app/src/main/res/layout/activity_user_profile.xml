@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_user_profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.android.soloud.activities.UserProfileActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/profile_background"
+        >
+
+        <FrameLayout
+            android:id="@+id/userFrame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <View
+                android:id="@+id/background_view"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/b3818"/>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_view_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="170dp"
+
+                app:cardBackgroundColor="#ffffff"
+                card_view:cardCornerRadius="4dp"
+                app:cardElevation="5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/userName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="80dp"
+                        android:text="Lorem Ipsum"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/user_level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="8dp"
+                        android:text="Level 2"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/progress_text1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@+id/user_level"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:text="82/100"
+                        android:textSize="14sp" />
+
+                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                        android:id="@+id/userProgressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"
+                        android:layout_below="@+id/progress_text1"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="2dp"
+                        app:rcBackgroundColor="#bebebe"
+                        app:rcBackgroundPadding="2dp"
+                        app:rcMax="100"
+                        app:rcProgress="75"
+                        app:rcProgressColor="@color/colorPrimary"
+                        app:rcRadius="10dp"
+                        app:rcReverse="false" />
+
+                    <TextView
+                        android:id="@+id/progress_text2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/userProgressBar"
+                        android:layout_centerHorizontal="true"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:text="Level up in 18 points"
+                        android:textColor="@color/mySecondary"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_profile_IV"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="110dp"
+                android:elevation="6dp"
+                android:src="@drawable/bazo"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="4dp" />
+
+        </FrameLayout>
+
+        <!--<android.support.v7.widget.CardView
+            android:id="@+id/card_view_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userFrame"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="#ffffff"
+            card_view:cardCornerRadius="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/user_level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
+                    android:text="Level 2"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/progress_text1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/user_level"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="82/100"
+                    android:textSize="14sp" />
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/userProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_below="@+id/progress_text1"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="2dp"
+                    app:rcBackgroundColor="#bebebe"
+                    app:rcBackgroundPadding="2dp"
+                    app:rcMax="100"
+                    app:rcProgress="75"
+                    app:rcProgressColor="@color/colorPrimary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false" />
+
+                <TextView
+                    android:id="@+id/progress_text2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/userProgressBar"
+                    android:layout_centerHorizontal="true"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="Level up in 18 points"
+                    android:textColor="@color/mySecondary"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>-->
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_view_current_contest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userFrame"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="#ffffff"
+            card_view:cardCornerRadius="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/current_contest_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Current Contest"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/expand_Btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_expand_more_white_24dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="@android:color/transparent"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"/>
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/chart1"
+                    android:layout_width="220dp"
+                    android:layout_height="220dp"
+                    android:layout_below="@+id/current_contest_label"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:layout_below="@+id/card_view_current_contest"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="#ffffff"
+            card_view:cardCornerRadius="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/total_contests_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:text="Total"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/chart2"
+                    android:layout_width="220dp"
+                    android:layout_height="220dp"
+                    android:layout_below="@+id/total_contests_label"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="8dp"
+                    android:paddingBottom="16dp" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </RelativeLayout>
+</ScrollView>

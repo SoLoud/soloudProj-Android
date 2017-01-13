@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "534839479219",
+    "project_id": "firebase-soloud"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534839479219:android:daeba43511a3bd3a",
+        "android_client_info": {
+          "package_name": "com.android.soloud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0-Nx9v2c_VFXRpxrhmrTZg_8MUS5o4vY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-87673880-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context="com.android.soloud.activities.ContestDetails"
+    android:id="@+id/activity_advertisement_details">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/prize_IV"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:scaleType="centerInside"
+            android:background="#000000"/>
+
+        <TextView
+            android:id="@+id/advertisement_description_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/prize_IV"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/advertisement_description"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/prize_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/advertisement_description_label"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/desctipiton_content" />
+
+        <TextView
+            android:id="@+id/prize_hash_tags_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/prize_description"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/hashTags_label"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/hashTags_TV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/prize_hash_tags_label"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginRight="90dp"
+            android:layout_marginEnd="90dp"
+            android:layout_marginTop="8dp"
+            android:text="#Lorem"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!--<TextView
+            android:id="@+id/h2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/hashTags_TV"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:text="#Ipsum" />-->
+
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            fab:menu_animationDelayPerItem="50"
+            fab:menu_backgroundColor="@android:color/transparent"
+            fab:menu_buttonSpacing="0dp"
+            fab:menu_colorNormal="@color/colorPrimary"
+            fab:menu_colorPressed="@color/colorPrimaryDark"
+            fab:menu_colorRipple="#99FFFFFF"
+            fab:menu_fab_size="normal"
+            fab:menu_icon="@drawable/fab_add"
+            fab:menu_labels_colorNormal="#333333"
+            fab:menu_labels_colorPressed="#444444"
+            fab:menu_labels_colorRipple="#66FFFFFF"
+            fab:menu_labels_cornerRadius="3dp"
+            fab:menu_labels_ellipsize="none"
+            fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+            fab:menu_labels_margin="0dp"
+            fab:menu_labels_maxLines="-1"
+            fab:menu_labels_padding="8dp"
+            fab:menu_labels_paddingBottom="4dp"
+            fab:menu_labels_paddingLeft="8dp"
+            fab:menu_labels_paddingRight="8dp"
+            fab:menu_labels_paddingTop="4dp"
+            fab:menu_labels_position="left"
+            fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+            fab:menu_labels_showShadow="true"
+            fab:menu_labels_singleLine="false"
+            fab:menu_labels_textColor="#FFFFFF"
+            fab:menu_labels_textSize="14sp"
+            fab:menu_openDirection="up"
+            fab:menu_shadowColor="#66000000"
+            fab:menu_shadowRadius="4dp"
+            fab:menu_shadowXOffset="1dp"
+            fab:menu_shadowYOffset="3dp"
+            fab:menu_showShadow="true">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/menu_item_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_camera_white_18dp"
+                fab:fab_colorNormal="@color/mySecondary"
+                fab:fab_colorPressed="@color/mySecondary"
+                fab:fab_label="Camera"
+                fab:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/menu_item_gallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_collections_white_18dp"
+                fab:fab_colorNormal="@color/mySecondary"
+                fab:fab_colorPressed="@color/mySecondary"
+                fab:fab_label="Gallery"
+                fab:fab_size="mini" />
+
+        </com.github.clans.fab.FloatingActionMenu>
+
+    </RelativeLayout>
+</ScrollView>
