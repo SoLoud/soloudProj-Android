@@ -121,6 +121,6 @@
     <string name="permission_granted">Permission has been granted</string>
     <string name="permission_not_granted">Permission was not granted</string>
     <string name="share_to_facebook">Share</string>
-
+    <string name="success_post_for_revision">Post sent for revision. Thank you!</string>
 
 </resources>

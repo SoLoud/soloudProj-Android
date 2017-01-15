@@ -1,12 +1,15 @@
 package com.android.soloud.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -20,17 +23,30 @@ import android.widget.Toast;
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
+import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.apiCalls.PostService;
 import com.android.soloud.apiCalls.PostUserPhoto;
 import com.android.soloud.dialogs.UserPostDialog;
+import com.android.soloud.models.User;
 import com.android.soloud.utils.SharedPrefsHelper;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginFragment;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -47,22 +63,31 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
     public static final String TAG = "PostActivity";
 
-    private Button shareButton;
     private Tracker mTracker;
-
     private Target mTarget;
     private ImageView photo_IV;
     private Bitmap bitmap1;
     private String photoUri;
+    private CallbackManager mCallbackManager;
+    private String postText;
+    private ProgressWheel progressWheel;
+    private CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
+        // Obtain the shared Tracker instance.
+        SoLoudApplication application = (SoLoudApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
         TextView post_info_TV = (TextView) findViewById(R.id.post_info_TV);
         photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
-        shareButton = (Button) findViewById(R.id.share_button);
+        Button shareButton = (Button) findViewById(R.id.share_button);
+        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id
+                .coordinatorLayout);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,25 +95,23 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             }
         });
 
-        ArrayList<String> tagsList = new ArrayList<>();
         String description = "";
         photoUri = "";
+        postText = "";
 
-        if(getIntent() != null && getIntent().getStringExtra("description") !=null &&
+        if(getIntent() != null && getIntent().getStringExtra("description") != null &&
                 getIntent().getStringArrayListExtra("hashTagsList") != null &&
                 getIntent().getStringExtra("photoUri") != null){
 
             description = getIntent().getStringExtra("description");
-            tagsList = getIntent().getStringArrayListExtra("hashTagsList");
+            ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
             photoUri = getIntent().getStringExtra("photoUri");
             Log.d(TAG, "onCreate: " + description + ", " + tagsList.toString());
-
 
             String tags = tagsList.toString();
             int tagsSize = tags.length();
             String tagsWithoutBrackets = tags.substring(1,tagsSize-1);
-            /*hashTags_TV.setText(tagsWithoutBrackets);
-            description_TV.setText(description);*/
+            postText = description + " " + tagsWithoutBrackets;
 
             String sourceString = description +" " +"<b>" + tagsWithoutBrackets + "</b> ";
             post_info_TV.setText(Html.fromHtml(sourceString));
@@ -99,10 +122,60 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             //loadImage(this, photoUri);
         }
 
-        // Obtain the shared Tracker instance.
-        SoLoudApplication application = (SoLoudApplication) getApplication();
-        mTracker = application.getDefaultTracker();
+    }
 
+    private void checkForPublishPermissions() {
+        String fb_token_from_prefs = SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.FB_TOKEN);
+        // TODO: 15/1/2017 prepei na elegxw an exw parei token gia publish kai apo ton Kwsta!!
+        progressWheel.setVisibility(View.VISIBLE);
+        progressWheel.spin();
+        if (fb_token_from_prefs.equals(AccessToken.getCurrentAccessToken().getToken())){
+            Set<String> permissions_set = AccessToken.getCurrentAccessToken().getPermissions();
+            if (!permissions_set.contains("publish_actions")){
+                askFacebookPublishPermissions();
+                LoginManager.getInstance().logInWithPublishPermissions(PostActivity.this, Arrays.asList("publish_actions"));
+            }else{
+                if (!isNoE(photoUri)){
+                    initPostUserPhotoService(photoUri, postText);
+                }
+            }
+        }
+    }
+
+    private boolean isNoE( final String s ) {
+        // Null-safe, short-circuit evaluation.
+        return s == null || s.trim().isEmpty();
+    }
+
+    private void askFacebookPublishPermissions() {
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        mCallbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d(TAG, "Login to FB: success with new token which has publish permissions");
+                        //Toast.makeText(PostActivity.this, "Login Success", Toast.LENGTH_LONG).show();
+
+                        SharedPrefsHelper.storeInPrefs(PostActivity.this, loginResult.getAccessToken().getToken(), SharedPrefsHelper.FB_TOKEN);
+                        SharedPrefsHelper.storeInPrefs(PostActivity.this, loginResult.getAccessToken().getUserId(), SharedPrefsHelper.USER_FB_ID);
+
+                        loginToBackend(loginResult.getAccessToken().getToken());
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d(TAG, "Login to FB: canceled");
+                        //Toast.makeText(PostActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Log.d(TAG, "Login to FB: error");
+                        //Toast.makeText(PostActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     void loadImage(Context context, String url) {
@@ -207,7 +280,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
-                    Toast.makeText(PostActivity.this, "Successful post!",Toast.LENGTH_SHORT).show();
+                    progressWheel.stopSpinning();
+                    Snackbar.make(coordinatorLayout, getResources().getString(R.string.success_post_for_revision), Snackbar.LENGTH_LONG).show();
                 }
             }
 
@@ -221,8 +295,18 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
     @Override
     public void onOkPressed() {
-        //initPostsService("test post2");
-        initPostUserPhotoService(photoUri, "test image post");
+
+        checkForPublishPermissions();
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: " + data.toString());
     }
 
     private String getRealPathFromURI(Uri contentURI) {
@@ -240,7 +324,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     }
 
 
-
     public String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;
         try {
@@ -254,6 +337,40 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 cursor.close();
             }
         }
+    }
+
+    private void loginToBackend(String token) {
+
+        // Create a very simple REST adapter which points the API endpoint.
+        LoginService client = ServiceGenerator.createService(LoginService.class);
+
+        // Post the user's Facebook Token
+        Call<User> call = client.login(LoginActivity.FACEBOOK_PROVIDER, token, "password");
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    User soLoudUser = response.body();
+                    String soLoudToken = soLoudUser.getSoloudToken();
+                    SharedPrefsHelper.storeInPrefs(PostActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
+
+                    initPostUserPhotoService(photoUri, postText);
+
+                } else {
+                    // error response, no access to resource?
+                    Log.d(TAG, "Backend login error in response: " + response.toString());
+                    //Snackbar.make(coordinatorLayout, "Login no response", Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                Log.d(TAG, "Backend login Failure: " + t.getMessage());
+                //Snackbar.make(coordinatorLayout, "Login failure", Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
 

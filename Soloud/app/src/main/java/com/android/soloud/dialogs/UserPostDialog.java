@@ -42,8 +42,7 @@ public class UserPostDialog extends android.support.v4.app.DialogFragment {
 
 
     public static UserPostDialog newInstance() {
-        UserPostDialog frag = new UserPostDialog();
-        return frag;
+        return new UserPostDialog();
     }
 
 
@@ -55,8 +54,6 @@ public class UserPostDialog extends android.support.v4.app.DialogFragment {
         alertDialogBuilder.setPositiveButton(getString(R.string.ok),  new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // on success
-                Toast.makeText(getActivity(), getString(R.string.post_sent), Toast.LENGTH_LONG).show();
                 mListener.onOkPressed();
             }
         });
@@ -68,6 +65,5 @@ public class UserPostDialog extends android.support.v4.app.DialogFragment {
         });
 
         return alertDialogBuilder.create();
-
     }
 }

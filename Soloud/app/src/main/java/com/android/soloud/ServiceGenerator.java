@@ -9,7 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServiceGenerator {
 
-    public static final String API_BASE_URL = "http://soloud.azurewebsites.net";
+    //private static final String API_BASE_URL = "http://52b68176.ngrok.io";
+    private static final String API_BASE_URL = "http://soloud.azurewebsites.net";
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 

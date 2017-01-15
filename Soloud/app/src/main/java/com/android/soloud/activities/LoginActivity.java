@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,8 +71,8 @@ public class LoginActivity extends Activity {
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
-        //loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
-        loginButton.setPublishPermissions("publish_actions");
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
+        //loginButton.setPublishPermissions("publish_actions");
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override

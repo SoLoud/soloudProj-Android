@@ -1,59 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_post"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.android.soloud.activities.PostActivity">
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <RelativeLayout
+        android:id="@+id/activity_post"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/hashtags_and_share_LL">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/post_photo_IV"
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/hashtags_and_share_LL">
+
+            <ImageView
+                android:id="@+id/post_photo_IV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                tools:background="@drawable/lorem_image" />
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/hashtags_and_share_LL"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            tools:background="@drawable/lorem_image" />
-
-    </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/hashtags_and_share_LL"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="16dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/post_info_TV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:textColor="#000000"
-            tools:text="#blah blah" />
-
-        <Button
-            android:id="@+id/share_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="16dp"
-            android:drawableLeft="@drawable/facebook_logo_24"
-            android:drawablePadding="4dp"
-            android:drawableStart="@drawable/facebook_logo_24"
-            android:text="@string/share_to_facebook"
-            android:textAllCaps="false"/>
+            android:orientation="vertical">
 
-    </LinearLayout>
-</RelativeLayout>
+            <TextView
+                android:id="@+id/post_info_TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:textColor="#000000"
+                tools:text="#blah blah" />
+
+            <Button
+                android:id="@+id/share_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:drawableLeft="@drawable/facebook_logo_24"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/facebook_logo_24"
+                android:text="@string/share_to_facebook"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:id="@+id/progress_wheel"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            wheel:matProg_barColor="@color/colorPrimary"
+            wheel:matProg_progressIndeterminate="true" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

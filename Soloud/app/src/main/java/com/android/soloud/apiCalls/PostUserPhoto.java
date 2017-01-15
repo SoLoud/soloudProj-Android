@@ -16,10 +16,10 @@ import retrofit2.http.Part;
 public interface PostUserPhoto {
 
     @Multipart
-    @POST("/api/Posts/ByImage?Caption=yololeilo")
+    @POST("/api/Posts")
     Call<ResponseBody> postImage(@Header("Authorization") String soLoudToken,
                                  @Part MultipartBody.Part image,
-                                 @Part("description") RequestBody description);
+                                 @Part("caption") RequestBody description);
 
 
 }
