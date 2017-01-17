@@ -2,6 +2,10 @@ package com.android.soloud.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +18,7 @@ import com.android.soloud.SoLoudApplication;
 import com.android.soloud.adapters.ContestsAdapter;
 import com.android.soloud.apiCalls.ContestsService;
 import com.android.soloud.models.Contest;
+import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -37,16 +42,35 @@ public class ContestsActivity extends AppCompatActivity {
     private Tracker mTracker;
     private ListView listView;
     public static ArrayList<Contest> contestsList;
-    private ProgressWheel progressWheel;
+    //private ProgressWheel progressWheel;
+    private CoordinatorLayout coordinatorLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    NetworkStatusHelper networkStatusHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contests);
 
-        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
-        progressWheel.spin();
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        /*progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
+        progressWheel.spin();*/
         listView = (ListView) findViewById(R.id.listView);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.mySecondary);
+        networkStatusHelper = new NetworkStatusHelper(this);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (networkStatusHelper.isNetworkAvailable()){
+                    initContestsService();
+                }else{
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    displayNoConnectionMessage();
+                }
+            }
+        });
 
         if (getIntent() != null && getIntent().getStringExtra(CONTEST_NAME) != null){
             String contestName = getIntent().getStringExtra(CONTEST_NAME);
@@ -60,12 +84,33 @@ public class ContestsActivity extends AppCompatActivity {
         }else if (contestsList != null){
             initializeListView();
         }else{
-            initContestsService();
+            if (networkStatusHelper.isNetworkAvailable()){
+                initContestsService();
+            }else{
+                //displayNoConnectionMessage(networkStatusHelper);
+                displayNoConnectionMessage();
+            }
         }
 
         // Obtain the shared Tracker instance.
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
+    }
+
+    private void displayNoConnectionMessage() {
+        Snackbar.make(coordinatorLayout, getResources().
+                getString(R.string.error_no_internet_connection), Snackbar.LENGTH_LONG).
+                setAction(R.string.retry, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (networkStatusHelper.isNetworkAvailable()){
+                            mSwipeRefreshLayout.setRefreshing(true);
+                            initContestsService();
+                        }else{
+                            displayNoConnectionMessage();
+                        }
+                    }
+                }).setActionTextColor(ContextCompat.getColor(this, R.color.mySecondary)).show();
     }
 
     private void initializeListView(){
@@ -107,7 +152,8 @@ public class ContestsActivity extends AppCompatActivity {
 
     private void initContestsService() {
 
-        progressWheel.setVisibility(View.VISIBLE);
+        mSwipeRefreshLayout.setRefreshing(true);
+        //progressWheel.setVisibility(View.VISIBLE);
         // Create a very simple REST adapter which points the API endpoint.
         ContestsService client = ServiceGenerator.createService(ContestsService.class);
 
@@ -118,7 +164,8 @@ public class ContestsActivity extends AppCompatActivity {
                          public void onResponse(Call<List<Contest>> call, Response<List<Contest>> response) {
                              if (response.isSuccessful()) {
                                  contestsList = (ArrayList<Contest>) response.body();
-                                 progressWheel.stopSpinning();
+                                 //progressWheel.stopSpinning();
+                                 mSwipeRefreshLayout.setRefreshing(false);
                                  initializeListView();
                              } else {
                                  // error response, no access to resource?

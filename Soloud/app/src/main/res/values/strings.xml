@@ -23,7 +23,7 @@
     <string name="ok">OK</string>
     <string name="enter_your_hashtag">Enter your hashtags</string>
     <string name="proceed">Proceed</string>
-    <string name="description">Description</string>
+    <string name="description">Say something about this photo&#8230;</string>
     <string name="hashTags_label">Hashtags</string>
     <string name="post">Post</string>
     <string name="title_activity_profile">ProfileActivity</string>
@@ -122,5 +122,7 @@
     <string name="permission_not_granted">Permission was not granted</string>
     <string name="share_to_facebook">Share</string>
     <string name="success_post_for_revision">Post sent for revision. Thank you!</string>
+    <string name="error_no_internet_connection">No internet connection</string>
+    <string name="retry">Retry</string>
 
 </resources>
