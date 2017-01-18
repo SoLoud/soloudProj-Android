@@ -68,6 +68,7 @@ public class MainActivity extends MaterialNavigationDrawer{
                 error(R.drawable.ic_account_circle_white_24dp).transform(new CropCircleTransformation()).into(profilePicture_IV);
 
         setDrawerHeaderCustom(view);
+        this.allowArrowAnimation();
 
         this.addSection(newSection(CATEGORIES, R.drawable.ic_view_list_white_24dp, new CategoriesFragment()).setSectionColor(Color.parseColor(MATERIAL_DRAWER_COLOR)));
 

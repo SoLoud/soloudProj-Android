@@ -19,6 +19,7 @@ import com.android.soloud.ServiceGenerator;
 import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.models.User;
 import com.android.soloud.utils.SharedPrefsHelper;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -53,10 +54,14 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
 
         String fb_token = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.FB_TOKEN);
         String userFbId = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.USER_FB_ID);
         String soLoudToken = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.SOLOUD_TOKEN);
+
+        // TODO: 19/1/2017 Mipws na min xrisimopoiw katholou ta Prefs gia to fb token afou mporw na to exw apo to fb sdk apothikeumeno
+        //String fbk_token = AccessToken.getCurrentAccessToken().getToken();
 
         if(fb_token != null && userFbId != null && soLoudToken != null){
             Intent intent = new Intent(this, MainActivity.class);
@@ -64,16 +69,12 @@ public class LoginActivity extends Activity {
             finish();
         }
 
-        callbackManager = CallbackManager.Factory.create();
-
         setContentView(R.layout.activity_login);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
-        //loginButton.setPublishPermissions("publish_actions");
-
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -139,12 +140,14 @@ public class LoginActivity extends Activity {
 
     private void loginToBackend(String token) {
 
+        // TODO: 19/1/2017 se periptwsi failure na ksanaprospathei alles 2 fores na kanei login
+
         // Create a very simple REST adapter which points the API endpoint.
         LoginService client = ServiceGenerator.createService(LoginService.class);
 
         // Post the user's Facebook Token
         Call<User> call = client.login(FACEBOOK_PROVIDER, token, "password");
-        call.enqueue(new Callback<User>() {
+        Callback<User> loginCallback = new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
@@ -159,18 +162,66 @@ public class LoginActivity extends Activity {
                 } else {
                     // error response, no access to resource?
                     Log.d(TAG, "Backend login error in response: " + response.toString());
-                    Snackbar.make(coordinatorLayout, "Login no response", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(coordinatorLayout, "Login no response, retrying", Snackbar.LENGTH_LONG).show();
+
+                    //Retry to do the same call
+                    Call<User> newCall = call.clone();
+                    newCall.enqueue(new Callback<User>() {
+                        @Override
+                        public void onResponse(Call<User> call, Response<User> response) {
+                            if (response.isSuccessful()) {
+                                Snackbar.make(coordinatorLayout, "Login success with 2nd time", Snackbar.LENGTH_LONG).show();
+                                User soLoudUser = response.body();
+                                String soLoudToken = soLoudUser.getSoloudToken();
+                                SharedPrefsHelper.storeInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
+
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<User> call, Throwable t) {
+                            Snackbar.make(coordinatorLayout, "Login failure on 2nd time", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
-
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Log.d(TAG, "Backend login Failure: " + t.getMessage());
                 Snackbar.make(coordinatorLayout, "Login failure", Snackbar.LENGTH_LONG).show();
+
+                //Retry to do the same call
+                Call<User> newCall = call.clone();
+                newCall.enqueue(new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        if (response.isSuccessful()) {
+                            User soLoudUser = response.body();
+                            String soLoudToken = soLoudUser.getSoloudToken();
+                            SharedPrefsHelper.storeInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
+
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+                        Snackbar.make(coordinatorLayout, "Login failure 2nd time", Snackbar.LENGTH_LONG).show();
+                    }
+                });
             }
-        });
+        };
+
+        call.enqueue(loginCallback);
     }
 
     private void generateHashKey() {
@@ -196,13 +247,6 @@ public class LoginActivity extends Activity {
             startActivity(intent);
             finish();*/
         }
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

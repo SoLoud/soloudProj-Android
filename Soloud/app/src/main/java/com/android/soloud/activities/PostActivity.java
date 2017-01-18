@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.android.soloud.apiCalls.PostService;
 import com.android.soloud.apiCalls.PostUserPhoto;
 import com.android.soloud.dialogs.UserPostDialog;
 import com.android.soloud.models.User;
+import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -72,6 +74,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private String postText;
     private ProgressWheel progressWheel;
     private CoordinatorLayout coordinatorLayout;
+    private NetworkStatusHelper networkStatusHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
+        networkStatusHelper = new NetworkStatusHelper(this);
+
         TextView post_info_TV = (TextView) findViewById(R.id.post_info_TV);
         photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
         Button shareButton = (Button) findViewById(R.id.share_button);
@@ -91,7 +96,11 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showShareDialog();
+                if (networkStatusHelper.isNetworkAvailable()){
+                    showShareDialog();
+                }else{
+                 displayNoConnectionMessage();
+                }
             }
         });
 
@@ -122,6 +131,21 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             //loadImage(this, photoUri);
         }
 
+    }
+
+    private void displayNoConnectionMessage() {
+        Snackbar.make(coordinatorLayout, getResources().
+                getString(R.string.error_no_internet_connection), Snackbar.LENGTH_LONG).
+                setAction(R.string.retry, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (networkStatusHelper.isNetworkAvailable()){
+                            showShareDialog();
+                        }else{
+                            displayNoConnectionMessage();
+                        }
+                    }
+                }).setActionTextColor(ContextCompat.getColor(this, R.color.mySecondary)).show();
     }
 
     private void checkForPublishPermissions() {
@@ -298,7 +322,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
         checkForPublishPermissions();
     }
-
 
 
     @Override
