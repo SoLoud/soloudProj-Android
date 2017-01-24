@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import com.android.soloud.SoLoudApplication;
 import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.apiCalls.PostService;
 import com.android.soloud.apiCalls.PostUserPhoto;
+import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.UserPostDialog;
 import com.android.soloud.models.User;
 import com.android.soloud.utils.NetworkStatusHelper;
@@ -131,6 +133,18 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             //loadImage(this, photoUri);
         }
 
+        photo_IV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFullScreenImageDialog();
+            }
+        });
+
+    }
+
+    private void showFullScreenImageDialog(){
+        DialogFragment dialogFragment = ImagePreviewDialog.newInstance(photoUri);
+        dialogFragment.show(getSupportFragmentManager(),"imagePreview");
     }
 
     private void displayNoConnectionMessage() {
