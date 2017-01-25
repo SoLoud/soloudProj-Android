@@ -18,6 +18,8 @@ import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 import com.android.soloud.materialnavigationdrawer.elements.MaterialSection;
 import com.android.soloud.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
 import com.android.soloud.utils.SharedPrefsHelper;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
@@ -94,6 +96,9 @@ public class MainActivity extends MaterialNavigationDrawer{
                 String[] prefsToDelete = {SharedPrefsHelper.USER_FB_ID, SharedPrefsHelper.FB_TOKEN};
                 SharedPrefsHelper.deleteFromPrefs(MainActivity.this, prefsToDelete);
 
+                // TODO: 25/1/2017 Na tsekarw oti den skaei
+                FacebookSdk.sdkInitialize(getApplicationContext());
+                LoginManager.getInstance().logOut();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();

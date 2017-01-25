@@ -124,5 +124,9 @@
     <string name="success_post_for_revision">Post sent for revision. Thank you!</string>
     <string name="error_no_internet_connection">No internet connection</string>
     <string name="retry">Retry</string>
+    <string name="error_login">Could not login to SoLoud</string>
+    <string name="error_requesting_contests">Could not load Contests</string>
+    <string name="error_login_facebook">Facebook login attempt failed</string>
+
 
 </resources>

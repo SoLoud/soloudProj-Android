@@ -77,6 +77,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private ProgressWheel progressWheel;
     private CoordinatorLayout coordinatorLayout;
     private NetworkStatusHelper networkStatusHelper;
+    private int loginFailureRequestsCounter;
+    private int postFailureRequestsCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         mTracker = application.getDefaultTracker();
 
         networkStatusHelper = new NetworkStatusHelper(this);
+        loginFailureRequestsCounter =0;
+        postFailureRequestsCounter = 0;
 
         TextView post_info_TV = (TextView) findViewById(R.id.post_info_TV);
         photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
@@ -210,8 +214,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
                     @Override
                     public void onError(FacebookException exception) {
-                        Log.d(TAG, "Login to FB: error");
-                        //Toast.makeText(PostActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d(TAG, "Facebook Login attempt failed");
+                        Snackbar.make(coordinatorLayout, R.string.error_login_facebook, Snackbar.LENGTH_LONG).show();
                     }
                 });
     }
@@ -313,21 +317,44 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         RequestBody desc = RequestBody.create(MediaType.parse("text/plain"), description);
 
         String soLoudToken = SharedPrefsHelper.getFromPrefs(this, SOLOUD_TOKEN);
-        Call<ResponseBody> req = service.postImage("Bearer " + soLoudToken, body, desc);
-        req.enqueue(new Callback<ResponseBody>() {
+        Call<ResponseBody> request = service.postImage("Bearer " + soLoudToken, body, desc);
+        Callback<ResponseBody> postImageCallback = new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
                     progressWheel.stopSpinning();
                     Snackbar.make(coordinatorLayout, getResources().getString(R.string.success_post_for_revision), Snackbar.LENGTH_LONG).show();
+                }else{
+                    if (response.code() == 401){
+                        // TODO: 26/1/2017 Na kanw diaxeirisi an einai unauthorized. Refresh Token?
+
+
+                    }else{
+                        handleResponseFailure(call);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.toString());
+                handleResponseFailure(call);
             }
-        });
+
+            private void handleResponseFailure(Call<ResponseBody> call) {
+                // Try 3 times to login
+                postFailureRequestsCounter ++;
+                if (postFailureRequestsCounter <3){
+                    // Request reuse
+                    Call<ResponseBody> newCall = call.clone();
+                    newCall.enqueue(this);
+                }else{
+                    LoginManager.getInstance().logOut();
+                    Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
+                }
+            }
+        };
+        request.enqueue(postImageCallback);
     }
 
 
@@ -383,7 +410,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
         // Post the user's Facebook Token
         Call<User> call = client.login(LoginActivity.FACEBOOK_PROVIDER, token, "password");
-        call.enqueue(new Callback<User>() {
+        Callback<User> loginCallback = new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
@@ -396,19 +423,37 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 } else {
                     // error response, no access to resource?
                     Log.d(TAG, "Backend login error in response: " + response.toString());
-                    //Snackbar.make(coordinatorLayout, "Login no response", Snackbar.LENGTH_LONG).show();
+                    if (response.code() == 401){
+                        // TODO: 26/1/2017 Na kanw diaxeirisi an einai unauthorized. Refresh token ?
+
+
+                    }else{
+                        handleResponseFailure(call);
+                    }
                 }
             }
-
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Log.d(TAG, "Backend login Failure: " + t.getMessage());
-                //Snackbar.make(coordinatorLayout, "Login failure", Snackbar.LENGTH_LONG).show();
+                handleResponseFailure(call);
             }
-        });
-    }
 
+            private void handleResponseFailure(Call<User> call) {
+                // Try 3 times to login
+                loginFailureRequestsCounter ++;
+                if (loginFailureRequestsCounter <3){
+                    // Request reuse
+                    Call<User> newCall = call.clone();
+                    newCall.enqueue(this);
+                }else{
+                    // TODO: 26/1/2017 Handle this situation
+                    Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
+                }
+            }
+        };
+        call.enqueue(loginCallback);
+    }
 
 }

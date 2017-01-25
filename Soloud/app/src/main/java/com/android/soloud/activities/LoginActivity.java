@@ -26,6 +26,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -48,6 +49,7 @@ public class LoginActivity extends Activity {
 
     public static final String FACEBOOK_PROVIDER = "facebook";
     private CoordinatorLayout coordinatorLayout;
+    private int loginFailureRequestsCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,8 @@ public class LoginActivity extends Activity {
         String fb_token = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.FB_TOKEN);
         String userFbId = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.USER_FB_ID);
         String soLoudToken = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.SOLOUD_TOKEN);
+
+        loginFailureRequestsCounter = 0;
 
         // TODO: 19/1/2017 Mipws na min xrisimopoiw katholou ta Prefs gia to fb token afou mporw na to exw apo to fb sdk apothikeumeno
         //String fbk_token = AccessToken.getCurrentAccessToken().getToken();
@@ -72,7 +76,6 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -80,7 +83,6 @@ public class LoginActivity extends Activity {
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "onSuccess: " + "User ID:  " + loginResult.getAccessToken().getUserId() + "\n" +
                         "Auth Token: " + loginResult.getAccessToken().getToken());
-                //Snackbar.make(coordinatorLayout, "Login Success", Snackbar.LENGTH_LONG).show();
 
                 final String token = loginResult.getAccessToken().getToken();
 
@@ -102,9 +104,7 @@ public class LoginActivity extends Activity {
 
                                     SharedPrefsHelper.storeInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
                                     SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
-
-
-                                    // TODO: 11/12/2016 Na teleiwsw to login
+                                    
                                     loginToBackend(token);
 
                                 } catch (JSONException e) {
@@ -123,14 +123,14 @@ public class LoginActivity extends Activity {
 
             @Override
             public void onCancel() {
-                Log.d(TAG, "onCancel: Facebook login attempt cancelled.");
-                Snackbar.make(coordinatorLayout, "Login attempt cancelled", Snackbar.LENGTH_LONG).show();
+                //Log.d(TAG, "onCancel: Facebook login attempt cancelled.");
+                //Snackbar.make(coordinatorLayout, "Login attempt cancelled", Snackbar.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Log.d(TAG, "onError: Facebook login attempt failed.");
-                Snackbar.make(coordinatorLayout, "Login attempt failed", Snackbar.LENGTH_LONG).show();
+                //Log.d(TAG, "onError: Facebook login attempt failed.");
+                Snackbar.make(coordinatorLayout, R.string.error_login_facebook, Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -139,9 +139,6 @@ public class LoginActivity extends Activity {
     }
 
     private void loginToBackend(String token) {
-
-        // TODO: 19/1/2017 se periptwsi failure na ksanaprospathei alles 2 fores na kanei login
-
         // Create a very simple REST adapter which points the API endpoint.
         LoginService client = ServiceGenerator.createService(LoginService.class);
 
@@ -161,66 +158,31 @@ public class LoginActivity extends Activity {
 
                 } else {
                     // error response, no access to resource?
-                    Log.d(TAG, "Backend login error in response: " + response.toString());
-                    Snackbar.make(coordinatorLayout, "Login no response, retrying", Snackbar.LENGTH_LONG).show();
-
-                    //Retry to do the same call
-                    Call<User> newCall = call.clone();
-                    newCall.enqueue(new Callback<User>() {
-                        @Override
-                        public void onResponse(Call<User> call, Response<User> response) {
-                            if (response.isSuccessful()) {
-                                Snackbar.make(coordinatorLayout, "Login success with 2nd time", Snackbar.LENGTH_LONG).show();
-                                User soLoudUser = response.body();
-                                String soLoudToken = soLoudUser.getSoloudToken();
-                                SharedPrefsHelper.storeInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
-
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<User> call, Throwable t) {
-                            Snackbar.make(coordinatorLayout, "Login failure on 2nd time", Snackbar.LENGTH_LONG).show();
-                        }
-                    });
+                    //Log.d(TAG, "Backend login error in response: " + response.toString());
+                    handleResponseFailure(call);
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 // something went completely south (like no internet connection)
-                Log.d(TAG, "Backend login Failure: " + t.getMessage());
-                Snackbar.make(coordinatorLayout, "Login failure", Snackbar.LENGTH_LONG).show();
+                //Log.d(TAG, "Backend login Failure: " + t.getMessage());
+                handleResponseFailure(call);
+            }
 
-                //Retry to do the same call
-                Call<User> newCall = call.clone();
-                newCall.enqueue(new Callback<User>() {
-                    @Override
-                    public void onResponse(Call<User> call, Response<User> response) {
-                        if (response.isSuccessful()) {
-                            User soLoudUser = response.body();
-                            String soLoudToken = soLoudUser.getSoloudToken();
-                            SharedPrefsHelper.storeInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
-
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<User> call, Throwable t) {
-                        Snackbar.make(coordinatorLayout, "Login failure 2nd time", Snackbar.LENGTH_LONG).show();
-                    }
-                });
+            private void handleResponseFailure(Call<User> call) {
+                // Try 3 times to login
+                loginFailureRequestsCounter ++;
+                if (loginFailureRequestsCounter <3){
+                    // Request reuse
+                    Call<User> newCall = call.clone();
+                    newCall.enqueue(this);
+                }else{
+                    LoginManager.getInstance().logOut();
+                    Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
+                }
             }
         };
-
         call.enqueue(loginCallback);
     }
 

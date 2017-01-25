@@ -18,8 +18,10 @@ import com.android.soloud.SoLoudApplication;
 import com.android.soloud.adapters.ContestsAdapter;
 import com.android.soloud.apiCalls.ContestsService;
 import com.android.soloud.models.Contest;
+import com.android.soloud.models.User;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -46,6 +48,7 @@ public class ContestsActivity extends AppCompatActivity {
     private CoordinatorLayout coordinatorLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     NetworkStatusHelper networkStatusHelper;
+    private int contestsFailureRequestsCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,30 +66,31 @@ public class ContestsActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (networkStatusHelper.isNetworkAvailable()){
+                if (networkStatusHelper.isNetworkAvailable()) {
                     initContestsService();
-                }else{
+                } else {
                     mSwipeRefreshLayout.setRefreshing(false);
                     displayNoConnectionMessage();
                 }
             }
         });
 
-        if (getIntent() != null && getIntent().getStringExtra(CONTEST_NAME) != null){
+        if (getIntent() != null && getIntent().getStringExtra(CONTEST_NAME) != null) {
             String contestName = getIntent().getStringExtra(CONTEST_NAME);
             getSupportActionBar().setTitle(contestName);
         }
 
+        contestsFailureRequestsCounter = 0;
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             contestsList = (ArrayList<Contest>) savedInstanceState.getSerializable("contestsList");
             initializeListView();
-        }else if (contestsList != null){
+        } else if (contestsList != null) {
             initializeListView();
-        }else{
-            if (networkStatusHelper.isNetworkAvailable()){
+        } else {
+            if (networkStatusHelper.isNetworkAvailable()) {
                 initContestsService();
-            }else{
+            } else {
                 //displayNoConnectionMessage(networkStatusHelper);
                 displayNoConnectionMessage();
             }
@@ -103,17 +107,17 @@ public class ContestsActivity extends AppCompatActivity {
                 setAction(R.string.retry, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (networkStatusHelper.isNetworkAvailable()){
+                        if (networkStatusHelper.isNetworkAvailable()) {
                             mSwipeRefreshLayout.setRefreshing(true);
                             initContestsService();
-                        }else{
+                        } else {
                             displayNoConnectionMessage();
                         }
                     }
                 }).setActionTextColor(ContextCompat.getColor(this, R.color.mySecondary)).show();
     }
 
-    private void initializeListView(){
+    private void initializeListView() {
         listView.setAdapter(new ContestsAdapter(ContestsActivity.this, contestsList));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -159,25 +163,47 @@ public class ContestsActivity extends AppCompatActivity {
 
         // Fetch the Contests.
         Call<List<Contest>> call = client.getContests("Bearer " + SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.SOLOUD_TOKEN));
-        call.enqueue(new Callback<List<Contest>>() {
-                         @Override
-                         public void onResponse(Call<List<Contest>> call, Response<List<Contest>> response) {
-                             if (response.isSuccessful()) {
-                                 contestsList = (ArrayList<Contest>) response.body();
-                                 //progressWheel.stopSpinning();
-                                 mSwipeRefreshLayout.setRefreshing(false);
-                                 initializeListView();
-                             } else {
-                                 // error response, no access to resource?
-                             }
-                         }
+        Callback<List<Contest>> contestsCallback = new Callback<List<Contest>>() {
+            @Override
+            public void onResponse(Call<List<Contest>> call, Response<List<Contest>> response) {
+                if (response.isSuccessful()) {
+                    contestsList = (ArrayList<Contest>) response.body();
+                    //progressWheel.stopSpinning();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    initializeListView();
+                } else {
+                    // error response, no access to resource?
+                    if (response.code() == 401){
+                        // TODO: 26/1/2017 Na kanw diaxeirisi an einai unauthorized. Refresh Token?
 
-                         @Override
-                         public void onFailure(Call<List<Contest>> call, Throwable t) {
-                             // something went completely south (like no internet connection)
-                             Log.d(TAG, "Error getting contests: " + t.getMessage());
-                         }
-                     });
+
+                    }else{
+                        handleResponseFailure(call);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Contest>> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                //Log.d(TAG, "Error getting contests: " + t.getMessage());
+                handleResponseFailure(call);
+            }
+
+            private void handleResponseFailure(Call<List<Contest>> call) {
+                // Try 3 times to login
+                contestsFailureRequestsCounter++;
+                if (contestsFailureRequestsCounter < 3) {
+                    // Request reuse
+                    Call<List<Contest>> newCall = call.clone();
+                    newCall.enqueue(this);
+                } else {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    Snackbar.make(coordinatorLayout, R.string.error_requesting_contests, Snackbar.LENGTH_LONG).show();
+                }
+            }
+        };
+        call.enqueue(contestsCallback);
     }
 
 }

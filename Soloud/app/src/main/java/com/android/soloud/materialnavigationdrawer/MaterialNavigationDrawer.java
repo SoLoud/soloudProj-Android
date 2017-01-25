@@ -18,11 +18,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -854,7 +856,11 @@ public abstract class MaterialNavigationDrawer<Fragment> extends AppCompatActivi
             switch (backPattern) {
                 default:
                 case BACKPATTERN_BACK_ANYWHERE:
-                    super.onBackPressed();
+                    if (layout.isDrawerOpen(GravityCompat.START)){
+                        layout.closeDrawer(GravityCompat.START);
+                    }else{
+                        super.onBackPressed();
+                    }
                     break;
                 case BACKPATTERN_BACK_TO_FIRST:
                     MaterialSection section = sectionList.get(0);
