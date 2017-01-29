@@ -13,7 +13,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/scrollView"
+            android:id="@+id/image_LL"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:background="#000000"
@@ -23,13 +23,21 @@
                 android:id="@+id/post_photo_IV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:adjustViewBounds="true"
-                android:scaleType="centerInside"
-                tools:background="@drawable/lorem_image"
-                android:src="@drawable/bazo"/>
+                android:layout_gravity="center"
+                tools:src="@drawable/bazo"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/post_info_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:textColor="#000000"
+            tools:text="#blah blah"
+            android:layout_below="@+id/image_LL"
+            android:layout_marginTop="32dp"/>
 
         <LinearLayout
             android:id="@+id/hashtags_and_share_LL"
@@ -41,14 +49,7 @@
             android:layout_marginTop="16dp"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/post_info_TV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:textColor="#000000"
-                tools:text="#blah blah" />
+
 
             <Button
                 android:id="@+id/share_button"

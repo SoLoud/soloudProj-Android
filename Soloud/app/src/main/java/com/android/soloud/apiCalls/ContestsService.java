@@ -13,7 +13,7 @@ import retrofit2.http.Header;
  */
 
 public interface ContestsService {
-    @GET("api/Contests")
+    @GET("/api/Contests?$expand=User,ProductPhotos,ExamplePhotos")
     Call<List<Contest>> getContests(@Header("Authorization") String BearerAndSoLoudToken);
 }
 

@@ -9,15 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.models.Contest;
+import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 /**
  * Created by f.stamopoulos on 28/10/2016.
@@ -52,7 +56,7 @@ public class ContestsAdapter extends ArrayAdapter {
             holder = new ContestsAdapter.ViewHolder();
 
             holder.companyName_TV = (TextView) convertView.findViewById(R.id.companyName_TV);
-            holder.product_IV = (de.hdodenhof.circleimageview.CircleImageView) convertView.findViewById(R.id.product_IV);
+            holder.product_IV = (ImageView) convertView.findViewById(R.id.product_IV);
             holder.prize_TV = (TextView) convertView.findViewById(R.id.prize_TV);
             holder.endingDate_TV = (TextView) convertView.findViewById(R.id.ending_date_TV);
 
@@ -64,28 +68,31 @@ public class ContestsAdapter extends ArrayAdapter {
         Contest contestItem = mContestsList.get(position);
 
         // Display Company Name
-        Contest.User user = contestItem.getUser();
-        String companyEmail = user.getEmail();
+        Contest.User user = contestItem.getmUser();
+        String companyEmail = user.getmUserName();
         holder.companyName_TV.setText(companyEmail);
 
         // Display Company Image
-        // TODO: 4/12/2016 Na to deixnw me Picasso gia na min exw problima me tis eikones sto scroll
-        Contest.Photo[] photosArray = contestItem.getPhotos();
-        if (photosArray.length > 0){
-            String photoBase64 = photosArray[0].getContent();
-            byte[] decodedString = Base64.decode(photoBase64, Base64.DEFAULT);
-            Bitmap photoBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            holder.product_IV.setImageBitmap(photoBitmap);
+        Picasso.with(mContext).cancelRequest(holder.product_IV);
+
+        Contest.Photo[] photosArray = contestItem.getmProductPhotos();
+        if (photosArray != null && photosArray.length > 0){
+
+            String photoUrl = photosArray[0].getmUrl();
+            Picasso.with(mContext).load(photoUrl).placeholder(R.drawable.ic_view_list_white_24dp).
+                    transform(new CropCircleTransformation()).
+                    error(R.drawable.ic_view_list_white_24dp).into(holder.product_IV);
         }else{
-            holder.product_IV.setImageResource(R.drawable.ic_view_list_white_24dp);
+            Picasso.with(mContext).cancelRequest(holder.product_IV);
+            holder.product_IV.setImageResource(R.drawable.bazo);
         }
 
         // Display Prize Description
-        String prizeDescription = contestItem.getTitle();
+        String prizeDescription = contestItem.getmTitle();
         holder.prize_TV.setText(prizeDescription);
 
         // Display Ending Date
-        String endingDateISO = contestItem.getEndingAt();
+        String endingDateISO = contestItem.getmEndingAt();
         DateTime dateTime = new DateTime(endingDateISO);
         int day = dateTime.getDayOfMonth();
         int year = dateTime.getYear();
@@ -93,39 +100,13 @@ public class ContestsAdapter extends ArrayAdapter {
         String endingDate = day + "-" + month + "-" +year;
         holder.endingDate_TV.setText(endingDate);
 
-
-        //holder.product_IV.setImageResource(R.drawable.ic_arrow_back_white);
-        //holder.prize_TV.setImageResource(R.drawable.ic_arrow_back_white);
-
-        /*Picasso.with(mContext).cancelRequest(holder.product_IV);
-        Picasso.with(mContext).load(photoBitmap).placeholder(R.drawable.ic_view_list_white_24dp).
-                transform(new CropCircleTransformation()).
-                error(R.drawable.ic_view_list_white_24dp).into(holder.product_IV);
-
-        mTarget = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                holder.product_IV.setImageBitmap(bitmap);
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-            }
-        };*/
-
         return convertView;
     }
 
 
     private static class ViewHolder {
         TextView companyName_TV;
-        de.hdodenhof.circleimageview.CircleImageView product_IV;
+        ImageView product_IV;
         TextView prize_TV;
         TextView endingDate_TV;
     }

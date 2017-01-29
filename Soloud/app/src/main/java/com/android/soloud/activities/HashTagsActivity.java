@@ -36,7 +36,7 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     private TagView tagGroup;
     private EditText hashTag_ET;
     private EditText description_ET;
-    private ArrayList<TagClass> defaultTagsList;
+    //private ArrayList<TagClass> defaultTagsList;
     //private ArrayList<TagClass> userTagsList;
     private String photoUri;
     private Tracker mTracker;
@@ -58,48 +58,41 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hash_tags);
 
+        hashTag_ET = (EditText) findViewById(R.id.hashTag_ET);
+        tagGroup = (TagView)findViewById(R.id.tag_group);
+        description_ET = (EditText) findViewById(R.id.description_ET);
+
         if(savedInstanceState != null){
             contest = (Contest) savedInstanceState.getSerializable("contest");
             photoUri = savedInstanceState.getString("photoUri");
         }
 
-        Contest.HashTag[] hashTags = null;
+        String hashTags = "";
         if (getIntent().getSerializableExtra("contest") != null &&
                 getIntent().getStringExtra("photoUri") != null){
             contest = (Contest) getIntent().getSerializableExtra("contest");
 
             photoUri = getIntent().getStringExtra("photoUri");
-            hashTags = contest.getHashTags();
+            String requiredTags = contest.getmRequiredHashTags();
+            String optionalTags = contest.getmOtionalHashTags();
+
+            if (!isNoE(requiredTags)){
+                ArrayList<TagClass> tags = prepareRequiredTags(requiredTags);
+                showRequiredTags(tags);
+            }
+
+            if (!isNoE(optionalTags)){
+                String[] parts = optionalTags.split(",");
+                for (String tag : parts) {
+                    addUserTagToList("#" + tag);
+                }
+            }
+
+
         }
 
-        hashTag_ET = (EditText) findViewById(R.id.hashTag_ET);
-        tagGroup = (TagView)findViewById(R.id.tag_group);
-        description_ET = (EditText) findViewById(R.id.description_ET);
-
-        //userTagsList = new ArrayList<>();
-
-        if (hashTags != null){
-            prepareDefaultTags(hashTags);
-            showDefaultTags();
-        }
-
-        //You can add one tag
-        //tagGroup.addTag(Tag tag);
-        //You can add multiple tag via ArrayList
-        //tagGroup.addTags(ArrayList<Tag> tags);
-        //Via string array
-        //addTags(String[] tags);
 
         hashTag_ET.setOnEditorActionListener(this);
-
-        //set click listener
-        tagGroup.setOnTagClickListener(new TagView.OnTagClickListener() {
-            @Override
-            public void onTagClick(Tag tag, int position) {
-                /*hashTag_ET.setText(tag.text);
-                hashTag_ET.setSelection(tag.text.length());*/ //to set cursor position
-            }
-        });
 
         //set delete listener
         tagGroup.setOnTagDeleteListener(new TagView.OnTagDeleteListener() {
@@ -109,16 +102,14 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
             }
         });
 
-        //set long click listener
-        tagGroup.setOnTagLongClickListener(new TagView.OnTagLongClickListener() {
-            @Override
-            public void onTagLongClick(Tag tag, int position) {
-            }
-        });
-
         // Obtain the shared Tracker instance.
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
+    }
+
+    private boolean isNoE( final String s ) {
+        // Null-safe, short-circuit evaluation.
+        return s == null || s.trim().isEmpty();
     }
 
     @Override
@@ -130,63 +121,20 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-
-    private void setTags(CharSequence cs) {
-        /**
-         * for empty edittext
-         */
-        if (cs.toString().equals("")) {
-            tagGroup.addTags(new ArrayList<Tag>());
-            return;
-        }
-
-        String text = cs.toString();
-        ArrayList<Tag> tags = new ArrayList<>();
-        Tag tag;
-
-
-        for (int i = 0; i < defaultTagsList.size(); i++) {
-            if (defaultTagsList.get(i).getName().toLowerCase().startsWith(text.toLowerCase())) {
-                tag = new Tag(defaultTagsList.get(i).getName());
-                tag.radius = 10f;
-                tag.layoutColor = Color.parseColor(defaultTagsList.get(i).getColor());
-                if (i % 2 == 0) // you can set deletable or not
-                    tag.isDeletable = true;
-                tags.add(tag);
-            }
-        }
-        tagGroup.addTags(tags);
-
-    }
-
-    private void prepareTags() {
-        defaultTagsList = new ArrayList<>();
-        JSONArray jsonArray;
-        JSONObject temp;
-        try {
-            jsonArray = new JSONArray(DEFAULT_TAGS);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                temp = jsonArray.getJSONObject(i);
-                defaultTagsList.add(new TagClass(temp.getString("code"),temp.getString("name")));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void prepareDefaultTags(Contest.HashTag[] hashTagsArray){
-        defaultTagsList = new ArrayList<>();
+    private ArrayList<TagClass> prepareRequiredTags(String hashTags){
+        String[] hashTagsArray = hashTags.split(",");
+        ArrayList<TagClass> defaultTagsList = new ArrayList<>();
         for (int i = 0; i < hashTagsArray.length; i++) {
-            String hashTag = "#" + hashTagsArray[i].getName();
+            String hashTag = "#" + hashTagsArray[i];
             defaultTagsList.add(new TagClass(hashTag));
         }
+        return defaultTagsList;
     }
 
-    private void showDefaultTags() {
+    private void showRequiredTags(ArrayList<TagClass> defaultTagsList) {
         ArrayList<Tag> tags = new ArrayList<>();
         Tag tag;
         for (int j = 0; j < defaultTagsList.size(); j++) {
-
             tag = new Tag(defaultTagsList.get(j).getName());
             tag.radius = 10f;
             tag.layoutColor = Color.parseColor("#e6004c");
@@ -206,17 +154,16 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         tagGroup.addTag(userTag);
     }
 
-    public static final String DEFAULT_TAGS = "[ \n" +
-            "{\"name\": \"#Lorem\", \"code\": \"AF\"}, \n" +
-            "{\"name\": \"#Ipsum\", \"code\": \"AX\"}, \n" +
-            "{\"name\": \"#Dolor\", \"code\": \"AL\"}, \n" +
-            "{\"name\": \"#Amet\", \"code\": \"DZ\"}, \n" +
-            "{\"name\": \"#Elit\", \"code\": \"AS\"} \n" + "]";
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (EditorInfo.IME_ACTION_DONE == actionId) {
-            addUserTagToList(hashTag_ET.getText().toString());
+            String userInput = hashTag_ET.getText().toString().trim();
+            if (!userInput.startsWith("#")){
+                addUserTagToList("#" + userInput);
+            }else{
+                addUserTagToList(userInput);
+            }
             hashTag_ET.setText("#");
             hashTag_ET.setSelection(1);
             return true;
@@ -241,11 +188,11 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
                 intent.putExtra("description",description_ET.getText().toString());
                 intent.putExtra("photoUri", photoUri);
                 startActivity(intent);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     private ArrayList<String> getHashTags(){

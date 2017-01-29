@@ -18,13 +18,10 @@ import com.android.soloud.SoLoudApplication;
 import com.android.soloud.adapters.ContestsAdapter;
 import com.android.soloud.apiCalls.ContestsService;
 import com.android.soloud.models.Contest;
-import com.android.soloud.models.User;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
-import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,14 +122,15 @@ public class ContestsActivity extends AppCompatActivity {
 
                 Contest contest = contestsList.get(position);
 
-                Contest.User user = contest.getUser();
-                String companyEmail = user.getEmail();
+                Contest.User user = contest.getmUser();
+                String companyName = user.getmUserName();
 
                 //String companyName = contestsList.get(position).getUser().;
                 Intent intent = new Intent(ContestsActivity.this, ContestDetails.class);
-                intent.putExtra(COMPANY_NAME, companyEmail);
+                intent.putExtra(COMPANY_NAME, companyName);
                 intent.putExtra(CONTEST, contest);
                 startActivity(intent);
+                finish();
             }
         });
     }

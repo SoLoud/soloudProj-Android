@@ -1,10 +1,7 @@
 package com.android.soloud.dialogs;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -34,7 +31,6 @@ public class ImagePreviewDialog extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
-
     }
 
 
@@ -49,8 +45,8 @@ public class ImagePreviewDialog extends DialogFragment {
         ImageView imageView = (ImageView) view.findViewById(R.id.imagePreview_IV);
 
         if (photoUri != null){
-            /*Picasso.with(getActivity()).load(photoUri).placeholder(R.drawable.ic_account_circle_white_24dp).
-                    error(R.drawable.ic_account_circle_white_24dp).into(imageView);*/
+            Picasso.with(getActivity()).load(photoUri).placeholder(R.drawable.ic_account_circle_white_24dp).
+                    error(R.drawable.ic_account_circle_white_24dp).into(imageView);
         }
 
         imageView.setOnClickListener(new View.OnClickListener() {

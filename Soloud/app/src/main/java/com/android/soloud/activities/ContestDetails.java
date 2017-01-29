@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Base64;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
+import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.models.Contest;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.analytics.HitBuilders;
@@ -33,12 +35,15 @@ import com.google.android.gms.analytics.Tracker;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 import static com.android.soloud.activities.ContestsActivity.COMPANY_NAME;
 import static com.android.soloud.activities.ContestsActivity.CONTEST;
@@ -58,7 +63,6 @@ public class ContestDetails extends AppCompatActivity {
     private static Contest contest;
     private ImageView prize_IV;
     private TextView prizeDescription_TV;
-    private TextView hashTags_TV;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -75,12 +79,29 @@ public class ContestDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advertisement_details);
 
+        prize_IV = (ImageView) findViewById(R.id.prize_IV);
+        prizeDescription_TV = (TextView) findViewById(R.id.prize_description);
+        TextView hashTags_TV = (TextView) findViewById(R.id.hashTags_TV);
+        FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.menu_item_camera);
+        FloatingActionButton fab_gallery = (FloatingActionButton) findViewById(R.id.menu_item_gallery);
+
+        prize_IV.setOnClickListener(clickListener);
+        fab_camera.setOnClickListener(clickListener);
+        fab_gallery.setOnClickListener(clickListener);
+
         if (getIntent() != null) {
             String companyName = getIntent().getStringExtra(COMPANY_NAME);
             if (companyName != null){
                 getSupportActionBar().setTitle(companyName);
             }
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
+
+            displayExampleImage();
+            displayPrizeDescription();
+            String hashTags = prepareHashTags();
+            if (!isNoE(hashTags)){
+                hashTags_TV.setText(hashTags);
+            }
         }
 
         if (savedInstanceState != null){
@@ -90,54 +111,81 @@ public class ContestDetails extends AppCompatActivity {
 
         //mLayout = findViewById(R.id.activity_advertisement_details);
 
-        prize_IV = (ImageView) findViewById(R.id.prize_IV);
-        prizeDescription_TV = (TextView) findViewById(R.id.prize_description);
-        hashTags_TV = (TextView) findViewById(R.id.hashTags_TV);
-        FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.menu_item_camera);
-        FloatingActionButton fab_gallery = (FloatingActionButton) findViewById(R.id.menu_item_gallery);
-
-        fab_camera.setOnClickListener(clickListener);
-        fab_gallery.setOnClickListener(clickListener);
-
-        displayPrizeImage();
-        displayPrizeDescription();
-        displayHashTags();
-
         // Obtain the shared Tracker instance.
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
     }
 
-    private void displayPrizeImage() {
-        Contest.Photo[] photosArray = contest.getPhotos();
-        if (photosArray.length > 0){
-            String photoBase64 = photosArray[0].getContent();
-            byte[] decodedString = Base64.decode(photoBase64, Base64.DEFAULT);
-            Bitmap photoBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            prize_IV.setImageBitmap(photoBitmap);
+    private void showFullScreenImageDialog() {
+        Contest.Photo[] photosArray = contest.getmExamplePhotos();
+        if (photosArray.length > 0 && !isNoE(photosArray[0].getmUrl())){
+            DialogFragment dialogFragment = ImagePreviewDialog.newInstance(photosArray[0].getmUrl());
+            dialogFragment.show(getSupportFragmentManager(), "imagePreview");
+        }
+    }
+
+    private void displayExampleImage() {
+        Contest.Photo[] photosArray = contest.getmExamplePhotos();
+        if (photosArray.length > 0 && !isNoE(photosArray[0].getmUrl())){
+            Picasso.with(ContestDetails.this).load(photosArray[0].getmUrl()).placeholder(R.drawable.ic_view_list_white_24dp).
+                    error(R.drawable.ic_view_list_white_24dp).into(prize_IV);
         }else{
             prize_IV.setImageResource(R.drawable.ic_view_list_white_24dp);
         }
     }
 
     private void displayPrizeDescription(){
-        String description = contest.getDescription();
-        prizeDescription_TV.setText(description);
+        if (contest != null && !isNoE(contest.getmDescription())){
+                prizeDescription_TV.setText(contest.getmDescription());
+        }
     }
 
-    private void displayHashTags() {
-        Contest.HashTag[] hasTagsArray = contest.getHashTags();
-        if (hasTagsArray.length > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (int i=0; i< hasTagsArray.length; i++){
-                String hashTag = "#" + hasTagsArray[i].getName();
-                if (i < hasTagsArray.length-1){
-                    hashTag += ", ";
-                }
-                sb.append(hashTag);
+    private String prepareHashTags() {
+        if (contest != null){
+            String requiredTags = contest.getmRequiredHashTags();
+            String optionalTags = contest.getmOtionalHashTags();
+
+            String requiredHashTags = splitInputAndAddHashTags(requiredTags);
+            String optionalHashTags = splitInputAndAddHashTags(optionalTags);
+
+            String hashTags = "";
+            if (requiredHashTags != null){
+                hashTags += requiredHashTags;
             }
-            hashTags_TV.setText(sb.toString());
+            if (optionalHashTags != null){
+                if (!hashTags.isEmpty()){
+                    hashTags += " " + optionalHashTags;
+                }else{
+                    hashTags += optionalHashTags;
+                }
+            }
+            return hashTags;
         }
+        return null;
+    }
+
+    private String splitInputAndAddHashTags(String input){
+        StringBuilder sb;
+        if (!isNoE(input)){
+        String[] parts = input.split(",");
+            sb = new StringBuilder();
+            for(int i=0; i< parts.length; i++){
+                if (i == parts.length -1){
+                    parts[i] = "#" + parts[i].trim();
+                    sb.append(parts[i]);
+                    break;
+                }
+                parts[i] = "#" + parts[i].trim() + " ";
+                sb.append(parts[i]);
+            }
+            return sb.toString();
+        }
+        return null;
+    }
+
+    private boolean isNoE( final String s ) {
+        // Null-safe, short-circuit evaluation.
+        return s == null || s.trim().isEmpty();
     }
 
     @Override
@@ -159,6 +207,9 @@ public class ContestDetails extends AppCompatActivity {
                 case R.id.menu_item_gallery:
                     // Open Gallery to pick image
                     openGallery();
+                    break;
+                case R.id.prize_IV:
+                    showFullScreenImageDialog();
                     break;
             }
         }
@@ -269,6 +320,7 @@ public class ContestDetails extends AppCompatActivity {
                 intent.putExtra("photoUri" ,photoUri);
                 intent.putExtra("contest", contest);
                 startActivity(intent);
+                finish();
             }else{
                 Toast.makeText(this, "Please try again", Toast.LENGTH_LONG).show();
             }
@@ -280,6 +332,7 @@ public class ContestDetails extends AppCompatActivity {
             intent.putExtra("photoUri" ,selectedImage.toString());
             intent.putExtra("contest", contest);
             startActivity(intent);
+            finish();
 
             /*InputStream imageStream = null;
             try {

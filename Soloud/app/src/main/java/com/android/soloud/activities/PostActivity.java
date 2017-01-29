@@ -3,8 +3,6 @@ package com.android.soloud.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,13 +18,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
 import com.android.soloud.apiCalls.LoginService;
-import com.android.soloud.apiCalls.PostService;
 import com.android.soloud.apiCalls.PostUserPhoto;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.UserPostDialog;
@@ -38,14 +34,12 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.login.LoginFragment;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,9 +62,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     public static final String TAG = "PostActivity";
 
     private Tracker mTracker;
-    private Target mTarget;
-    private ImageView photo_IV;
-    private Bitmap bitmap1;
     private String photoUri;
     private CallbackManager mCallbackManager;
     private String postText;
@@ -94,11 +85,10 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         postFailureRequestsCounter = 0;
 
         TextView post_info_TV = (TextView) findViewById(R.id.post_info_TV);
-        photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
+        ImageView photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
         Button shareButton = (Button) findViewById(R.id.share_button);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id
-                .coordinatorLayout);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,20 +111,17 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             description = getIntent().getStringExtra("description");
             ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
             photoUri = getIntent().getStringExtra("photoUri");
-            Log.d(TAG, "onCreate: " + description + ", " + tagsList.toString());
+            //Log.d(TAG, "onCreate: " + description + ", " + tagsList.toString());
 
-            String tags = tagsList.toString();
-            int tagsSize = tags.length();
-            String tagsWithoutBrackets = tags.substring(1,tagsSize-1);
-            postText = description + " " + tagsWithoutBrackets;
+            String tags = convertTagsListToString(tagsList);
 
-            String sourceString = description +" " +"<b>" + tagsWithoutBrackets + "</b> ";
+            postText = description + " " + tags;
+
+            String sourceString = description +" " +"<b>" + tags + "</b> ";
             post_info_TV.setText(Html.fromHtml(sourceString));
 
             Picasso.with(this).load(photoUri).placeholder(R.drawable.ic_account_circle_white_24dp).
                     error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);
-
-            //loadImage(this, photoUri);
         }
 
         photo_IV.setOnClickListener(new View.OnClickListener() {
@@ -143,7 +130,16 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 showFullScreenImageDialog();
             }
         });
+    }
 
+
+    private String convertTagsListToString(ArrayList<String> tagsList){
+        StringBuilder sb = new StringBuilder();
+        for (String tag : tagsList) {
+            String text = tag + " ";
+            sb.append(text);
+        }
+        return sb.toString();
     }
 
     private void showFullScreenImageDialog(){
@@ -198,7 +194,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d(TAG, "Login to FB: success with new token which has publish permissions");
-                        //Toast.makeText(PostActivity.this, "Login Success", Toast.LENGTH_LONG).show();
 
                         SharedPrefsHelper.storeInPrefs(PostActivity.this, loginResult.getAccessToken().getToken(), SharedPrefsHelper.FB_TOKEN);
                         SharedPrefsHelper.storeInPrefs(PostActivity.this, loginResult.getAccessToken().getUserId(), SharedPrefsHelper.USER_FB_ID);
@@ -220,34 +215,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 });
     }
 
-    void loadImage(Context context, String url) {
-
-        //final ImageView imageView = (ImageView) findViewById(R.id.image);
-
-        mTarget = new Target() {
-            @Override
-            public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){
-                //Do something
-
-               // photo_IV.setImageBitmap(bitmap);
-                bitmap1 = bitmap;
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-            }
-        };
-
-        Picasso.with(context)
-                .load(url)
-                .into(mTarget);
-    }
 
     @Override
     protected void onResume() {
@@ -263,39 +230,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         FragmentManager fm = getSupportFragmentManager();
         UserPostDialog alertDialog = UserPostDialog.newInstance();
         alertDialog.show(fm, "post_dialog");
-    }
-
-
-    private void initPostsService(String description) {
-
-        // Create a very simple REST adapter which points the API endpoint.
-        PostService client = ServiceGenerator.createService(PostService.class);
-
-        // Make the user post to So Loud Backend
-        String soLoudToken = SharedPrefsHelper.getFromPrefs(this, SOLOUD_TOKEN);
-        if (soLoudToken != null && !soLoudToken.isEmpty()){
-            Call<Object> call = client.sendUserPostToBackend("Bearer " + SharedPrefsHelper.getFromPrefs(this, SOLOUD_TOKEN), description);
-            call.enqueue(new Callback<Object>() {
-                @Override
-                public void onResponse(Call<Object> call, Response<Object> response) {
-                    if (response.isSuccessful()) {
-                        Log.d(TAG, "Success posting: " + response.toString());
-
-                    } else {
-                        // error response, no access to resource?
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Object> call, Throwable t) {
-                    // something went completely south (like no internet connection)
-                    Log.d(TAG, "Error posting: " + t.getMessage());
-                }
-            });
-        }else{
-            // User has no token !!!
-        }
-
     }
 
     private void initPostUserPhotoService(String filePath, String description){
@@ -323,7 +257,19 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
                     progressWheel.stopSpinning();
-                    Snackbar.make(coordinatorLayout, getResources().getString(R.string.success_post_for_revision), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(coordinatorLayout, getResources().getString(R.string.success_post_for_revision), Snackbar.LENGTH_LONG).
+                            setCallback(new Snackbar.Callback() {
+                                @Override
+                                public void onDismissed(Snackbar snackbar, int event) {
+                                    super.onDismissed(snackbar, event);
+
+                                    Intent intent = new Intent(PostActivity.this, ContestsActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            })
+                            .show();
+
                 }else{
                     if (response.code() == 401){
                         // TODO: 26/1/2017 Na kanw diaxeirisi an einai unauthorized. Refresh Token?

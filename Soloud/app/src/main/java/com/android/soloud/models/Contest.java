@@ -10,95 +10,170 @@ import java.io.Serializable;
 
 public class Contest implements Serializable{
 
-    @SerializedName("$id")
-    private String id;
-
-    @SerializedName("hashTags")
-    private HashTag[] hashTags;
-
-    @SerializedName("photos")
-    private Photo[] photos;
-
-    @SerializedName("user")
-    private User user;
-
-    @SerializedName("title")
-    private String title;
-
-    @SerializedName("description")
-    private String description;
-
-    @SerializedName("endingAt")
-    private String endingAt;
-
-    @SerializedName("productImageUrl")
-    private String productImageUrl;
+    /*@SerializedName("$id")
+    private String id;*/
 
     @SerializedName("category")
-    private String category;
+    private String mCategory;
 
-    public Photo[] getPhotos() {
-        return photos;
+    @SerializedName("createdAt")
+    private String mCreatedAt;
+
+    @SerializedName("description")
+    private String mDescription;
+
+    @SerializedName("endingAt")
+    private String mEndingAt;
+
+    @SerializedName("examplePhotos")
+    private Photo[] mExamplePhotos;
+
+    @SerializedName("id")
+    private String mId;
+
+    @SerializedName("optionalHashTags")
+    private String mOtionalHashTags;
+
+    @SerializedName("productPhotos")
+    private Photo[] mProductPhotos;
+
+    @SerializedName("requiredHashTags")
+    private String mRequiredHashTags;
+
+    @SerializedName("title")
+    private String mTitle;
+
+    @SerializedName("user")
+    private User mUser;
+
+    @SerializedName("userId")
+    private String mUserId;
+
+
+    public String getmCategory() {
+        return mCategory;
     }
 
-    public String getEndingAt() {
-        return endingAt;
+    public void setmCategory(String mCategory) {
+        this.mCategory = mCategory;
     }
 
-    public String getProductImageUrl() {
-        return productImageUrl;
+    public String getmCreatedAt() {
+        return mCreatedAt;
     }
 
-    public String getCategory() {
-        return category;
+    public void setmCreatedAt(String mCreatedAt) {
+        this.mCreatedAt = mCreatedAt;
     }
 
-    public String getId() {
-        return id;
+    public String getmDescription() {
+        return mDescription;
     }
 
-    public User getUser() {
-        return user;
+    public void setmDescription(String mDescription) {
+        this.mDescription = mDescription;
     }
 
-    public String getTitle() {
-        return title;
+    public String getmEndingAt() {
+        return mEndingAt;
     }
 
-    public String getDescription() {
-        return description;
+    public void setmEndingAt(String mEndingAt) {
+        this.mEndingAt = mEndingAt;
     }
 
-    public HashTag[] getHashTags() {
-        return hashTags;
+    public Photo[] getmExamplePhotos() {
+        return mExamplePhotos;
+    }
+
+    public void setmExamplePhotos(Photo[] mExamplePhotos) {
+        this.mExamplePhotos = mExamplePhotos;
+    }
+
+    public String getmId() {
+        return mId;
+    }
+
+    public void setmId(String mId) {
+        this.mId = mId;
+    }
+
+    public String getmOtionalHashTags() {
+        return mOtionalHashTags;
+    }
+
+    public void setmOtionalHashTags(String mOtionalHashTags) {
+        this.mOtionalHashTags = mOtionalHashTags;
+    }
+
+    public Photo[] getmProductPhotos() {
+        return mProductPhotos;
+    }
+
+    public void setmProductPhotos(Photo[] mProductPhotos) {
+        this.mProductPhotos = mProductPhotos;
+    }
+
+    public String getmRequiredHashTags() {
+        return mRequiredHashTags;
+    }
+
+    public void setmRequiredHashTags(String mRequiredHashTags) {
+        this.mRequiredHashTags = mRequiredHashTags;
+    }
+
+    public String getmTitle() {
+        return mTitle;
+    }
+
+    public void setmTitle(String mTitle) {
+        this.mTitle = mTitle;
+    }
+
+    public User getmUser() {
+        return mUser;
+    }
+
+    public void setmUser(User mUser) {
+        this.mUser = mUser;
+    }
+
+    public String getmUserId() {
+        return mUserId;
+    }
+
+    public void setmUserId(String mUserId) {
+        this.mUserId = mUserId;
     }
 
     public class Photo implements Serializable{
 
-        public Photo(String content) {
-            this.content = content;
+        public Photo(String url) {
+            this.mUrl = url;
         }
 
-        @SerializedName("content")
-        private String content;
+        @SerializedName("url")
+        private String mUrl;
 
-        public String getContent() {return content;}
+        public String getmUrl() {return mUrl;}
 
     }
 
     public class User implements Serializable{
 
-        public User(String email){
-            this.email = email;
+        public User(String mUserName){
+            this.mUserName = mUserName;
         }
 
-        @SerializedName("email")
-        private String email;
+        @SerializedName("userName")
+        private String mUserName;
 
-        public String getEmail() {return email;}
+        public String getmUserName() {
+            return mUserName;
+        }
     }
 
-    public class HashTag implements Serializable{
+    /*public class HashTag implements Serializable{
 
         public HashTag(String name, String id, String itemId) {
             this.name = name;
@@ -126,7 +201,7 @@ public class Contest implements Serializable{
         public String getName() {
             return name;
         }
-    }
+    }*/
 
 
 }

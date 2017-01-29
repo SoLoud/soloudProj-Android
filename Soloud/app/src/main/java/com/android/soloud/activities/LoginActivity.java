@@ -13,6 +13,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
@@ -50,6 +51,7 @@ public class LoginActivity extends Activity {
     public static final String FACEBOOK_PROVIDER = "facebook";
     private CoordinatorLayout coordinatorLayout;
     private int loginFailureRequestsCounter;
+    private LoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,7 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
+        loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -125,16 +127,18 @@ public class LoginActivity extends Activity {
             public void onCancel() {
                 //Log.d(TAG, "onCancel: Facebook login attempt cancelled.");
                 //Snackbar.make(coordinatorLayout, "Login attempt cancelled", Snackbar.LENGTH_LONG).show();
+                loginButton.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onError(FacebookException e) {
                 //Log.d(TAG, "onError: Facebook login attempt failed.");
+                loginButton.setVisibility(View.VISIBLE);
                 Snackbar.make(coordinatorLayout, R.string.error_login_facebook, Snackbar.LENGTH_LONG).show();
             }
         });
 
-        // Hash Key 5SmyNCWXqgooB+tJ5v3GcjG4xC0=
+        // Hash Key H3iwRkLWe23Sh+pZxlndHY+HtFg=
         //generateHashKey();
     }
 
@@ -205,9 +209,8 @@ public class LoginActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            /*Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();*/
+
+            loginButton.setVisibility(View.INVISIBLE);
         }
     }
 
