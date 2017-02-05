@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
 import com.android.soloud.fragments.CategoriesFragment;
+import com.android.soloud.fragments.GalleryFragment;
 import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 import com.android.soloud.materialnavigationdrawer.elements.MaterialSection;
 import com.android.soloud.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
@@ -35,6 +36,7 @@ public class MainActivity extends MaterialNavigationDrawer{
     public static final String CATEGORIES = "Categories";
     public static final String PROFILE = "Profile";
     public static final String TRAINING = "Training";
+    public static final String GALLERY = "Gallery";
     public static final String LOGOUT = "Logout";
 
     public static final String MATERIAL_DRAWER_COLOR = "#e6004c";
@@ -77,6 +79,8 @@ public class MainActivity extends MaterialNavigationDrawer{
         Intent intent = new Intent(this, UserProfileActivity.class);
         this.addSection(newSection(PROFILE, R.drawable.ic_account_circle_white_24dp, intent));
 
+        this.addSection(newSection(GALLERY, R.drawable.ic_collections_white_24, new GalleryFragment()).setSectionColor(Color.parseColor(MATERIAL_DRAWER_COLOR)));
+
         MaterialSection training = this.newSection(TRAINING, R.drawable.ic_import_contacts_white_24dp, new MaterialSectionListener() {
             @Override
             public void onClick(MaterialSection section) {
@@ -106,6 +110,8 @@ public class MainActivity extends MaterialNavigationDrawer{
         });
         this.addBottomSection(sign_out);
         this.enableToolbarElevation();
+
+        this.setBackPattern(BACKPATTERN_BACK_TO_FIRST);
 
         /*MediaPlayer mPlayer = MediaPlayer.create(this, R.raw.sosoloud_sound);
         mPlayer.start();*/
