@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.android.soloud.activities.PostActivity">
+
+    <RelativeLayout
+        android:id="@+id/activity_post"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/image_LL"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="#000000"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/post_photo_IV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                tools:src="@drawable/bazo"
+                android:src="@drawable/bazo"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/likes_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:textColor="#000000"
+            tools:text="Foivos and 120 others like your photo"
+            android:text="Foivos and 120 others like your photo"
+            android:layout_below="@+id/image_LL"
+            android:layout_marginTop="32dp"
+            />
+
+        <TextView
+            android:id="@+id/post_info_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:textColor="#000000"
+            tools:text="#blah blah"
+            android:layout_below="@+id/likes_TV"
+            android:layout_marginTop="32dp"/>
+
+
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

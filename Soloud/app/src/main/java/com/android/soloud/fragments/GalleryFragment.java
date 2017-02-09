@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.adapters.GalleryAdapter;
 import com.android.soloud.dialogs.ImagePreviewDialog;
+import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 
 /**
  * Created by f.stamopoulos on 5/2/2017.
@@ -49,7 +49,7 @@ public class GalleryFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Integer[] mThumbIds = {
+        final Integer[] mThumbIds = {
                 R.drawable.bazo, R.drawable.bazo1,
                 R.drawable.bazo, R.drawable.bazo1,
                 R.drawable.bazo, R.drawable.bazo1,
@@ -67,7 +67,8 @@ public class GalleryFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "Position " + position, Toast.LENGTH_SHORT).show();
+                //showFullScreenImageDialog(mThumbIds[position].toString());
+                ((MaterialNavigationDrawer)getActivity()).setFragmentChild(new GalleryPostDetailsFragment(), "Post Info");
             }
         });
 
@@ -86,8 +87,9 @@ public class GalleryFragment extends Fragment {
         super.onStop();
     }
 
-    /*private void showFullScreenImageDialog(){
-        DialogFragment dialogFragment = ImagePreviewDialog.newInstance(photoUri);
-        dialogFragment.show(getSupportFragmentManager(),"imagePreview");
-    }*/
+
+    private void showFullScreenImageDialog(String resId){
+        DialogFragment dialogFragment = ImagePreviewDialog.newInstance(resId);
+        dialogFragment.show(getActivity().getSupportFragmentManager(),"imagePreview");
+    }
 }
