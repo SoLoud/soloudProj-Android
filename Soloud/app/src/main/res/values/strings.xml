@@ -14,6 +14,7 @@
     <string name="dialog_description_post_validation">The post will be published after our validation</string>
     <string name="post_sent">Post sent for revision</string>
     <string name="permission_camera_and_storage_rationale">Camera and Write Storage permissions are needed to capture photos.</string>
+    <string name="permission_read_storage_rationale">Read Storage permission is needed to choose photos.</string>
 
     <string name="desctipiton_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in turpis viverra, elementum sapien eget, consequat felis. Quisque posuere orci porta sapien pharetra, at facilisis sapien ullamcorper. Cras ante nisl, bibendum et dui nec, blandit hendrerit elit.</string>
 
@@ -127,6 +128,6 @@
     <string name="error_login">Could not login to SoLoud</string>
     <string name="error_requesting_contests">Could not load Contests</string>
     <string name="error_login_facebook">Facebook login attempt failed</string>
-
+    <string name="please_try_again">Please try again</string>
 
 </resources>

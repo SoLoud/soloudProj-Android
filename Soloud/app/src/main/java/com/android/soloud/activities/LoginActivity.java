@@ -184,6 +184,7 @@ public class LoginActivity extends Activity {
                 }else{
                     LoginManager.getInstance().logOut();
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
+                    loginButton.setVisibility(View.VISIBLE);
                 }
             }
         };

@@ -3,6 +3,7 @@ package com.android.soloud.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ import com.android.soloud.apiCalls.PostUserPhoto;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.UserPostDialog;
 import com.android.soloud.models.User;
+import com.android.soloud.utils.ImageHelper;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.AccessToken;
@@ -70,6 +73,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private NetworkStatusHelper networkStatusHelper;
     private int loginFailureRequestsCounter;
     private int postFailureRequestsCounter;
+    private String imageName = "";
+    private ImageHelper imageHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,22 +237,33 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         alertDialog.show(fm, "post_dialog");
     }
 
+    private String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
     private void initPostUserPhotoService(String filePath, String description){
 
         PostUserPhoto service = ServiceGenerator.createService(PostUserPhoto.class);
 
-        //File file = new File(filePath);
+        imageHelper = new ImageHelper(this);
+        //Bitmap bitmap = imageHelper.getBitmapFromUri(Uri.parse(filePath));
+        Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(filePath)));
+        File imageFile = imageHelper.saveToInternalStorage(resizedImage);
+        if (imageFile != null){
+            imageName = imageFile.getName();
+        }
 
-        /////////////////
 
-        File file = new File(getRealPathFromURI(this,Uri.parse(filePath)));
+        String imageType = getMimeType(imageFile.toString());
 
-        /////////
-
-        // TODO: 14/12/2016 na pairnw ton tupo tou arxeiou programmatistika k na min to bazw karfwta
-
-        RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
-        MultipartBody.Part body = MultipartBody.Part.createFormData("upload", file.getName(), reqFile);
+        RequestBody reqFile = RequestBody.create(MediaType.parse(imageType), imageFile);
+        //RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("upload", imageFile.getName(), reqFile);
         RequestBody desc = RequestBody.create(MediaType.parse("text/plain"), description);
 
         String soLoudToken = SharedPrefsHelper.getFromPrefs(this, SOLOUD_TOKEN);
@@ -256,6 +272,9 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
+
+                    imageHelper.deleteImageFromInternalStorage(imageName);
+
                     progressWheel.stopSpinning();
                     Snackbar.make(coordinatorLayout, getResources().getString(R.string.success_post_for_revision), Snackbar.LENGTH_LONG).
                             setCallback(new Snackbar.Callback() {
@@ -319,35 +338,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         Log.d(TAG, "onActivityResult: " + data.toString());
     }
 
-    private String getRealPathFromURI(Uri contentURI) {
-        String result;
-        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) {
-            result = contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            result = cursor.getString(idx);
-            cursor.close();
-        }
-        return result;
-    }
-
-
-    public String getRealPathFromURI(Context context, Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] projection = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri,  projection, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
 
     private void loginToBackend(String token) {
 
@@ -401,5 +391,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         };
         call.enqueue(loginCallback);
     }
+
 
 }

@@ -1,6 +1,7 @@
 package com.android.soloud.activities;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Base64;
@@ -55,6 +57,7 @@ public class ContestDetails extends AppCompatActivity {
     public static final int PICK_IMAGE_FROM_GAL = 2;
     public static final String TAG = "AdvertisementDetails";
     private static final int REQUEST_CAMERA_AND_STORAGE = 3;
+    private static final int REQUEST_READ_STORAGE = 4;
 
     private String photoUri;
     //private View mLayout;
@@ -63,6 +66,7 @@ public class ContestDetails extends AppCompatActivity {
     private static Contest contest;
     private ImageView prize_IV;
     private TextView prizeDescription_TV;
+    String wreUri;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -72,6 +76,8 @@ public class ContestDetails extends AppCompatActivity {
             outState.putString("photoUri", photoUri);
         }
         outState.putSerializable(CONTEST, contest);
+
+        outState.putString("wreUri" , wreUri);
     }
 
     @Override
@@ -107,6 +113,7 @@ public class ContestDetails extends AppCompatActivity {
         if (savedInstanceState != null){
             photoUri = savedInstanceState.getString("photoUri");
             contest = (Contest) savedInstanceState.getSerializable(CONTEST);
+            wreUri = savedInstanceState.getString("wreUri");
         }
 
         //mLayout = findViewById(R.id.activity_advertisement_details);
@@ -206,7 +213,8 @@ public class ContestDetails extends AppCompatActivity {
                     break;
                 case R.id.menu_item_gallery:
                     // Open Gallery to pick image
-                    openGallery();
+                    checkForReadStoragePermission();
+                    //openGallery();
                     break;
                 case R.id.prize_IV:
                     showFullScreenImageDialog();
@@ -299,8 +307,10 @@ public class ContestDetails extends AppCompatActivity {
                 new String[] { file.toString() }, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
-                        //Log.i("ExternalStorage", "Scanned " + path + ":");
-                        //Log.i("ExternalStorage", "-> uri=" + uri);
+                        Log.i("ExternalStorage", "Scanned " + path + ":");
+                        Log.i("ExternalStorage", "-> uri=" + uri);
+
+                        wreUri = uri.toString();
                     }
                 });
         return file;
@@ -316,13 +326,16 @@ public class ContestDetails extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             if(photoUri != null){
+                //Uri imageToGalleryUri = addImageToGallery(photoUri, this);
+                /*File file = new File(Uri.parse(photoUri).getPath());
+                boolean deleted = file.delete();*/
                 Intent intent = new Intent(this, HashTagsActivity.class);
-                intent.putExtra("photoUri" ,photoUri);
+                intent.putExtra("photoUri" ,wreUri);
                 intent.putExtra("contest", contest);
                 startActivity(intent);
                 finish();
             }else{
-                Toast.makeText(this, "Please try again", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -341,6 +354,47 @@ public class ContestDetails extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }*/
+        }
+    }
+
+    public Uri addImageToGallery(final String filePath, final Context context) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.MediaColumns.DATA, filePath);
+
+        return context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
+    private void checkForReadStoragePermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                SnackbarManager.show(
+                        com.nispok.snackbar.Snackbar.with(ContestDetails.this)
+                                .type(SnackbarType.SINGLE_LINE)
+                                .text(R.string.permission_read_storage_rationale)
+                                .duration(com.nispok.snackbar.Snackbar.SnackbarDuration.LENGTH_INDEFINITE)
+                                .animation(false) // don't animate it
+                                .swipeToDismiss(true)
+                                .actionLabel(R.string.ok)
+                                .actionListener(new ActionClickListener() {
+                                    @Override
+                                    public void onActionClicked(com.nispok.snackbar.Snackbar snackbar) {
+                                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                                REQUEST_READ_STORAGE);
+                                    }
+                                })
+                        , ContestDetails.this);
+
+            } else {
+                // No explanation needed, we can request the permission.
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_READ_STORAGE);
+            }
+        }else{
+            openGallery();
         }
     }
 
@@ -389,6 +443,16 @@ public class ContestDetails extends AppCompatActivity {
                     displayMessage(SnackbarType.SINGLE_LINE, getResources().getString(R.string.permission_not_granted), Color.parseColor("#ff323232"));
                 }
             }
+            break;
+            case REQUEST_READ_STORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    displayMessage(SnackbarType.SINGLE_LINE, getResources().getString(R.string.permission_granted), Color.parseColor("#ff323232"));
+                    openGallery();
+                } else {
+                    displayMessage(SnackbarType.SINGLE_LINE, getResources().getString(R.string.permission_not_granted), Color.parseColor("#ff323232"));
+                }
+                break;
         }
     }
 
