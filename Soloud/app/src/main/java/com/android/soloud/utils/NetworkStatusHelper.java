@@ -10,13 +10,13 @@ import android.net.NetworkInfo;
 
 public class NetworkStatusHelper {
 
-    private Context context;
+    /*private Context context;
 
     public NetworkStatusHelper(Context context) {
         this.context = context;
-    }
+    }*/
 
-    public boolean isNetworkAvailable() {
+    public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

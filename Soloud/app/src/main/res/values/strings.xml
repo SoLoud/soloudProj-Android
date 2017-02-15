@@ -129,5 +129,7 @@
     <string name="error_requesting_contests">Could not load Contests</string>
     <string name="error_login_facebook">Facebook login attempt failed</string>
     <string name="please_try_again">Please try again</string>
+    <string name="terms_and_privacy_policy"><![CDATA[By signing up, you agree to our
+        <u>Terms</u> & <u>Privacy Policy</u>.]]></string>
 
 </resources>

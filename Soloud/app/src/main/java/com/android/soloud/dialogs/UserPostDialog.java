@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.android.soloud.R;
+import com.android.soloud.utils.SharedPrefsHelper;
 
 /**
  * Created by f.stamopoulos on 13/11/2016.
@@ -54,6 +55,7 @@ public class UserPostDialog extends android.support.v4.app.DialogFragment {
         alertDialogBuilder.setPositiveButton(getString(R.string.ok),  new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                SharedPrefsHelper.storeBooleanInPrefs(getActivity(), true, SharedPrefsHelper.POST_POP_UP_DISPLAYED);
                 mListener.onOkPressed();
             }
         });

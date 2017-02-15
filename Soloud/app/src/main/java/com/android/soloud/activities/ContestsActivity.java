@@ -44,7 +44,6 @@ public class ContestsActivity extends AppCompatActivity {
     //private ProgressWheel progressWheel;
     private CoordinatorLayout coordinatorLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    NetworkStatusHelper networkStatusHelper;
     private int contestsFailureRequestsCounter;
 
     @Override
@@ -58,12 +57,11 @@ public class ContestsActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.mySecondary);
-        networkStatusHelper = new NetworkStatusHelper(this);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (networkStatusHelper.isNetworkAvailable()) {
+                if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
                     initContestsService();
                 } else {
                     mSwipeRefreshLayout.setRefreshing(false);
@@ -85,7 +83,7 @@ public class ContestsActivity extends AppCompatActivity {
         } else if (contestsList != null) {
             initializeListView();
         } else {
-            if (networkStatusHelper.isNetworkAvailable()) {
+            if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
                 initContestsService();
             } else {
                 //displayNoConnectionMessage(networkStatusHelper);
@@ -104,7 +102,7 @@ public class ContestsActivity extends AppCompatActivity {
                 setAction(R.string.retry, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (networkStatusHelper.isNetworkAvailable()) {
+                        if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
                             mSwipeRefreshLayout.setRefreshing(true);
                             initContestsService();
                         } else {

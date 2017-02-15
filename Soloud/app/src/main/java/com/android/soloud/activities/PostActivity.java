@@ -1,12 +1,9 @@
 package com.android.soloud.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
@@ -58,6 +55,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.android.soloud.activities.MainActivity.POST_SN;
+import static com.android.soloud.utils.SharedPrefsHelper.POST_POP_UP_DISPLAYED;
 import static com.android.soloud.utils.SharedPrefsHelper.SOLOUD_TOKEN;
 
 public class PostActivity extends AppCompatActivity implements UserPostDialog.OnOkPressedListener{
@@ -70,7 +68,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private String postText;
     private ProgressWheel progressWheel;
     private CoordinatorLayout coordinatorLayout;
-    private NetworkStatusHelper networkStatusHelper;
     private int loginFailureRequestsCounter;
     private int postFailureRequestsCounter;
     private String imageName = "";
@@ -85,7 +82,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
-        networkStatusHelper = new NetworkStatusHelper(this);
         loginFailureRequestsCounter =0;
         postFailureRequestsCounter = 0;
 
@@ -97,8 +93,13 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (networkStatusHelper.isNetworkAvailable()){
-                    showShareDialog();
+                if (NetworkStatusHelper.isNetworkAvailable(PostActivity.this)){
+                    boolean popUpDisplayed = SharedPrefsHelper.getBooleanFromPrefs(PostActivity.this, POST_POP_UP_DISPLAYED);
+                    if (!popUpDisplayed) {
+                        showShareDialog();
+                    }else{
+                        checkForPublishPermissions();
+                    }
                 }else{
                  displayNoConnectionMessage();
                 }
@@ -158,7 +159,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 setAction(R.string.retry, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (networkStatusHelper.isNetworkAvailable()){
+                        if (NetworkStatusHelper.isNetworkAvailable(PostActivity.this)){
                             showShareDialog();
                         }else{
                             displayNoConnectionMessage();

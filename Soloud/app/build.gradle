@@ -70,6 +70,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.pnikosis:materialish-progress:1.7'
     compile 'joda-time:joda-time:2.9.6'
+    compile 'com.android.support:customtabs:24.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

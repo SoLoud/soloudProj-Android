@@ -8,12 +8,18 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
@@ -30,6 +36,7 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +59,7 @@ public class LoginActivity extends Activity {
     private CoordinatorLayout coordinatorLayout;
     private int loginFailureRequestsCounter;
     private LoginButton loginButton;
+    private com.pnikosis.materialishprogress.ProgressWheel progressWheel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +87,11 @@ public class LoginActivity extends Activity {
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         loginButton = (LoginButton)findViewById(R.id.login_button);
+        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
+        TextView terms_and_policy_TV = (TextView) findViewById(R.id.terms_and_policy_TV);
+        Spanned sp = Html.fromHtml(getString(R.string.terms_and_privacy_policy));
+        terms_and_policy_TV.setText(sp);
+        terms_and_policy_TV.setOnClickListener(clickListener);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -106,7 +119,9 @@ public class LoginActivity extends Activity {
 
                                     SharedPrefsHelper.storeInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
                                     SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
-                                    
+
+                                    progressWheel.setVisibility(View.VISIBLE);
+                                    progressWheel.spin();
                                     loginToBackend(token);
 
                                 } catch (JSONException e) {
@@ -140,6 +155,16 @@ public class LoginActivity extends Activity {
 
         // Hash Key H3iwRkLWe23Sh+pZxlndHY+HtFg=
         //generateHashKey();
+    }
+
+    private void openWithChromeCustomTabs(){
+        String url = "https://www.google.com";
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        builder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        builder.setStartAnimations(this , R.anim.slide_in_right, R.anim.slide_out_left);
+        builder.setExitAnimations(this, R.anim.slide_in_left, R.anim.slide_out_right);
+        customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 
     private void loginToBackend(String token) {
@@ -185,6 +210,7 @@ public class LoginActivity extends Activity {
                     LoginManager.getInstance().logOut();
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
                     loginButton.setVisibility(View.VISIBLE);
+                    progressWheel.stopSpinning();
                 }
             }
         };
@@ -214,5 +240,18 @@ public class LoginActivity extends Activity {
             loginButton.setVisibility(View.INVISIBLE);
         }
     }
+
+    private View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.terms_and_policy_TV:
+                    openWithChromeCustomTabs();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
 }
