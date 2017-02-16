@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -20,7 +19,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,6 +29,8 @@ import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.models.Contest;
+import com.android.soloud.models.CurrentState;
+import com.android.soloud.utils.MyStringHelper;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -45,10 +45,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
-
-import static com.android.soloud.activities.ContestsActivity.COMPANY_NAME;
 import static com.android.soloud.activities.ContestsActivity.CONTEST;
+import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.CONTEST_DETAILS_SN;
 
 public class ContestDetails extends AppCompatActivity {
@@ -64,13 +62,13 @@ public class ContestDetails extends AppCompatActivity {
 
     private Tracker mTracker;
     private static Contest contest;
+    private CurrentState currentState;
     private ImageView prize_IV;
     private TextView prizeDescription_TV;
     String wreUri;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
 
         if(photoUri != null){
             outState.putString("photoUri", photoUri);
@@ -78,6 +76,10 @@ public class ContestDetails extends AppCompatActivity {
         outState.putSerializable(CONTEST, contest);
 
         outState.putString("wreUri" , wreUri);
+
+        outState.putSerializable(CURRENT_STATE, currentState);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -96,9 +98,12 @@ public class ContestDetails extends AppCompatActivity {
         fab_gallery.setOnClickListener(clickListener);
 
         if (getIntent() != null) {
-            String companyName = getIntent().getStringExtra(COMPANY_NAME);
-            if (companyName != null){
-                getSupportActionBar().setTitle(companyName);
+
+            currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
+            if (currentState != null) {
+                if (!MyStringHelper.isNoE(currentState.getCompanyName())){
+                    getSupportActionBar().setTitle(currentState.getCompanyName());
+                }
             }
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
 
@@ -114,10 +119,14 @@ public class ContestDetails extends AppCompatActivity {
             photoUri = savedInstanceState.getString("photoUri");
             contest = (Contest) savedInstanceState.getSerializable(CONTEST);
             wreUri = savedInstanceState.getString("wreUri");
+            currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
         }
 
-        //mLayout = findViewById(R.id.activity_advertisement_details);
 
+        googleAnalyticsTrack();
+    }
+
+    private void googleAnalyticsTrack() {
         // Obtain the shared Tracker instance.
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
@@ -150,7 +159,7 @@ public class ContestDetails extends AppCompatActivity {
     private String prepareHashTags() {
         if (contest != null){
             String requiredTags = contest.getmRequiredHashTags();
-            String optionalTags = contest.getmOtionalHashTags();
+            String optionalTags = contest.getmOptionalHashTags();
 
             String requiredHashTags = splitInputAndAddHashTags(requiredTags);
             String optionalHashTags = splitInputAndAddHashTags(optionalTags);
@@ -330,8 +339,10 @@ public class ContestDetails extends AppCompatActivity {
                 /*File file = new File(Uri.parse(photoUri).getPath());
                 boolean deleted = file.delete();*/
                 Intent intent = new Intent(this, HashTagsActivity.class);
-                intent.putExtra("photoUri" ,wreUri);
-                intent.putExtra("contest", contest);
+                //intent.putExtra("photoUri" ,wreUri);
+                intent.putExtra(CONTEST, contest);
+                currentState.setPhotoUri(photoUri);
+                intent.putExtra(CURRENT_STATE, currentState);
                 startActivity(intent);
                 finish();
             }else{
@@ -342,8 +353,9 @@ public class ContestDetails extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_FROM_GAL && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
             Intent intent = new Intent(this, HashTagsActivity.class);
-            intent.putExtra("photoUri" ,selectedImage.toString());
-            intent.putExtra("contest", contest);
+            intent.putExtra(CONTEST, contest);
+            currentState.setPhotoUri(selectedImage.toString());
+            intent.putExtra(CURRENT_STATE, currentState);
             startActivity(intent);
             finish();
 
@@ -480,4 +492,12 @@ public class ContestDetails extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(ContestDetails.this, ContestsActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+// TODO: 16/2/2017 na ftiaksw to navigation pros ta pisw apo to back arrow!!!!!!!!!!!!
 }

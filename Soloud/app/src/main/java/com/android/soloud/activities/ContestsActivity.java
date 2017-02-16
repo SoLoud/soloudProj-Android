@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.android.soloud.SoLoudApplication;
 import com.android.soloud.adapters.ContestsAdapter;
 import com.android.soloud.apiCalls.ContestsService;
 import com.android.soloud.models.Contest;
+import com.android.soloud.models.CurrentState;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.google.android.gms.analytics.HitBuilders;
@@ -37,14 +39,15 @@ public class ContestsActivity extends AppCompatActivity {
 
     public static final String COMPANY_NAME = "CompanyName";
     public static final String CONTEST = "contest";
+    public static final String CURRENT_STATE = "currentState";
     private static final String TAG = "ContestsActivity";
     private Tracker mTracker;
     private ListView listView;
     public static ArrayList<Contest> contestsList;
-    //private ProgressWheel progressWheel;
     private CoordinatorLayout coordinatorLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private int contestsFailureRequestsCounter;
+    private CurrentState currentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,23 +55,10 @@ public class ContestsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contests);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        /*progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
-        progressWheel.spin();*/
         listView = (ListView) findViewById(R.id.listView);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.mySecondary);
-
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
-                    initContestsService();
-                } else {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    displayNoConnectionMessage();
-                }
-            }
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
 
         if (getIntent() != null && getIntent().getStringExtra(CONTEST_NAME) != null) {
             String contestName = getIntent().getStringExtra(CONTEST_NAME);
@@ -91,6 +81,11 @@ public class ContestsActivity extends AppCompatActivity {
             }
         }
 
+
+        googleAnalyticsTrack();
+    }
+
+    private void googleAnalyticsTrack() {
         // Obtain the shared Tracker instance.
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
@@ -123,10 +118,10 @@ public class ContestsActivity extends AppCompatActivity {
                 Contest.User user = contest.getmUser();
                 String companyName = user.getmUserName();
 
-                //String companyName = contestsList.get(position).getUser().;
                 Intent intent = new Intent(ContestsActivity.this, ContestDetails.class);
-                intent.putExtra(COMPANY_NAME, companyName);
                 intent.putExtra(CONTEST, contest);
+                currentState = new CurrentState(null, companyName, null, null);
+                intent.putExtra(CURRENT_STATE, currentState);
                 startActivity(intent);
                 finish();
             }
@@ -153,7 +148,6 @@ public class ContestsActivity extends AppCompatActivity {
     private void initContestsService() {
 
         mSwipeRefreshLayout.setRefreshing(true);
-        //progressWheel.setVisibility(View.VISIBLE);
         // Create a very simple REST adapter which points the API endpoint.
         ContestsService client = ServiceGenerator.createService(ContestsService.class);
 
@@ -164,7 +158,6 @@ public class ContestsActivity extends AppCompatActivity {
             public void onResponse(Call<List<Contest>> call, Response<List<Contest>> response) {
                 if (response.isSuccessful()) {
                     contestsList = (ArrayList<Contest>) response.body();
-                    //progressWheel.stopSpinning();
                     mSwipeRefreshLayout.setRefreshing(false);
                     initializeListView();
                 } else {
@@ -201,5 +194,17 @@ public class ContestsActivity extends AppCompatActivity {
         };
         call.enqueue(contestsCallback);
     }
+
+    private SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
+                initContestsService();
+            } else {
+                mSwipeRefreshLayout.setRefreshing(false);
+                displayNoConnectionMessage();
+            }
+        }
+    };
 
 }

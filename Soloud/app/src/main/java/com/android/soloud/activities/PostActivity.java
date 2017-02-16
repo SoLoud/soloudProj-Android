@@ -25,6 +25,8 @@ import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.apiCalls.PostUserPhoto;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.UserPostDialog;
+import com.android.soloud.models.Contest;
+import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.User;
 import com.android.soloud.utils.ImageHelper;
 import com.android.soloud.utils.NetworkStatusHelper;
@@ -54,7 +56,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.android.soloud.activities.ContestsActivity.CONTEST;
+import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.POST_SN;
+import static com.android.soloud.utils.MyStringHelper.isNoE;
 import static com.android.soloud.utils.SharedPrefsHelper.POST_POP_UP_DISPLAYED;
 import static com.android.soloud.utils.SharedPrefsHelper.SOLOUD_TOKEN;
 
@@ -63,7 +68,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     public static final String TAG = "PostActivity";
 
     private Tracker mTracker;
-    private String photoUri;
+    //private String photoUri;
     private CallbackManager mCallbackManager;
     private String postText;
     private ProgressWheel progressWheel;
@@ -72,15 +77,13 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private int postFailureRequestsCounter;
     private String imageName = "";
     private ImageHelper imageHelper;
+    private Contest contest;
+    private CurrentState currentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
-
-        // Obtain the shared Tracker instance.
-        SoLoudApplication application = (SoLoudApplication) getApplication();
-        mTracker = application.getDefaultTracker();
 
         loginFailureRequestsCounter =0;
         postFailureRequestsCounter = 0;
@@ -90,33 +93,19 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         Button shareButton = (Button) findViewById(R.id.share_button);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (NetworkStatusHelper.isNetworkAvailable(PostActivity.this)){
-                    boolean popUpDisplayed = SharedPrefsHelper.getBooleanFromPrefs(PostActivity.this, POST_POP_UP_DISPLAYED);
-                    if (!popUpDisplayed) {
-                        showShareDialog();
-                    }else{
-                        checkForPublishPermissions();
-                    }
-                }else{
-                 displayNoConnectionMessage();
-                }
-            }
-        });
+        shareButton.setOnClickListener(onClickListener);
 
         String description = "";
-        photoUri = "";
+        //photoUri = "";
         postText = "";
 
-        if(getIntent() != null && getIntent().getStringExtra("description") != null &&
-                getIntent().getStringArrayListExtra("hashTagsList") != null &&
-                getIntent().getStringExtra("photoUri") != null){
+        if (savedInstanceState != null){
+            contest = (Contest) getIntent().getSerializableExtra(CONTEST);
+            currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
 
-            description = getIntent().getStringExtra("description");
+            description = currentState.getUserPostDescription();
             ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
-            photoUri = getIntent().getStringExtra("photoUri");
+            //photoUri = getIntent().getStringExtra("photoUri");
             //Log.d(TAG, "onCreate: " + description + ", " + tagsList.toString());
 
             String tags = convertTagsListToString(tagsList);
@@ -126,7 +115,29 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             String sourceString = description +" " +"<b>" + tags + "</b> ";
             post_info_TV.setText(Html.fromHtml(sourceString));
 
-            Picasso.with(this).load(photoUri).placeholder(R.drawable.ic_account_circle_white_24dp).
+            Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
+                    error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);
+        }
+
+        if(getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null &&
+                getIntent().getStringArrayListExtra("hashTagsList") != null){
+
+            contest = (Contest) getIntent().getSerializableExtra(CONTEST);
+            currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
+            //description = getIntent().getStringExtra("description");
+            description = currentState.getUserPostDescription();
+            ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
+            //photoUri = getIntent().getStringExtra("photoUri");
+            //Log.d(TAG, "onCreate: " + description + ", " + tagsList.toString());
+
+            String tags = convertTagsListToString(tagsList);
+
+            postText = description + " " + tags;
+
+            String sourceString = description +" " +"<b>" + tags + "</b> ";
+            post_info_TV.setText(Html.fromHtml(sourceString));
+
+            Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
                     error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);
         }
 
@@ -136,6 +147,23 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 showFullScreenImageDialog();
             }
         });
+
+        googleAnalyticsTrack();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putSerializable(CONTEST, contest);
+        outState.putSerializable(CURRENT_STATE, currentState);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    private void googleAnalyticsTrack() {
+        // Obtain the shared Tracker instance.
+        SoLoudApplication application = (SoLoudApplication) getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
 
@@ -149,7 +177,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     }
 
     private void showFullScreenImageDialog(){
-        DialogFragment dialogFragment = ImagePreviewDialog.newInstance(photoUri);
+        DialogFragment dialogFragment = ImagePreviewDialog.newInstance(currentState.getPhotoUri());
         dialogFragment.show(getSupportFragmentManager(),"imagePreview");
     }
 
@@ -179,16 +207,11 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 askFacebookPublishPermissions();
                 LoginManager.getInstance().logInWithPublishPermissions(PostActivity.this, Arrays.asList("publish_actions"));
             }else{
-                if (!isNoE(photoUri)){
-                    initPostUserPhotoService(photoUri, postText);
+                if (!isNoE(currentState.getPhotoUri())){
+                    initPostUserPhotoService(currentState.getPhotoUri(), postText);
                 }
             }
         }
-    }
-
-    private boolean isNoE( final String s ) {
-        // Null-safe, short-circuit evaluation.
-        return s == null || s.trim().isEmpty();
     }
 
     private void askFacebookPublishPermissions() {
@@ -355,7 +378,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     String soLoudToken = soLoudUser.getSoloudToken();
                     SharedPrefsHelper.storeInPrefs(PostActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
 
-                    initPostUserPhotoService(photoUri, postText);
+                    initPostUserPhotoService(currentState.getPhotoUri(), postText);
 
                 } else {
                     // error response, no access to resource?
@@ -393,5 +416,30 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         call.enqueue(loginCallback);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(PostActivity.this, HashTagsActivity.class);
+        intent.putExtra(CONTEST, contest);
+        intent.putExtra(CURRENT_STATE, currentState);
+        startActivity(intent);
+        finish();
+    }
+
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (NetworkStatusHelper.isNetworkAvailable(PostActivity.this)){
+                boolean popUpDisplayed = SharedPrefsHelper.getBooleanFromPrefs(PostActivity.this, POST_POP_UP_DISPLAYED);
+                if (!popUpDisplayed) {
+                    showShareDialog();
+                }else{
+                    checkForPublishPermissions();
+                }
+            }else{
+                displayNoConnectionMessage();
+            }
+        }
+    };
 
 }

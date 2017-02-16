@@ -16,19 +16,20 @@ import android.widget.TextView;
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
 import com.android.soloud.models.Contest;
+import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.TagClass;
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.android.soloud.activities.ContestsActivity.CONTEST;
+import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.TAGS_SN;
+import static com.android.soloud.utils.MyStringHelper.isNoE;
 
 public class HashTagsActivity extends AppCompatActivity implements TextView.OnEditorActionListener {
 
@@ -38,19 +39,22 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     private EditText description_ET;
     //private ArrayList<TagClass> defaultTagsList;
     //private ArrayList<TagClass> userTagsList;
-    private String photoUri;
+    //private String photoUri;
     private Tracker mTracker;
     private Contest contest;
+    private CurrentState currentState;
 
     //private Contest.HashTag[] hashTags;
 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
 
-        outState.putSerializable("contest", contest);
-        outState.putString("photoUri", photoUri);
+        outState.putSerializable(CONTEST, contest);
+        outState.putSerializable(CURRENT_STATE, currentState);
+        //outState.putString("photoUri", photoUri);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -63,18 +67,20 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         description_ET = (EditText) findViewById(R.id.description_ET);
 
         if(savedInstanceState != null){
-            contest = (Contest) savedInstanceState.getSerializable("contest");
-            photoUri = savedInstanceState.getString("photoUri");
+            contest = (Contest) savedInstanceState.getSerializable(CONTEST);
+            currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
+            //photoUri = savedInstanceState.getString("photoUri");
         }
 
         String hashTags = "";
-        if (getIntent().getSerializableExtra("contest") != null &&
-                getIntent().getStringExtra("photoUri") != null){
-            contest = (Contest) getIntent().getSerializableExtra("contest");
-
-            photoUri = getIntent().getStringExtra("photoUri");
+        if (getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null &&
+                getIntent().getSerializableExtra(CURRENT_STATE) != null){
+            currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
+            contest = (Contest) getIntent().getSerializableExtra(CONTEST);
+            //photoUri = getIntent().getStringExtra("photoUri");
             String requiredTags = contest.getmRequiredHashTags();
-            String optionalTags = contest.getmOtionalHashTags();
+            String optionalTags = contest.getmOptionalHashTags();
+            String userHashTags = currentState.getUserHashTags();
 
             if (!isNoE(requiredTags)){
                 ArrayList<TagClass> tags = prepareRequiredTags(requiredTags);
@@ -88,9 +94,14 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
                 }
             }
 
-
+            // TODO: 16/2/2017 Na arxikopoiw sta hashtags kai auta pou exei balei o xristis se periptwsi pou proerxetai apo tin post activity
+            if (!isNoE(userHashTags)){
+                String[] parts = optionalTags.split(",");
+                for (String tag : parts) {
+                    addUserTagToList("#" + tag);
+                }
+            }
         }
-
 
         hashTag_ET.setOnEditorActionListener(this);
 
@@ -102,14 +113,13 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
             }
         });
 
+        googleAnalyticsTrack();
+    }
+
+    private void googleAnalyticsTrack() {
         // Obtain the shared Tracker instance.
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
-    }
-
-    private boolean isNoE( final String s ) {
-        // Null-safe, short-circuit evaluation.
-        return s == null || s.trim().isEmpty();
     }
 
     @Override
@@ -184,9 +194,10 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         switch (item.getItemId()) {
             case R.id.action_proceed:
                 Intent intent = new Intent(HashTagsActivity.this, PostActivity.class);
+                intent.putExtra(CONTEST, contest);
                 intent.putStringArrayListExtra("hashTagsList",getHashTags());
-                intent.putExtra("description",description_ET.getText().toString());
-                intent.putExtra("photoUri", photoUri);
+                currentState.setUserPostDescription(description_ET.getText().toString());
+                intent.putExtra(CURRENT_STATE, currentState);
                 startActivity(intent);
                 finish();
                 return true;
@@ -202,5 +213,14 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
             tagsArrayList.add(tag.text);
         }
         return tagsArrayList;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(HashTagsActivity.this, ContestDetails.class);
+        intent.putExtra(CONTEST, contest);
+        intent.putExtra(CURRENT_STATE, currentState);
+        startActivity(intent);
+        finish();
     }
 }

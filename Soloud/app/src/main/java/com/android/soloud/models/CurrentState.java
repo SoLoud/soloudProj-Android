@@ -1,0 +1,63 @@
+package com.android.soloud.models;
+
+import java.io.Serializable;
+
+/**
+ * Created by f.stamopoulos on 16/2/2017.
+ */
+
+public class CurrentState implements Serializable {
+
+    private String photoUri;
+
+    private String companyName;
+
+    private String userPostDescription;
+
+    private String userHashTags;
+
+    public CurrentState() {
+        // Empty Constructor
+    }
+
+    public CurrentState(String photoUri, String companyName, String userPostDescription, String userHashTags) {
+        this.photoUri = photoUri;
+        this.companyName = companyName;
+        this.userPostDescription = userPostDescription;
+        this.userHashTags = userHashTags;
+    }
+
+    public String getPhotoUri() {
+        return photoUri;
+    }
+
+    public void setPhotoUri(String photoUri) {
+        this.photoUri = photoUri;
+    }
+
+
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getUserPostDescription() {
+        return userPostDescription;
+    }
+
+    public void setUserPostDescription(String userPostDescription) {
+        this.userPostDescription = userPostDescription;
+    }
+
+    public String getUserHashTags() {
+        return userHashTags;
+    }
+
+    public void setUserHashTags(String userHashTags) {
+        this.userHashTags = userHashTags;
+    }
+}
