@@ -20,6 +20,7 @@ import com.android.soloud.adapters.ContestsAdapter;
 import com.android.soloud.apiCalls.ContestsService;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
+import com.android.soloud.utils.MyStringHelper;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.google.android.gms.analytics.HitBuilders;
@@ -48,6 +49,7 @@ public class ContestsActivity extends AppCompatActivity {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private int contestsFailureRequestsCounter;
     private CurrentState currentState;
+    private String contestName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +62,27 @@ public class ContestsActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setColorSchemeResources(R.color.mySecondary);
         mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
 
-        if (getIntent() != null && getIntent().getStringExtra(CONTEST_NAME) != null) {
-            String contestName = getIntent().getStringExtra(CONTEST_NAME);
-            getSupportActionBar().setTitle(contestName);
+        if (getIntent() != null) {
+            if (getIntent().getStringExtra(CONTEST_NAME) != null){
+                contestName = getIntent().getStringExtra(CONTEST_NAME);
+                if (!MyStringHelper.isNoE(contestName)){
+                    getSupportActionBar().setTitle(contestName);
+                }
+            }
+            if (getIntent().getSerializableExtra(CURRENT_STATE) != null){
+                currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
+                if (currentState != null && !MyStringHelper.isNoE(currentState.getContestCategoryName())){
+                    getSupportActionBar().setTitle(currentState.getContestCategoryName());
+                }
+            }
         }
 
         contestsFailureRequestsCounter = 0;
 
         if (savedInstanceState != null) {
+
+            contestName = savedInstanceState.getString(CONTEST_NAME);
+
             contestsList = (ArrayList<Contest>) savedInstanceState.getSerializable("contestsList");
             initializeListView();
         } else if (contestsList != null) {
@@ -120,7 +135,7 @@ public class ContestsActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(ContestsActivity.this, ContestDetails.class);
                 intent.putExtra(CONTEST, contest);
-                currentState = new CurrentState(null, companyName, null, null);
+                currentState = new CurrentState(null, companyName, null, null, contestName);
                 intent.putExtra(CURRENT_STATE, currentState);
                 startActivity(intent);
                 finish();
@@ -132,6 +147,8 @@ public class ContestsActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
 
         outState.putSerializable("contestsList", contestsList);
+
+        outState.putString(CONTEST_NAME, contestName);
 
         super.onSaveInstanceState(outState);
     }

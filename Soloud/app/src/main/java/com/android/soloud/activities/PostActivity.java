@@ -24,6 +24,7 @@ import com.android.soloud.SoLoudApplication;
 import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.apiCalls.PostUserPhoto;
 import com.android.soloud.dialogs.ImagePreviewDialog;
+import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.dialogs.UserPostDialog;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
@@ -40,7 +41,6 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -71,7 +71,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     //private String photoUri;
     private CallbackManager mCallbackManager;
     private String postText;
-    private ProgressWheel progressWheel;
     private CoordinatorLayout coordinatorLayout;
     private int loginFailureRequestsCounter;
     private int postFailureRequestsCounter;
@@ -91,7 +90,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         TextView post_info_TV = (TextView) findViewById(R.id.post_info_TV);
         ImageView photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
         Button shareButton = (Button) findViewById(R.id.share_button);
-        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         shareButton.setOnClickListener(onClickListener);
 
@@ -199,8 +197,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private void checkForPublishPermissions() {
         String fb_token_from_prefs = SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.FB_TOKEN);
         // TODO: 15/1/2017 prepei na elegxw an exw parei token gia publish kai apo ton Kwsta!!
-        progressWheel.setVisibility(View.VISIBLE);
-        progressWheel.spin();
+        showProgressDialog();
         if (fb_token_from_prefs.equals(AccessToken.getCurrentAccessToken().getToken())){
             Set<String> permissions_set = AccessToken.getCurrentAccessToken().getPermissions();
             if (!permissions_set.contains("publish_actions")){
@@ -212,6 +209,12 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 }
             }
         }
+    }
+
+    private void showProgressDialog(){
+        ProgressDialog progressDialog = new ProgressDialog();
+        progressDialog.setCancelable(false);
+        progressDialog.show(getSupportFragmentManager(), ProgressDialog.class.getSimpleName());
     }
 
     private void askFacebookPublishPermissions() {
@@ -299,7 +302,11 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
                     imageHelper.deleteImageFromInternalStorage(imageName);
 
-                    progressWheel.stopSpinning();
+                    DialogFragment dialog = (DialogFragment) getSupportFragmentManager().findFragmentByTag(ProgressDialog.class.getSimpleName());
+                    if(dialog != null){
+                        dialog.dismiss();
+                    }
+
                     Snackbar.make(coordinatorLayout, getResources().getString(R.string.success_post_for_revision), Snackbar.LENGTH_LONG).
                             setCallback(new Snackbar.Callback() {
                                 @Override

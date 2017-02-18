@@ -16,15 +16,18 @@ public class CurrentState implements Serializable {
 
     private String userHashTags;
 
+    private String contestCategoryName;
+
     public CurrentState() {
         // Empty Constructor
     }
 
-    public CurrentState(String photoUri, String companyName, String userPostDescription, String userHashTags) {
+    public CurrentState(String photoUri, String companyName, String userPostDescription, String userHashTags, String contestCategoryName) {
         this.photoUri = photoUri;
         this.companyName = companyName;
         this.userPostDescription = userPostDescription;
         this.userHashTags = userHashTags;
+        this.contestCategoryName = contestCategoryName;
     }
 
     public String getPhotoUri() {
@@ -59,5 +62,13 @@ public class CurrentState implements Serializable {
 
     public void setUserHashTags(String userHashTags) {
         this.userHashTags = userHashTags;
+    }
+
+    public String getContestCategoryName() {
+        return contestCategoryName;
+    }
+
+    public void setContestCategoryName(String contestCategoryName) {
+        this.contestCategoryName = contestCategoryName;
     }
 }

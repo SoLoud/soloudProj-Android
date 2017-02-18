@@ -56,6 +56,7 @@ public class ContestDetails extends AppCompatActivity {
     public static final String TAG = "AdvertisementDetails";
     private static final int REQUEST_CAMERA_AND_STORAGE = 3;
     private static final int REQUEST_READ_STORAGE = 4;
+    private static final String PHOTO_URI = "photoUri";
 
     private String photoUri;
     //private View mLayout;
@@ -70,9 +71,8 @@ public class ContestDetails extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
-        if(photoUri != null){
-            outState.putString("photoUri", photoUri);
-        }
+        outState.putString(PHOTO_URI, photoUri);
+
         outState.putSerializable(CONTEST, contest);
 
         outState.putString("wreUri" , wreUri);
@@ -116,7 +116,7 @@ public class ContestDetails extends AppCompatActivity {
         }
 
         if (savedInstanceState != null){
-            photoUri = savedInstanceState.getString("photoUri");
+            photoUri = savedInstanceState.getString(PHOTO_URI);
             contest = (Contest) savedInstanceState.getSerializable(CONTEST);
             wreUri = savedInstanceState.getString("wreUri");
             currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
@@ -495,9 +495,11 @@ public class ContestDetails extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(ContestDetails.this, ContestsActivity.class);
+        intent.putExtra(CURRENT_STATE, currentState);
         startActivity(intent);
         finish();
     }
+
 
 // TODO: 16/2/2017 na ftiaksw to navigation pros ta pisw apo to back arrow!!!!!!!!!!!!
 }

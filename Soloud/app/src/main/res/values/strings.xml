@@ -131,5 +131,7 @@
     <string name="please_try_again">Please try again</string>
     <string name="terms_and_privacy_policy"><![CDATA[By signing up, you agree to our
         <u>Terms</u> & <u>Privacy Policy</u>.]]></string>
+    <string name="loading">Loading..</string>
+    <string name="promo_text">Sign up and be the face \n of famous brands</string>
 
 </resources>

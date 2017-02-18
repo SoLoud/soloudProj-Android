@@ -18,6 +18,7 @@ import com.android.soloud.SoLoudApplication;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.TagClass;
+import com.android.soloud.utils.MyStringHelper;
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
 import com.google.android.gms.analytics.HitBuilders;
@@ -39,12 +40,9 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     private EditText description_ET;
     //private ArrayList<TagClass> defaultTagsList;
     //private ArrayList<TagClass> userTagsList;
-    //private String photoUri;
     private Tracker mTracker;
     private Contest contest;
     private CurrentState currentState;
-
-    //private Contest.HashTag[] hashTags;
 
 
     @Override
@@ -52,7 +50,6 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
 
         outState.putSerializable(CONTEST, contest);
         outState.putSerializable(CURRENT_STATE, currentState);
-        //outState.putString("photoUri", photoUri);
 
         super.onSaveInstanceState(outState);
     }
@@ -69,7 +66,6 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         if(savedInstanceState != null){
             contest = (Contest) savedInstanceState.getSerializable(CONTEST);
             currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
-            //photoUri = savedInstanceState.getString("photoUri");
         }
 
         String hashTags = "";
@@ -77,7 +73,6 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
                 getIntent().getSerializableExtra(CURRENT_STATE) != null){
             currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
-            //photoUri = getIntent().getStringExtra("photoUri");
             String requiredTags = contest.getmRequiredHashTags();
             String optionalTags = contest.getmOptionalHashTags();
             String userHashTags = currentState.getUserHashTags();
@@ -96,11 +91,14 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
 
             // TODO: 16/2/2017 Na arxikopoiw sta hashtags kai auta pou exei balei o xristis se periptwsi pou proerxetai apo tin post activity
             if (!isNoE(userHashTags)){
-                String[] parts = optionalTags.split(",");
+                String[] parts = userHashTags.split(",");
                 for (String tag : parts) {
                     addUserTagToList("#" + tag);
                 }
             }
+
+            String description = currentState.getUserPostDescription();
+            description_ET.setText(description);
         }
 
         hashTag_ET.setOnEditorActionListener(this);
@@ -157,7 +155,7 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     }
 
     private void addUserTagToList(String userInput){
-        Tag userTag = new Tag(userInput);
+        Tag userTag = new Tag(userInput.trim());
         userTag.radius = 10f;
         userTag.layoutColor = Color.parseColor("#0e94a5");
         userTag.isDeletable = true;
@@ -171,8 +169,22 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
             String userInput = hashTag_ET.getText().toString().trim();
             if (!userInput.startsWith("#")){
                 addUserTagToList("#" + userInput);
+                String userTags = currentState.getUserHashTags();
+                if (MyStringHelper.isNoE(userTags)){
+                    userTags = userInput + ",";
+                }else{
+                    userTags += userInput + ",";
+                }
+                currentState.setUserHashTags(userTags);
             }else{
                 addUserTagToList(userInput);
+                String userTags = currentState.getUserHashTags();
+                if (MyStringHelper.isNoE(userTags)){
+                    userTags = userInput.substring(1) + ",";
+                }else{
+                    userTags += userInput.substring(1) + ",";
+                }
+                currentState.setUserHashTags(userTags);
             }
             hashTag_ET.setText("#");
             hashTag_ET.setSelection(1);
