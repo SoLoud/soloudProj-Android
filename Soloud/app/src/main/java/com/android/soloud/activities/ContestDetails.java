@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
 import com.android.soloud.dialogs.ImagePreviewDialog;
+import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.utils.MyStringHelper;
@@ -58,26 +59,27 @@ public class ContestDetails extends AppCompatActivity {
     public static final String TAG = "AdvertisementDetails";
     private static final int REQUEST_CAMERA_AND_STORAGE = 3;
     private static final int REQUEST_READ_STORAGE = 4;
-    private static final String PHOTO_URI = "photoUri";
+    //private static final String PHOTO_URI = "photoUri";
+    private static final String PHOTO_FILE = "photoFileString";
 
-    private String photoUri;
-    //private View mLayout;
+    //private String photoUri;
+    private String  photoFileString;
 
     private Tracker mTracker;
     private static Contest contest;
     private CurrentState currentState;
     private ImageView prize_IV;
     private TextView prizeDescription_TV;
-    String wreUri;
+    private boolean mShowDialog = false;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
-        outState.putString(PHOTO_URI, photoUri);
+        //outState.putString(PHOTO_URI, photoUri);
+
+        outState.putString(PHOTO_FILE, photoFileString);
 
         outState.putSerializable(CONTEST, contest);
-
-        outState.putString("wreUri" , wreUri);
 
         outState.putSerializable(CURRENT_STATE, currentState);
 
@@ -120,10 +122,10 @@ public class ContestDetails extends AppCompatActivity {
         }
 
         if (savedInstanceState != null){
-            photoUri = savedInstanceState.getString(PHOTO_URI);
+            //photoUri = savedInstanceState.getString(PHOTO_URI);
             contest = (Contest) savedInstanceState.getSerializable(CONTEST);
-            wreUri = savedInstanceState.getString("wreUri");
             currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
+            photoFileString = savedInstanceState.getString(PHOTO_FILE);
         }
 
         googleAnalyticsTrack();
@@ -281,14 +283,15 @@ public class ContestDetails extends AppCompatActivity {
             try {
                 photoFile = createImageFile();
 
-                photoUri = Uri.fromFile(photoFile).toString();
+                photoFileString = photoFile.toString();
+
+                //photoUri = Uri.fromFile(photoFile).toString();
             } catch (IOException ex) {
                 Log.d(TAG, "dispatchTakePictureIntent: " + ex.toString());
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -297,11 +300,10 @@ public class ContestDetails extends AppCompatActivity {
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
         File file = File.createTempFile(
-                imageFileName,  /* prefix */
+                timeStamp,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
@@ -311,7 +313,7 @@ public class ContestDetails extends AppCompatActivity {
 
         // Tell the media scanner about the new file so that it is
         // immediately available to the user.
-        MediaScannerConnection.scanFile(this,
+        /*MediaScannerConnection.scanFile(this,
                 new String[] { file.toString() }, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
@@ -320,7 +322,7 @@ public class ContestDetails extends AppCompatActivity {
 
                         wreUri = uri.toString();
                     }
-                });
+                });*/
         return file;
     }
 
@@ -333,38 +335,59 @@ public class ContestDetails extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            if(photoUri != null){
-                //Uri imageToGalleryUri = addImageToGallery(photoUri, this);
-                /*File file = new File(Uri.parse(photoUri).getPath());
-                boolean deleted = file.delete();*/
-                Intent intent = new Intent(this, HashTagsActivity.class);
-                //intent.putExtra("photoUri" ,wreUri);
-                intent.putExtra(CONTEST, contest);
-                currentState.setPhotoUri(photoUri);
-                intent.putExtra(CURRENT_STATE, currentState);
-                startActivity(intent);
-                finish();
+            if(photoFileString != null){
+                mShowDialog = true;
+                MediaScannerConnection.scanFile(this,
+                        new String[] { photoFileString }, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            public void onScanCompleted(String path, Uri uri) {
+                                ///Log.i("ExternalStorage", "Scanned " + path + ":");
+                                //Log.i("ExternalStorage", "-> uri=" + uri);
+
+                                hideProgressDialog();
+                                goToHashTagsActivity(uri);
+                            }
+                        });
             }else{
                 Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_LONG).show();
             }
         }
 
         if (requestCode == PICK_IMAGE_FROM_GAL && resultCode == RESULT_OK) {
-            Uri selectedImage = data.getData();
-            Intent intent = new Intent(this, HashTagsActivity.class);
-            intent.putExtra(CONTEST, contest);
-            currentState.setPhotoUri(selectedImage.toString());
-            intent.putExtra(CURRENT_STATE, currentState);
-            startActivity(intent);
-            finish();
+            Uri selectedImageUri = data.getData();
 
-            /*InputStream imageStream = null;
-            try {
-                imageStream = getContentResolver().openInputStream(selectedImage);
-                Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }*/
+            goToHashTagsActivity(selectedImageUri);
+        }
+    }
+
+    private void goToHashTagsActivity(Uri uri) {
+        Intent intent = new Intent(ContestDetails.this, HashTagsActivity.class);
+        intent.putExtra(CONTEST, contest);
+        currentState.setPhotoUri(uri.toString());
+        intent.putExtra(CURRENT_STATE, currentState);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+
+        if (mShowDialog){
+            showProgressDialog();
+        }
+    }
+
+    private void showProgressDialog(){
+        ProgressDialog progressDialog = new ProgressDialog();
+        progressDialog.setCancelable(false);
+        progressDialog.show(getSupportFragmentManager(), "progressDialog");
+    }
+
+    private void hideProgressDialog() {
+        DialogFragment dialog = (DialogFragment) getSupportFragmentManager().findFragmentByTag("progressDialog");
+        if(dialog != null){
+            dialog.dismiss();
         }
     }
 
