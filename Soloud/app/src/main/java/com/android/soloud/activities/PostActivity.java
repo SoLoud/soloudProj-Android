@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -78,6 +79,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private ImageHelper imageHelper;
     private Contest contest;
     private CurrentState currentState;
+    private Button shareButton;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +89,11 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         loginFailureRequestsCounter =0;
         postFailureRequestsCounter = 0;
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         TextView post_info_TV = (TextView) findViewById(R.id.post_info_TV);
         ImageView photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
-        Button shareButton = (Button) findViewById(R.id.share_button);
+        shareButton = (Button) findViewById(R.id.share_button);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         shareButton.setOnClickListener(onClickListener);
 
@@ -197,8 +201,9 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private void checkForPublishPermissions() {
         String fb_token_from_prefs = SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.FB_TOKEN);
         // TODO: 15/1/2017 prepei na elegxw an exw parei token gia publish kai apo ton Kwsta!!
-        showProgressDialog();
         if (fb_token_from_prefs.equals(AccessToken.getCurrentAccessToken().getToken())){
+            showProgressDialog();
+            shareButton.setEnabled(false);
             Set<String> permissions_set = AccessToken.getCurrentAccessToken().getPermissions();
             if (!permissions_set.contains("publish_actions")){
                 askFacebookPublishPermissions();
@@ -302,10 +307,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
                     imageHelper.deleteImageFromInternalStorage(imageName);
 
-                    DialogFragment dialog = (DialogFragment) getSupportFragmentManager().findFragmentByTag(ProgressDialog.class.getSimpleName());
-                    if(dialog != null){
-                        dialog.dismiss();
-                    }
+                    hideProgressDialog();
 
                     Snackbar.make(coordinatorLayout, getResources().getString(R.string.success_post_for_revision), Snackbar.LENGTH_LONG).
                             setCallback(new Snackbar.Callback() {
@@ -345,12 +347,21 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     Call<ResponseBody> newCall = call.clone();
                     newCall.enqueue(this);
                 }else{
+                    hideProgressDialog();
+                    shareButton.setEnabled(true);
                     LoginManager.getInstance().logOut();
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
                 }
             }
         };
         request.enqueue(postImageCallback);
+    }
+
+    private void hideProgressDialog() {
+        DialogFragment dialog = (DialogFragment) getSupportFragmentManager().findFragmentByTag(ProgressDialog.class.getSimpleName());
+        if(dialog != null){
+            dialog.dismiss();
+        }
     }
 
 
@@ -449,4 +460,16 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         }
     };
 
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

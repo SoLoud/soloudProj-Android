@@ -72,7 +72,8 @@ public class ContestsActivity extends AppCompatActivity {
             if (getIntent().getSerializableExtra(CURRENT_STATE) != null){
                 currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
                 if (currentState != null && !MyStringHelper.isNoE(currentState.getContestCategoryName())){
-                    getSupportActionBar().setTitle(currentState.getContestCategoryName());
+                    contestName = currentState.getContestCategoryName();
+                    getSupportActionBar().setTitle(contestName);
                 }
             }
         }

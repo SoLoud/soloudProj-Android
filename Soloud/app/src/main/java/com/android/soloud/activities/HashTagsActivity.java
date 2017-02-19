@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -25,6 +27,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.android.soloud.activities.ContestsActivity.CONTEST;
@@ -35,6 +38,7 @@ import static com.android.soloud.utils.MyStringHelper.isNoE;
 public class HashTagsActivity extends AppCompatActivity implements TextView.OnEditorActionListener {
 
     private static final String TAG = "HashTagsActivity";
+    private static final String ALL_TAGS_LIST = "allTagsList";
     private TagView tagGroup;
     private EditText hashTag_ET;
     private EditText description_ET;
@@ -43,6 +47,7 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     private Tracker mTracker;
     private Contest contest;
     private CurrentState currentState;
+    private ArrayList<String> allTagsList;
 
 
     @Override
@@ -50,6 +55,7 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
 
         outState.putSerializable(CONTEST, contest);
         outState.putSerializable(CURRENT_STATE, currentState);
+        //outState.putStringArrayList(ALL_TAGS_LIST, allTagsList);
 
         super.onSaveInstanceState(outState);
     }
@@ -59,42 +65,50 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hash_tags);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         hashTag_ET = (EditText) findViewById(R.id.hashTag_ET);
         tagGroup = (TagView)findViewById(R.id.tag_group);
         description_ET = (EditText) findViewById(R.id.description_ET);
 
-        if(savedInstanceState != null){
-            contest = (Contest) savedInstanceState.getSerializable(CONTEST);
-            currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
-        }
+
 
         String hashTags = "";
         if (getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null &&
                 getIntent().getSerializableExtra(CURRENT_STATE) != null){
             currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
+
+            if(savedInstanceState != null){
+                contest = (Contest) savedInstanceState.getSerializable(CONTEST);
+                currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
+                //allTagsList = savedInstanceState.getStringArrayList(ALL_TAGS_LIST);
+
+                Log.d(TAG, "savedInstanceState != null");
+            }
+
             String requiredTags = contest.getmRequiredHashTags();
             String optionalTags = contest.getmOptionalHashTags();
             String userHashTags = currentState.getUserHashTags();
+            Log.d(TAG, "code run");
 
-            if (!isNoE(requiredTags)){
-                ArrayList<TagClass> tags = prepareRequiredTags(requiredTags);
-                showRequiredTags(tags);
-            }
+            allTagsList = new ArrayList<>();
 
-            if (!isNoE(optionalTags)){
-                String[] parts = optionalTags.split(",");
-                for (String tag : parts) {
-                    addUserTagToList("#" + tag);
+            // It means that the user comes from Post Activity
+            if (userHashTags != null){
+                if (!isNoE(requiredTags)){
+                    ArrayList<TagClass> tags = prepareRequiredTags(requiredTags);
+                    showRequiredTags(tags);
                 }
-            }
+                addTagsToList(userHashTags);
 
-            // TODO: 16/2/2017 Na arxikopoiw sta hashtags kai auta pou exei balei o xristis se periptwsi pou proerxetai apo tin post activity
-            if (!isNoE(userHashTags)){
-                String[] parts = userHashTags.split(",");
-                for (String tag : parts) {
-                    addUserTagToList("#" + tag);
+            }else{
+                if (!isNoE(requiredTags)){
+                    ArrayList<TagClass> tags = prepareRequiredTags(requiredTags);
+                    showRequiredTags(tags);
                 }
+                addTagsToList(optionalTags);
+                //addTagsToList(userHashTags);
             }
 
             String description = currentState.getUserPostDescription();
@@ -108,10 +122,46 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
             @Override
             public void onTagDeleted(final TagView view, final Tag tag, final int position) {
                 view.remove(position);
+                allTagsList.remove(position);
             }
         });
 
+        description_ET.addTextChangedListener(textWatcher);
+
         googleAnalyticsTrack();
+    }
+
+    private void addTagsToList(String tags) {
+        if (!isNoE(tags)){
+            String[] parts = tags.split(",");
+            for (String tag : parts) {
+                addUserTagToList("#" + tag);
+            }
+        }
+    }
+
+
+    private List<String> convertStringHashTagsToArrayList(String tags){
+        List<String> tagsList = null;
+        if (!MyStringHelper.isNoE(tags)){
+            String[] parts = tags.split(",");
+            tagsList = Arrays.asList(parts);
+        }
+        return tagsList;
+    }
+
+    private String convertTagsListToString(ArrayList<String> tagsList){
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i <tagsList.size(); i++) {
+            String text;
+            if (i == tagsList.size() -1){
+                text = tagsList.get(i);
+            }else{
+                text = tagsList.get(i) + ",";
+            }
+            sb.append(text);
+        }
+        return sb.toString();
     }
 
     private void googleAnalyticsTrack() {
@@ -150,6 +200,12 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
                 tag.isDeletable = false;
             tags.add(tag);
 
+            String text = tag.text;
+            if (text.startsWith("#")){
+                allTagsList.add(text.substring(1));
+            }else{
+                allTagsList.add(text);
+            }
         }
         tagGroup.addTags(tags);
     }
@@ -160,6 +216,12 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         userTag.layoutColor = Color.parseColor("#0e94a5");
         userTag.isDeletable = true;
         tagGroup.addTag(userTag);
+
+        if (userInput.startsWith("#")){
+            allTagsList.add(userInput.substring(1));
+        }else{
+            allTagsList.add(userInput);
+        }
     }
 
 
@@ -167,28 +229,20 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (EditorInfo.IME_ACTION_DONE == actionId) {
             String userInput = hashTag_ET.getText().toString().trim();
-            if (!userInput.startsWith("#")){
-                addUserTagToList("#" + userInput);
-                String userTags = currentState.getUserHashTags();
-                if (MyStringHelper.isNoE(userTags)){
-                    userTags = userInput + ",";
-                }else{
-                    userTags += userInput + ",";
-                }
-                currentState.setUserHashTags(userTags);
-            }else{
-                addUserTagToList(userInput);
-                String userTags = currentState.getUserHashTags();
-                if (MyStringHelper.isNoE(userTags)){
-                    userTags = userInput.substring(1) + ",";
-                }else{
-                    userTags += userInput.substring(1) + ",";
-                }
-                currentState.setUserHashTags(userTags);
+            if (userInput.trim().isEmpty() || userInput.trim().equals("#")){
+                return false;
             }
-            hashTag_ET.setText("#");
-            hashTag_ET.setSelection(1);
-            return true;
+            else
+            {
+                if (!userInput.startsWith("#")){
+                    addUserTagToList("#" + userInput);
+                }else{
+                    addUserTagToList(userInput);
+                }
+                hashTag_ET.setText("#");
+                hashTag_ET.setSelection(1);
+                return true;
+            }
         }
         return false;
     }
@@ -204,10 +258,15 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
             case R.id.action_proceed:
                 Intent intent = new Intent(HashTagsActivity.this, PostActivity.class);
                 intent.putExtra(CONTEST, contest);
                 intent.putStringArrayListExtra("hashTagsList",getHashTags());
+                removeRequiredHashTags();
+                currentState.setUserHashTags(convertTagsListToString(allTagsList));
                 currentState.setUserPostDescription(description_ET.getText().toString());
                 intent.putExtra(CURRENT_STATE, currentState);
                 startActivity(intent);
@@ -215,6 +274,16 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void removeRequiredHashTags(){
+        String requiredHashTags = contest.getmRequiredHashTags();
+        if (!MyStringHelper.isNoE(requiredHashTags)){
+            String[] parts = requiredHashTags.split(",");
+            for (int i=0; i<parts.length; i++){
+                allTagsList.remove(0);
+            }
         }
     }
 
@@ -231,8 +300,29 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     public void onBackPressed() {
         Intent intent = new Intent(HashTagsActivity.this, ContestDetails.class);
         intent.putExtra(CONTEST, contest);
+        removeRequiredHashTags();
+        currentState.setUserHashTags(convertTagsListToString(allTagsList));
+        currentState.setUserPostDescription(description_ET.getText().toString());
         intent.putExtra(CURRENT_STATE, currentState);
         startActivity(intent);
         finish();
     }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            currentState.setUserPostDescription(s.toString());
+        }
+    };
 }

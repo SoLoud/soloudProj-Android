@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ import java.util.Date;
 import static com.android.soloud.activities.ContestsActivity.CONTEST;
 import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.CONTEST_DETAILS_SN;
+import static com.android.soloud.utils.MyStringHelper.isNoE;
 
 public class ContestDetails extends AppCompatActivity {
 
@@ -87,6 +89,8 @@ public class ContestDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advertisement_details);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         prize_IV = (ImageView) findViewById(R.id.prize_IV);
         prizeDescription_TV = (TextView) findViewById(R.id.prize_description);
         TextView hashTags_TV = (TextView) findViewById(R.id.hashTags_TV);
@@ -101,7 +105,7 @@ public class ContestDetails extends AppCompatActivity {
 
             currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
             if (currentState != null) {
-                if (!MyStringHelper.isNoE(currentState.getCompanyName())){
+                if (!isNoE(currentState.getCompanyName())){
                     getSupportActionBar().setTitle(currentState.getCompanyName());
                 }
             }
@@ -121,7 +125,6 @@ public class ContestDetails extends AppCompatActivity {
             wreUri = savedInstanceState.getString("wreUri");
             currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
         }
-
 
         googleAnalyticsTrack();
     }
@@ -199,10 +202,6 @@ public class ContestDetails extends AppCompatActivity {
         return null;
     }
 
-    private boolean isNoE( final String s ) {
-        // Null-safe, short-circuit evaluation.
-        return s == null || s.trim().isEmpty();
-    }
 
     @Override
     protected void onResume() {
@@ -501,5 +500,14 @@ public class ContestDetails extends AppCompatActivity {
     }
 
 
-// TODO: 16/2/2017 na ftiaksw to navigation pros ta pisw apo to back arrow!!!!!!!!!!!!
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
