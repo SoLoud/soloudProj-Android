@@ -167,12 +167,12 @@ public class LoginActivity extends Activity {
         customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 
-    private void loginToBackend(String token) {
+    private void loginToBackend(String facebookToken) {
         // Create a very simple REST adapter which points the API endpoint.
         LoginService client = ServiceGenerator.createService(LoginService.class);
 
         // Post the user's Facebook Token
-        Call<User> call = client.login(FACEBOOK_PROVIDER, token, "password");
+        Call<User> call = client.login(FACEBOOK_PROVIDER, facebookToken, "password");
         Callback<User> loginCallback = new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {

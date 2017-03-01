@@ -201,6 +201,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private void checkForPublishPermissions() {
         String fb_token_from_prefs = SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.FB_TOKEN);
         // TODO: 15/1/2017 prepei na elegxw an exw parei token gia publish kai apo ton Kwsta!!
+        // TODO: 2/3/2017 An patisei o xristis NOT NOW kai pali exei allo fb token kai den bainei mesa se auto to IF 
         if (fb_token_from_prefs.equals(AccessToken.getCurrentAccessToken().getToken())){
             showProgressDialog();
             shareButton.setEnabled(false);
@@ -242,12 +243,16 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     public void onCancel() {
                         Log.d(TAG, "Login to FB: canceled");
                         //Toast.makeText(PostActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
+                        shareButton.setEnabled(true);
+                        hideProgressDialog();
+                        Snackbar.make(coordinatorLayout, R.string.cancel_login_facebook, Snackbar.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         Log.d(TAG, "Facebook Login attempt failed");
                         Snackbar.make(coordinatorLayout, R.string.error_login_facebook, Snackbar.LENGTH_LONG).show();
+                        logout();
                     }
                 });
     }
@@ -260,6 +265,17 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         Log.i(TAG, "Setting screen name: " + POST_SN);
         mTracker.setScreenName("Screen: " + POST_SN);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    private void logout(){
+        String[] prefsToDelete = {SharedPrefsHelper.USER_FB_ID, SharedPrefsHelper.FB_TOKEN};
+        SharedPrefsHelper.deleteFromPrefs(PostActivity.this, prefsToDelete);
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        LoginManager.getInstance().logOut();
+        Intent intent = new Intent(PostActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 
@@ -298,8 +314,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         MultipartBody.Part body = MultipartBody.Part.createFormData("upload", imageFile.getName(), reqFile);
         RequestBody desc = RequestBody.create(MediaType.parse("text/plain"), description);
 
-        String soLoudToken = SharedPrefsHelper.getFromPrefs(this, SOLOUD_TOKEN);
-        Call<ResponseBody> request = service.postImage("Bearer " + soLoudToken, body, desc);
+        String soLoudToken = "Bearer " + SharedPrefsHelper.getFromPrefs(this, SOLOUD_TOKEN);
+        Call<ResponseBody> request = service.postImage(soLoudToken, body, desc);
         Callback<ResponseBody> postImageCallback = new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -325,8 +341,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 }else{
                     if (response.code() == 401){
                         // TODO: 26/1/2017 Na kanw diaxeirisi an einai unauthorized. Refresh Token?
-
-
+                        loginToBackend(AccessToken.getCurrentAccessToken().getToken());
                     }else{
                         handleResponseFailure(call);
                     }
@@ -349,8 +364,9 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 }else{
                     hideProgressDialog();
                     shareButton.setEnabled(true);
-                    LoginManager.getInstance().logOut();
+                    //LoginManager.getInstance().logOut();
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
+                    logout();
                 }
             }
         };
@@ -381,14 +397,14 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     }
 
 
-    private void loginToBackend(String token) {
+    private void loginToBackend(String facebookToken) {
 
         // Create a very simple REST adapter which points the API endpoint.
         LoginService client = ServiceGenerator.createService(LoginService.class);
 
         // Post the user's Facebook Token
-        Call<User> call = client.login(LoginActivity.FACEBOOK_PROVIDER, token, "password");
-        Callback<User> loginCallback = new Callback<User>() {
+        Call<User> call = client.login(LoginActivity.FACEBOOK_PROVIDER, facebookToken, "password");
+        final Callback<User> loginCallback = new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
@@ -401,13 +417,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 } else {
                     // error response, no access to resource?
                     Log.d(TAG, "Backend login error in response: " + response.toString());
-                    if (response.code() == 401){
-                        // TODO: 26/1/2017 Na kanw diaxeirisi an einai unauthorized. Refresh token ?
-
-
-                    }else{
-                        handleResponseFailure(call);
-                    }
+                    handleResponseFailure(call);
                 }
             }
 
@@ -426,8 +436,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     Call<User> newCall = call.clone();
                     newCall.enqueue(this);
                 }else{
-                    // TODO: 26/1/2017 Handle this situation
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
+                    logout();
                 }
             }
         };

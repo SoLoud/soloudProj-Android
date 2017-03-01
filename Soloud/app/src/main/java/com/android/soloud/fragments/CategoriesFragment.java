@@ -88,6 +88,7 @@ public class CategoriesFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), ContestsActivity.class);
                 intent.putExtra(CONTEST_NAME,contestName);
                 startActivity(intent);
+                getActivity().finish();
             }
         });
 
