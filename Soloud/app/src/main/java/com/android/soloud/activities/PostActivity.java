@@ -1,14 +1,21 @@
 package com.android.soloud.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -16,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,6 +53,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -69,36 +78,43 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     public static final String TAG = "PostActivity";
 
     private Tracker mTracker;
-    //private String photoUri;
     private CallbackManager mCallbackManager;
     private String postText;
     private CoordinatorLayout coordinatorLayout;
-    private int loginFailureRequestsCounter;
-    private int postFailureRequestsCounter;
+
     private String imageName = "";
     private ImageHelper imageHelper;
     private Contest contest;
     private CurrentState currentState;
-    private Button shareButton;;
+    private Button shareButton;
+    private ImageView photo_IV;
+    private int loginFailureRequestsCounter;
+    private int postFailureRequestsCounter;
+    private int orientationButtonCounter;
+    private Bitmap orientatedImage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        loginFailureRequestsCounter =0;
-        postFailureRequestsCounter = 0;
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        loginFailureRequestsCounter =0;
+        postFailureRequestsCounter = 0;
+        orientationButtonCounter = 0;
+
         TextView post_info_TV = (TextView) findViewById(R.id.post_info_TV);
-        ImageView photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
+        photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
+        ImageButton rotate_Btn = (ImageButton) findViewById(R.id.rotate_btn);
         shareButton = (Button) findViewById(R.id.share_button);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         shareButton.setOnClickListener(onClickListener);
+        rotate_Btn.setOnClickListener(onClickListener);
+        photo_IV.setOnClickListener(onClickListener);
 
         String description = "";
-        //photoUri = "";
         postText = "";
 
         if (savedInstanceState != null){
@@ -107,8 +123,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
             description = currentState.getUserPostDescription();
             ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
-            //photoUri = getIntent().getStringExtra("photoUri");
-            //Log.d(TAG, "onCreate: " + description + ", " + tagsList.toString());
 
             String tags = convertTagsListToString(tagsList);
 
@@ -118,6 +132,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             post_info_TV.setText(Html.fromHtml(sourceString));
 
             Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
+                    centerInside().
                     error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);
         }
 
@@ -129,8 +144,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             //description = getIntent().getStringExtra("description");
             description = currentState.getUserPostDescription();
             ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
-            //photoUri = getIntent().getStringExtra("photoUri");
-            //Log.d(TAG, "onCreate: " + description + ", " + tagsList.toString());
 
             String tags = convertTagsListToString(tagsList);
 
@@ -139,18 +152,62 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             String sourceString = description +" " +"<b>" + tags + "</b> ";
             post_info_TV.setText(Html.fromHtml(sourceString));
 
-            Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
-                    error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);
+            //int orientation1 = getOrientation(this, Uri.parse(currentState.getPhotoUri()));
+
+            try {
+                String uriString = getRealPathFromURI(Uri.parse(currentState.getPhotoUri()));
+                ExifInterface exif = new ExifInterface(uriString);
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                Log.d("EXIF", "Exif: " + orientation);
+                Matrix matrix = new Matrix();
+                if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                    matrix.postRotate(90);
+                }
+                else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+                    matrix.postRotate(180);
+                }
+                else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+                    matrix.postRotate(270);
+                }
+
+                imageHelper = new ImageHelper(this);
+                Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(currentState.getPhotoUri())));
+
+                orientatedImage = Bitmap.createBitmap(resizedImage, 0, 0, resizedImage.getWidth(), resizedImage.getHeight(), matrix, true);
+                photo_IV.setImageBitmap(orientatedImage);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            /*Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
+                    error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);*/
         }
 
-        photo_IV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showFullScreenImageDialog();
-            }
-        });
-
         googleAnalyticsTrack();
+    }
+
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(this, contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+
+    public static int getOrientation(Context context, Uri photoUri) {
+    /* it's on the external media. */
+        Cursor cursor = context.getContentResolver().query(photoUri,
+                new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+
+        if (cursor.getCount() != 1) {
+            return -1;
+        }
+
+        cursor.moveToFirst();
+        return cursor.getInt(0);
     }
 
     @Override
@@ -300,8 +357,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
         imageHelper = new ImageHelper(this);
         //Bitmap bitmap = imageHelper.getBitmapFromUri(Uri.parse(filePath));
-        Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(filePath)));
-        File imageFile = imageHelper.saveToInternalStorage(resizedImage);
+        //Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(filePath)));
+        File imageFile = imageHelper.saveToInternalStorage(((BitmapDrawable)photo_IV.getDrawable()).getBitmap());
         if (imageFile != null){
             imageName = imageFile.getName();
         }
@@ -457,20 +514,61 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (NetworkStatusHelper.isNetworkAvailable(PostActivity.this)){
-                boolean popUpDisplayed = SharedPrefsHelper.getBooleanFromPrefs(PostActivity.this, POST_POP_UP_DISPLAYED);
-                if (!popUpDisplayed) {
-                    showShareDialog();
-                }else{
-                    checkForPublishPermissions();
-                }
-            }else{
-                displayNoConnectionMessage();
+            switch (v.getId()){
+                case R.id.share_button:
+                    onSharePressed();
+                    break;
+                case R.id.rotate_btn:
+                    onRotatePressed();
+                    break;
+                case R.id.post_photo_IV:
+                    showFullScreenImageDialog();
+                    break;
+                default:
+                    break;
             }
         }
     };
 
+    private void onRotatePressed(){
+        orientationButtonCounter ++;
+        if (orientationButtonCounter >3){
+            orientationButtonCounter = 0;
+        }
+        float degrees;
+        if (orientationButtonCounter == 0){
+            degrees = 0f;
+        }
+        else if (orientationButtonCounter == 1){
+            degrees = 90f;
+        }else if (orientationButtonCounter == 2){
+            degrees = 180f;
+        }else {
+            degrees = 270f;
+        }
+       rotateBitmap(degrees);
+    }
 
+    private void rotateBitmap(float degrees){
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degrees);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(orientatedImage,orientatedImage.getWidth(),orientatedImage.getHeight(),true);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap , 0, 0, scaledBitmap .getWidth(), scaledBitmap .getHeight(), matrix, true);
+        photo_IV.setImageBitmap(rotatedBitmap);
+    }
+
+    private void onSharePressed(){
+        if (NetworkStatusHelper.isNetworkAvailable(PostActivity.this)){
+            boolean popUpDisplayed = SharedPrefsHelper.getBooleanFromPrefs(PostActivity.this, POST_POP_UP_DISPLAYED);
+            if (!popUpDisplayed) {
+                showShareDialog();
+            }else{
+                checkForPublishPermissions();
+            }
+        }else{
+            displayNoConnectionMessage();
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

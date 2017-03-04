@@ -1,6 +1,8 @@
 package com.android.soloud.dialogs;
 
 import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -11,6 +13,7 @@ import android.view.Window;
 import android.widget.ImageView;
 
 import com.android.soloud.R;
+import com.android.soloud.utils.ImageHelper;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -45,8 +48,13 @@ public class ImagePreviewDialog extends DialogFragment {
         ImageView imageView = (ImageView) view.findViewById(R.id.imagePreview_IV);
 
         if (photoUri != null){
-            Picasso.with(getActivity()).load(photoUri).placeholder(R.drawable.ic_account_circle_white_24dp).
-                    error(R.drawable.ic_account_circle_white_24dp).into(imageView);
+
+            ImageHelper imageHelper = new ImageHelper(getActivity());
+            Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(photoUri)));
+            imageView.setImageBitmap(resizedImage);
+
+            /*Picasso.with(getActivity()).load(photoUri).placeholder(R.drawable.ic_account_circle_white_24dp).
+                    error(R.drawable.ic_account_circle_white_24dp).into(imageView);*/
         }
 
         imageView.setOnClickListener(new View.OnClickListener() {
