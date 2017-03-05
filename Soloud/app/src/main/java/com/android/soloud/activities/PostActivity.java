@@ -66,6 +66,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.R.attr.orientation;
 import static com.android.soloud.activities.ContestsActivity.CONTEST;
 import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.POST_SN;
@@ -92,6 +93,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private int postFailureRequestsCounter;
     private int orientationButtonCounter;
     private Bitmap orientatedImage;
+    private TextView post_info_TV;
 
 
     @Override
@@ -101,11 +103,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        loginFailureRequestsCounter =0;
-        postFailureRequestsCounter = 0;
-        orientationButtonCounter = 0;
-
-        TextView post_info_TV = (TextView) findViewById(R.id.post_info_TV);
+        post_info_TV = (TextView) findViewById(R.id.post_info_TV);
         photo_IV = (ImageView) findViewById(R.id.post_photo_IV);
         ImageButton rotate_Btn = (ImageButton) findViewById(R.id.rotate_btn);
         shareButton = (Button) findViewById(R.id.share_button);
@@ -114,26 +112,18 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         rotate_Btn.setOnClickListener(onClickListener);
         photo_IV.setOnClickListener(onClickListener);
 
-        String description = "";
+        loginFailureRequestsCounter =0;
+        postFailureRequestsCounter = 0;
+        orientationButtonCounter = 0;
+
         postText = "";
 
         if (savedInstanceState != null){
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
             currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
 
-            description = currentState.getUserPostDescription();
-            ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
-
-            String tags = convertTagsListToString(tagsList);
-
-            postText = description + " " + tags;
-
-            String sourceString = description +" " +"<b>" + tags + "</b> ";
-            post_info_TV.setText(Html.fromHtml(sourceString));
-
-            Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
-                    centerInside().
-                    error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);
+            displayTagsAndDescription();
+            displayUserPhoto();
         }
 
         if(getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null &&
@@ -141,74 +131,40 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
             currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
-            //description = getIntent().getStringExtra("description");
-            description = currentState.getUserPostDescription();
-            ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
 
-            String tags = convertTagsListToString(tagsList);
-
-            postText = description + " " + tags;
-
-            String sourceString = description +" " +"<b>" + tags + "</b> ";
-            post_info_TV.setText(Html.fromHtml(sourceString));
-
-            //int orientation1 = getOrientation(this, Uri.parse(currentState.getPhotoUri()));
-
-            try {
-                String uriString = getRealPathFromURI(Uri.parse(currentState.getPhotoUri()));
-                ExifInterface exif = new ExifInterface(uriString);
-                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                Log.d("EXIF", "Exif: " + orientation);
-                Matrix matrix = new Matrix();
-                if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
-                    matrix.postRotate(90);
-                }
-                else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
-                    matrix.postRotate(180);
-                }
-                else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-                    matrix.postRotate(270);
-                }
-
-                imageHelper = new ImageHelper(this);
-                Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(currentState.getPhotoUri())));
-
-                orientatedImage = Bitmap.createBitmap(resizedImage, 0, 0, resizedImage.getWidth(), resizedImage.getHeight(), matrix, true);
-                photo_IV.setImageBitmap(orientatedImage);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            /*Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
-                    error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);*/
+            displayTagsAndDescription();
+            displayUserPhoto();
         }
 
         googleAnalyticsTrack();
     }
 
-
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
-        CursorLoader loader = new CursorLoader(this, contentUri, proj, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
+    private void displayTagsAndDescription() {
+        String description;
+        description = currentState.getUserPostDescription();
+        ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
+        String tags = convertTagsListToString(tagsList);
+        postText = description + " " + tags;
+        String sourceString = description +" " +"<b>" + tags + "</b> ";
+        post_info_TV.setText(Html.fromHtml(sourceString));
     }
 
-    public static int getOrientation(Context context, Uri photoUri) {
-    /* it's on the external media. */
-        Cursor cursor = context.getContentResolver().query(photoUri,
-                new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+    private void displayUserPhoto() {
 
-        if (cursor.getCount() != 1) {
-            return -1;
-        }
+        imageHelper = new ImageHelper(this);
+        //int orientation = getOrientation(this, Uri.parse(currentState.getPhotoUri()));
 
-        cursor.moveToFirst();
-        return cursor.getInt(0);
+        Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(currentState.getPhotoUri())), 960);
+
+        orientatedImage = Bitmap.createBitmap(resizedImage, 0, 0, resizedImage.getWidth(),
+                resizedImage.getHeight(), imageHelper.getImageOrientation(currentState.getPhotoUri()), true);
+        resizedImage.recycle();
+        photo_IV.setImageBitmap(orientatedImage);
+
+        /*Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
+                    error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);*/
     }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.HashTagsActivity">
     <item android:id="@+id/action_proceed"
-        android:title="@string/proceed"
+        android:title="@string/next"
         app:showAsAction="always"
         android:icon="@drawable/ic_arrow_forward_white_24dp"/>
 </menu>

@@ -2,10 +2,13 @@ package com.android.soloud.dialogs;
 
 import android.app.Dialog;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +19,15 @@ import com.android.soloud.R;
 import com.android.soloud.utils.ImageHelper;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+
 /**
  * Created by f.stamopoulos on 24/1/2017.
  */
 
 public class ImagePreviewDialog extends DialogFragment {
+
+    private ImageView imageView;
 
     public static ImagePreviewDialog newInstance(String photoUri) {
         Bundle args = new Bundle();
@@ -45,18 +52,12 @@ public class ImagePreviewDialog extends DialogFragment {
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         View view = inflater.inflate(R.layout.image_preview_dialog, container, false);
-        ImageView imageView = (ImageView) view.findViewById(R.id.imagePreview_IV);
+
+        imageView = (ImageView) view.findViewById(R.id.imagePreview_IV);
 
         if (photoUri != null){
-
-            ImageHelper imageHelper = new ImageHelper(getActivity());
-            Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(photoUri)));
-            imageView.setImageBitmap(resizedImage);
-
-            /*Picasso.with(getActivity()).load(photoUri).placeholder(R.drawable.ic_account_circle_white_24dp).
-                    error(R.drawable.ic_account_circle_white_24dp).into(imageView);*/
+            displayUserPhoto(photoUri);
         }
-
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +79,17 @@ public class ImagePreviewDialog extends DialogFragment {
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             dialog.getWindow().setLayout(width, height);
         }
+    }
+
+    private void displayUserPhoto(String imageUri) {
+
+        ImageHelper imageHelper = new ImageHelper(getActivity());
+        Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(imageUri)),1400);
+        Bitmap orientatedImage = Bitmap.createBitmap(resizedImage, 0, 0, resizedImage.getWidth(),
+                resizedImage.getHeight(), imageHelper.getImageOrientation(imageUri), true);
+        resizedImage.recycle();
+        imageView.setImageBitmap(orientatedImage);
+
     }
 
  /*   @Override

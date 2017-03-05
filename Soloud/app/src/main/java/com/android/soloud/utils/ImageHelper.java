@@ -5,8 +5,12 @@ import android.content.ContextWrapper;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.content.CursorLoader;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,9 +51,9 @@ public class ImageHelper {
     }
 
 
-    public Bitmap getResizedImage(Bitmap bitmap) {
-        int scaleSize = 960;
-        Bitmap resizedBitmap = null;
+    public Bitmap getResizedImage(Bitmap bitmap, int scaleSize) {
+        //int scaleSize = 960;
+        Bitmap resizedBitmap;
         int originalWidth = bitmap.getWidth();
         int originalHeight = bitmap.getHeight();
         int newWidth = -1;
@@ -104,5 +108,41 @@ public class ImageHelper {
         //File dir = context.getFilesDir();
         File file = new File(dir, fileName);
         boolean deleted = file.delete();
+    }
+
+    public String getRealPathFromURI(Uri contentUri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(context, contentUri, projection, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String imagePath = cursor.getString(column_index);
+        cursor.close();
+        return imagePath;
+    }
+
+    public Matrix getImageOrientation(String imageUri){
+
+        int orientation = ExifInterface.ORIENTATION_UNDEFINED;
+        try {
+            String uriString = getRealPathFromURI(Uri.parse(imageUri));
+            ExifInterface exif = new ExifInterface(uriString);
+            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            Log.d("EXIF", "Exif: " + orientation);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Matrix matrix = new Matrix();
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            matrix.postRotate(90);
+        }
+        else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            matrix.postRotate(180);
+        }
+        else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            matrix.postRotate(270);
+        }
+        return matrix;
     }
 }

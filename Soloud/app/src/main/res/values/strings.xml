@@ -11,7 +11,7 @@
     <string name="title_activity_advertisement_details">Advertisement Details</string>
     <string name="advertisement_description">Description</string>
     <string name="dialog_title_post_validation">Post Validation</string>
-    <string name="dialog_description_post_validation">The post will be published after our validation</string>
+    <string name="dialog_description_post_validation">The post will be published after SoLoud validation. Thank you!</string>
     <string name="post_sent">Post sent for revision</string>
     <string name="permission_camera_and_storage_rationale">Camera and Write Storage permissions are needed to capture photos.</string>
     <string name="permission_read_storage_rationale">Read Storage permission is needed to choose photos.</string>
@@ -23,7 +23,7 @@
     <string name="suggested_hashtags">Suggested hashtags</string>
     <string name="ok">OK</string>
     <string name="enter_your_hashtag">Enter your hashtags</string>
-    <string name="proceed">Proceed</string>
+    <string name="next">Next</string>
     <string name="description">Say something about this photo&#8230;</string>
     <string name="hashTags_label">Hashtags</string>
     <string name="post">Post</string>
@@ -121,7 +121,7 @@
 
     <string name="permission_granted">Permission has been granted</string>
     <string name="permission_not_granted">Permission was not granted</string>
-    <string name="share_to_facebook">Share</string>
+    <string name="share_to_facebook">Share to Facebook</string>
     <string name="success_post_for_revision">Post sent for revision. Thank you!</string>
     <string name="error_no_internet_connection">No internet connection</string>
     <string name="retry">Retry</string>

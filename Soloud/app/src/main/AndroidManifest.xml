@@ -76,7 +76,8 @@
         <activity
             android:name=".activities.HashTagsActivity"
             android:label="@string/hashTags_label"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden">
             <!--<meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.ContestDetails" />-->
