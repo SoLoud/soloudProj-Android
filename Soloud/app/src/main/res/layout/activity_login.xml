@@ -37,6 +37,7 @@
             android:textSize="38sp" />-->
 
         <ImageView
+            android:id="@+id/soloud_logo"
             android:layout_width="140dp"
             android:layout_height="140dp"
             android:background="@drawable/ic_launcher1"

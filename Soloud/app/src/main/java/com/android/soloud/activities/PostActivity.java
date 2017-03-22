@@ -1,21 +1,20 @@
 package com.android.soloud.activities;
 
-import android.content.Context;
+
 import android.content.Intent;
-import android.database.Cursor;
+
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.ExifInterface;
+
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -50,10 +49,8 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -66,7 +63,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.R.attr.orientation;
 import static com.android.soloud.activities.ContestsActivity.CONTEST;
 import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.POST_SN;
@@ -94,6 +90,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private int orientationButtonCounter;
     private Bitmap orientatedImage;
     private TextView post_info_TV;
+    private String tagsWithoutHashString;
 
 
     @Override
@@ -144,6 +141,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         description = currentState.getUserPostDescription();
         ArrayList<String> tagsList = getIntent().getStringArrayListExtra("hashTagsList");
         String tags = convertTagsListToString(tagsList);
+        tagsWithoutHashString = convertTagsListToStringWithoutHash(tagsList);
         postText = description + " " + tags;
         String sourceString = description +" " +"<b>" + tags + "</b> ";
         post_info_TV.setText(Html.fromHtml(sourceString));
@@ -187,6 +185,20 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         for (String tag : tagsList) {
             String text = tag + " ";
             sb.append(text);
+        }
+        return sb.toString();
+    }
+
+    private String convertTagsListToStringWithoutHash(ArrayList<String> tagsList){
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i < tagsList.size(); i++){
+            if (i == tagsList.size() -1){
+                String text = tagsList.get(i).replace("#","");
+                sb.append(text);
+            }else{
+                String text = tagsList.get(i).replace("#","") + ",";
+                sb.append(text);
+            }
         }
         return sb.toString();
     }
@@ -326,9 +338,11 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         //RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
         MultipartBody.Part body = MultipartBody.Part.createFormData("upload", imageFile.getName(), reqFile);
         RequestBody desc = RequestBody.create(MediaType.parse("text/plain"), description);
+        RequestBody contestId = RequestBody.create(MediaType.parse("text/plain"), contest.getmId());
+        RequestBody hashTags = RequestBody.create(MediaType.parse("text/plain"), tagsWithoutHashString);
 
         String soLoudToken = "Bearer " + SharedPrefsHelper.getFromPrefs(this, SOLOUD_TOKEN);
-        Call<ResponseBody> request = service.postImage(soLoudToken, body, desc);
+        Call<ResponseBody> request = service.postImage(soLoudToken, body, desc, contestId, hashTags);
         Callback<ResponseBody> postImageCallback = new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

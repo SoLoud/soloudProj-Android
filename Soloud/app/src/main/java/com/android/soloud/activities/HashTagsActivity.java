@@ -291,7 +291,7 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         List<Tag> tagList = tagGroup.getTags();
         ArrayList<String> tagsArrayList = new ArrayList<>();
         for (Tag tag : tagList) {
-            tagsArrayList.add(tag.text);
+            tagsArrayList.add(tag.text.trim());
         }
         return tagsArrayList;
     }

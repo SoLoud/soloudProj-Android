@@ -19,7 +19,9 @@ public interface PostUserPhoto {
     @POST("/api/Posts")
     Call<ResponseBody> postImage(@Header("Authorization") String soLoudToken,
                                  @Part MultipartBody.Part image,
-                                 @Part("caption") RequestBody description);
+                                 @Part("caption") RequestBody description,
+                                 @Part("ContestId") RequestBody contestId,
+                                 @Part("Hashtags") RequestBody hashTags);
 
 
 }
