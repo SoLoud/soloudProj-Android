@@ -18,6 +18,7 @@ import com.android.soloud.fragments.GalleryFragment;
 import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 import com.android.soloud.materialnavigationdrawer.elements.MaterialSection;
 import com.android.soloud.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
+import com.android.soloud.training.TrainingFragment;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
@@ -81,7 +82,10 @@ public class MainActivity extends MaterialNavigationDrawer{
 
         this.addSection(newSection(GALLERY, R.drawable.ic_collections_white_24, new GalleryFragment()).setSectionColor(Color.parseColor(MATERIAL_DRAWER_COLOR)));
 
-        MaterialSection training = this.newSection(TRAINING, R.drawable.ic_import_contacts_white_24dp, new MaterialSectionListener() {
+        this.addSection(newSection(TRAINING, R.drawable.ic_import_contacts_white_24dp, new TrainingFragment()).setSectionColor(Color.parseColor(MATERIAL_DRAWER_COLOR)));
+
+
+        /*MaterialSection training = this.newSection(TRAINING, R.drawable.ic_import_contacts_white_24dp, new MaterialSectionListener() {
             @Override
             public void onClick(MaterialSection section) {
                 section.unSelect();
@@ -90,7 +94,7 @@ public class MainActivity extends MaterialNavigationDrawer{
             }
         });
 
-        this.addSection(training);
+        this.addSection(training);*/
 
         MaterialSection sign_out = this.newSection(LOGOUT, new MaterialSectionListener() {
             @Override
