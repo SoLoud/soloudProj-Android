@@ -136,4 +136,14 @@
     <string name="promo_text">Sign up and be the face \n of famous brands</string>
     <string name="unlock_trainings">Make posts to unlock trainings</string>
 
+    <string name="training_title_framing_composition">Framing and Composition</string>
+    <string name="training_title_colors_1">Colors 1</string>
+    <string name="training_title_colors_2">Colors 2</string>
+    <string name="training_title_typography">Typography is an art</string>
+    <string name="training_title_editing_basics">Editing- Basics</string>
+    <string name="training_title_hash_tags_1">Each day has its own Tags 1</string>
+    <string name="training_title_hash_tags_2">Each day has its own Tags 2</string>
+    <string name="training_title_story">Put a story behind the image</string>
+
+
 </resources>
