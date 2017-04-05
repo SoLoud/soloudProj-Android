@@ -11,9 +11,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
@@ -35,7 +35,7 @@ import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.TAGS_SN;
 import static com.android.soloud.utils.MyStringHelper.isNoE;
 
-public class HashTagsActivity extends AppCompatActivity implements TextView.OnEditorActionListener {
+public class HashTagsActivity extends AppCompatActivity {
 
     private static final String TAG = "HashTagsActivity";
     private static final String ALL_TAGS_LIST = "allTagsList";
@@ -48,6 +48,8 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     private Contest contest;
     private CurrentState currentState;
     private ArrayList<String> allTagsList;
+
+    private String userInputHashTags;
 
 
     @Override
@@ -71,6 +73,7 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         tagGroup = (TagView)findViewById(R.id.tag_group);
         description_ET = (EditText) findViewById(R.id.description_ET);
 
+        userInputHashTags = "";
 
 
         String hashTags = "";
@@ -115,20 +118,44 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
             description_ET.setText(description);
         }
 
-        hashTag_ET.setOnEditorActionListener(this);
+        hashTag_ET.addTextChangedListener(editTextTextWatcher);
 
         //set delete listener
-        tagGroup.setOnTagDeleteListener(new TagView.OnTagDeleteListener() {
+        /*tagGroup.setOnTagDeleteListener(new TagView.OnTagDeleteListener() {
             @Override
             public void onTagDeleted(final TagView view, final Tag tag, final int position) {
                 view.remove(position);
                 allTagsList.remove(position);
+            }
+        });*/
+
+        tagGroup.setOnTagClickListener(new TagView.OnTagClickListener() {
+            @Override
+            public void onTagClick(Tag tag, int i) {
+                //Toast.makeText(HashTagsActivity.this, "tag num" + i, Toast.LENGTH_SHORT).show();
+                updateEditText(tag.text);
             }
         });
 
         description_ET.addTextChangedListener(textWatcher);
 
         googleAnalyticsTrack();
+    }
+
+
+    private void updateEditText(String input){
+        if (userInputHashTags.length() > 0){
+            char lastChar = userInputHashTags.charAt(userInputHashTags.length()-1) ;
+            if (lastChar == ','){
+                userInputHashTags += input;
+            }else{
+                userInputHashTags += "," + input;
+            }
+        }else{
+            userInputHashTags += input;
+        }
+        hashTag_ET.setText(userInputHashTags);
+        hashTag_ET.setSelection(hashTag_ET.getText().length());
     }
 
     private void addTagsToList(String tags) {
@@ -214,7 +241,7 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         Tag userTag = new Tag(userInput.trim());
         userTag.radius = 10f;
         userTag.layoutColor = Color.parseColor("#0e94a5");
-        userTag.isDeletable = true;
+        userTag.isDeletable = false;
         tagGroup.addTag(userTag);
 
         if (userInput.startsWith("#")){
@@ -222,29 +249,6 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         }else{
             allTagsList.add(userInput);
         }
-    }
-
-
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (EditorInfo.IME_ACTION_DONE == actionId) {
-            String userInput = hashTag_ET.getText().toString().trim();
-            if (userInput.trim().isEmpty() || userInput.trim().equals("#")){
-                return false;
-            }
-            else
-            {
-                if (!userInput.startsWith("#")){
-                    addUserTagToList("#" + userInput);
-                }else{
-                    addUserTagToList(userInput);
-                }
-                hashTag_ET.setText("#");
-                hashTag_ET.setSelection(1);
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -288,10 +292,24 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
     }
 
     private ArrayList<String> getHashTags(){
-        List<Tag> tagList = tagGroup.getTags();
+        /*List<Tag> tagList = tagGroup.getTags();
         ArrayList<String> tagsArrayList = new ArrayList<>();
         for (Tag tag : tagList) {
             tagsArrayList.add(tag.text.trim());
+        }
+        return tagsArrayList;*/
+        ArrayList<String> tagsArrayList = new ArrayList<>();
+        if (userInputHashTags.length() >0){
+            String[] parts = userInputHashTags.split(",");
+            if (parts.length > 0){
+                for (int i=0; i<parts.length; i++){
+                    tagsArrayList.add(parts[i].trim());
+                }
+            }else{
+                tagsArrayList.add(userInputHashTags);
+            }
+        }else{
+            tagsArrayList.add(userInputHashTags);
         }
         return tagsArrayList;
     }
@@ -323,6 +341,25 @@ public class HashTagsActivity extends AppCompatActivity implements TextView.OnEd
         @Override
         public void afterTextChanged(Editable s) {
             currentState.setUserPostDescription(s.toString());
+        }
+    };
+
+
+    private TextWatcher editTextTextWatcher = new TextWatcher() {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            userInputHashTags = s.toString();
         }
     };
 }
