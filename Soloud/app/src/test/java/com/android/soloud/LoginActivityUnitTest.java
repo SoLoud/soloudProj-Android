@@ -1,3 +1,4 @@
+/*
 package com.android.soloud;
 
 import android.os.Build;
@@ -22,9 +23,11 @@ import retrofit2.Callback;
 
 import static org.junit.Assert.assertThat;
 
+*/
 /**
  * Created by f.stamopoulos on 20/3/2017.
- */
+ *//*
+
 
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 @RunWith(CustomTestRunner.class)
@@ -54,16 +57,19 @@ public class LoginActivityUnitTest {
     public void shouldFillAdapterWithReposFromApi() throws Exception {
         //Mockito.verify(mockApi).login(Mockito.anyString(), cb.capture());
 
-        /*List<Repository> testRepos = new ArrayList<Repository>();
+        */
+/*List<Repository> testRepos = new ArrayList<Repository>();
         testRepos.add(new Repository("rails", "ruby", new Owner("dhh")));
         testRepos.add(new Repository("android", "java", new Owner("google")));
 
-        cb.getValue().success(testRepos, null);*/
+        cb.getValue().success(testRepos, null);*//*
+
 
         //assertThat(activity.getListAdapter()).hasCount(2);
     }
 
-    /*@Test
+    */
+/*@Test
     public void shouldToastSadMessageIfNoRepos() throws Exception {
         Mockito.verify(mockApi).repositories(Mockito.anyString(), cb.capture());
 
@@ -82,7 +88,9 @@ public class LoginActivityUnitTest {
         cb.getValue().failure(null);
 
         assertThat(ShadowToast.getTextOfLatestToast()).contains("Failed");
-    }*/
+    }*//*
+
 
 
 }
+*/

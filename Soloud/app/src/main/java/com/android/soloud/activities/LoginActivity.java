@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -20,11 +21,13 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.models.User;
+import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -99,36 +102,10 @@ public class LoginActivity extends Activity {
                 Log.d(TAG, "onSuccess: " + "User ID:  " + loginResult.getAccessToken().getUserId() + "\n" +
                         "Auth Token: " + loginResult.getAccessToken().getToken());
 
-                final String token = loginResult.getAccessToken().getToken();
+                //final String token = loginResult.getAccessToken().getToken();
 
                 // App code
-                GraphRequest request = GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(),
-                        new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(JSONObject object, GraphResponse response) {
-                                Log.d(TAG, response.toString());
-
-                                // Application code
-                                try {
-                                    String name = object.getString("name");
-                                    String email = object.getString("email");
-                                    //String picture = object.getString("picture");
-                                    //String birthday = object.getString("birthday"); // 01/31/1980 format
-                                    String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
-
-                                    SharedPrefsHelper.storeInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
-                                    SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
-
-                                    progressWheel.setVisibility(View.VISIBLE);
-                                    progressWheel.spin();
-                                    loginToBackend(token);
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
+                GraphRequest request = getGraphRequestMe(loginResult.getAccessToken());
                 Bundle parameters = new Bundle();
                 parameters.putString("fields", "id, name, email, gender, birthday, picture.type(large)");
                 request.setParameters(parameters);
@@ -155,6 +132,37 @@ public class LoginActivity extends Activity {
 
         // Hash Key H3iwRkLWe23Sh+pZxlndHY+HtFg=
         //generateHashKey();
+    }
+
+    @NonNull
+    private GraphRequest getGraphRequestMe(final AccessToken accessToken) {
+        return GraphRequest.newMeRequest(
+                            accessToken,
+                            new GraphRequest.GraphJSONObjectCallback() {
+                                @Override
+                                public void onCompleted(JSONObject object, GraphResponse response) {
+                                    Log.d(TAG, response.toString());
+
+                                    // Application code
+                                    try {
+                                        String name = object.getString("name");
+                                        String email = object.getString("email");
+                                        //String picture = object.getString("picture");
+                                        //String birthday = object.getString("birthday"); // 01/31/1980 format
+                                        String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+
+                                        SharedPrefsHelper.storeInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
+                                        SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
+
+                                        progressWheel.setVisibility(View.VISIBLE);
+                                        progressWheel.spin();
+                                        loginToBackend(accessToken.getToken());
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
     }
 
     private void openWithChromeCustomTabs(){
@@ -211,7 +219,7 @@ public class LoginActivity extends Activity {
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
                     loginButton.setVisibility(View.VISIBLE);
                     progressWheel.stopSpinning();
-                }
+              }
             }
         };
         call.enqueue(loginCallback);
@@ -253,5 +261,7 @@ public class LoginActivity extends Activity {
             }
         }
     };
+
+
 
 }

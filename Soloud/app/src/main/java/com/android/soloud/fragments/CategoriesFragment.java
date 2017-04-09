@@ -5,20 +5,30 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.activities.ContestsActivity;
 import com.android.soloud.adapters.CategoryAdapter;
 import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 import com.android.soloud.models.Category;
+import com.android.soloud.utils.NetworkStatusHelper;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -104,6 +114,8 @@ public class CategoriesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        testMethod();
     }
 
 
@@ -115,24 +127,44 @@ public class CategoriesFragment extends Fragment {
         super.onPause();
     }
 
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
-                getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
-                break;
-            default:
-                break;
-        }
-        return false;
-    }*/
 
-    private Boolean isConnected(){
-        ConnectivityManager cm =
-                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
+
+    private void testMethod(){
+        if (NetworkStatusHelper.isNetworkAvailable(getActivity()) && AccessToken.getCurrentAccessToken() != null){
+            String oldAccessToken = AccessToken.getCurrentAccessToken().getToken();
+            getGraphRequestMe(AccessToken.getCurrentAccessToken());
+            String newAccessToken = AccessToken.getCurrentAccessToken().getToken();
+            if (!oldAccessToken.equals(newAccessToken)){
+                Toast.makeText(getActivity(), "The token has changed!!!", Toast.LENGTH_SHORT).show();
+                Log.d("CategoriesFragment", "The token has changed!!!");
+            }else{
+                Toast.makeText(getActivity(), "Same token", Toast.LENGTH_SHORT).show();
+                Log.d("CategoriesFragment", "Same token");
+            }
+        }
+    }
+
+    @NonNull
+    private GraphRequest getGraphRequestMe(final AccessToken accessToken) {
+        return GraphRequest.newMeRequest(
+                accessToken,
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.d("CategoriesFragment", response.toString());
+
+                        // Application code
+                        try {
+                            String name = object.getString("name");
+                            String email = object.getString("email");
+                            //String picture = object.getString("picture");
+                            //String birthday = object.getString("birthday"); // 01/31/1980 format
+                            String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 }

@@ -38,6 +38,7 @@ import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.User;
 import com.android.soloud.utils.ImageHelper;
+import com.android.soloud.utils.LogoutHelper;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.AccessToken;
@@ -277,7 +278,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     public void onError(FacebookException exception) {
                         Log.d(TAG, "Facebook Login attempt failed");
                         Snackbar.make(coordinatorLayout, R.string.error_login_facebook, Snackbar.LENGTH_LONG).show();
-                        logout();
+                        LogoutHelper logoutHelper = new LogoutHelper(PostActivity.this);
+                        logoutHelper.logOut();
                     }
                 });
     }
@@ -290,17 +292,6 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         Log.i(TAG, "Setting screen name: " + POST_SN);
         mTracker.setScreenName("Screen: " + POST_SN);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-    }
-
-    private void logout(){
-        String[] prefsToDelete = {SharedPrefsHelper.USER_FB_ID, SharedPrefsHelper.FB_TOKEN};
-        SharedPrefsHelper.deleteFromPrefs(PostActivity.this, prefsToDelete);
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        LoginManager.getInstance().logOut();
-        Intent intent = new Intent(PostActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
     }
 
 
@@ -367,8 +358,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
                 }else{
                     if (response.code() == 401){
-                        // TODO: 26/1/2017 Na kanw diaxeirisi an einai unauthorized. Refresh Token?
-                        loginToBackend(AccessToken.getCurrentAccessToken().getToken());
+                        LogoutHelper logoutHelper = new LogoutHelper(PostActivity.this);
+                        logoutHelper.logOut();
                     }else{
                         handleResponseFailure(call);
                     }
@@ -393,7 +384,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     shareButton.setEnabled(true);
                     //LoginManager.getInstance().logOut();
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
-                    logout();
+                    LogoutHelper logoutHelper = new LogoutHelper(PostActivity.this);
+                    logoutHelper.logOut();
                 }
             }
         };
@@ -464,7 +456,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     newCall.enqueue(this);
                 }else{
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
-                    logout();
+                    LogoutHelper logoutHelper = new LogoutHelper(PostActivity.this);
+                    logoutHelper.logOut();
                 }
             }
         };

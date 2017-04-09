@@ -40,18 +40,9 @@ public class TrainingFragment extends Fragment implements TrainingContract.View 
 
         mActionsListener = new TrainingPresenter(this);
 
-        ArrayList<Training> trainingArrayList = new ArrayList<>();
-        trainingArrayList.add(new Training(getString(R.string.training_title_framing_composition), R.drawable.bazo, 100));
-        trainingArrayList.add(new Training(getString(R.string.training_title_colors_1), R.drawable.bazo1, 200));
-        trainingArrayList.add(new Training(getString(R.string.training_title_colors_2), R.drawable.bazo, 300));
-        trainingArrayList.add(new Training(getString(R.string.training_title_editing_basics), R.drawable.bazo, 300));
-        trainingArrayList.add(new Training(getString(R.string.training_title_typography), R.drawable.bazo, 300));
-        trainingArrayList.add(new Training(getString(R.string.training_title_hash_tags_1), R.drawable.bazo, 300));
-        trainingArrayList.add(new Training(getString(R.string.training_title_hash_tags_2), R.drawable.bazo, 300));
-        trainingArrayList.add(new Training(getString(R.string.training_title_story), R.drawable.bazo, 300));
 
 
-        trainingAdapter = new TrainingAdapter(trainingArrayList);
+
     }
 
 
@@ -74,7 +65,19 @@ public class TrainingFragment extends Fragment implements TrainingContract.View 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        ArrayList<Training> trainingArrayList = new ArrayList<>();
+        trainingArrayList.add(new Training(getString(R.string.training_title_framing_composition), R.drawable.bazo, 100));
+        trainingArrayList.add(new Training(getString(R.string.training_title_colors_1), R.drawable.bazo1, 200));
+        trainingArrayList.add(new Training(getString(R.string.training_title_colors_2), R.drawable.bazo, 300));
+        trainingArrayList.add(new Training(getString(R.string.training_title_editing_basics), R.drawable.bazo, 300));
+        trainingArrayList.add(new Training(getString(R.string.training_title_typography), R.drawable.bazo1, 300));
+        trainingArrayList.add(new Training(getString(R.string.training_title_hash_tags_1), R.drawable.bazo, 300));
+        trainingArrayList.add(new Training(getString(R.string.training_title_hash_tags_2), R.drawable.bazo, 300));
+        trainingArrayList.add(new Training(getString(R.string.training_title_story), R.drawable.bazo1, 300));
+        trainingArrayList.add(new Training(getString(R.string.training_narration_1), R.drawable.bazo, 300));
+        trainingArrayList.add(new Training(getString(R.string.training_narration_2), R.drawable.bazo1, 300));
 
+        trainingAdapter = new TrainingAdapter(getActivity(), trainingArrayList);
         gridView.setAdapter(trainingAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

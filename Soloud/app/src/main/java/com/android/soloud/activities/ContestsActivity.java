@@ -23,6 +23,7 @@ import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.User;
+import com.android.soloud.utils.LogoutHelper;
 import com.android.soloud.utils.MyStringHelper;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
@@ -191,7 +192,8 @@ public class ContestsActivity extends AppCompatActivity {
                 } else {
                     // error response, no access to resource?
                     if (response.code() == 401){
-                        loginToBackend(AccessToken.getCurrentAccessToken().getToken());
+                        LogoutHelper logoutHelper = new LogoutHelper(ContestsActivity.this);
+                        logoutHelper.logOut();
                     }else{
                         handleResponseFailure(call);
                     }

@@ -1,3 +1,4 @@
+/*
 package com.android.soloud;
 
 import com.android.soloud.apiCalls.LoginService;
@@ -19,9 +20,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+*/
 /**
  * Created by f.stamopoulos on 20/3/2017.
- */
+ *//*
+
 
 public class LoginActivityTest {
 
@@ -60,3 +63,4 @@ public class LoginActivityTest {
         mockWebServer.shutdown();
     }
 }
+*/

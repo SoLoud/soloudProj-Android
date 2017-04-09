@@ -144,6 +144,8 @@
     <string name="training_title_hash_tags_1">Each day has its own Tags 1</string>
     <string name="training_title_hash_tags_2">Each day has its own Tags 2</string>
     <string name="training_title_story">Put a story behind the image</string>
+    <string name="training_narration_1">Narration 1</string>
+    <string name="training_narration_2">Narration 2</string>
 
 
 </resources>

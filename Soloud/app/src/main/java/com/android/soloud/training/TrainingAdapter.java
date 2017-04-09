@@ -2,6 +2,8 @@ package com.android.soloud.training;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +14,11 @@ import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.models.Training;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 
 /**
  * Created by f.stamopoulos on 29/3/2017.
@@ -21,12 +26,12 @@ import java.util.ArrayList;
 
 public class TrainingAdapter extends BaseAdapter {
 
-    /*private Context context;
-    private Integer[] imageIdArray;*/
+    private Context mContext;
+    /*private Integer[] imageIdArray;*/
     private ArrayList<Training> mTrainingArrayList;
 
-    public TrainingAdapter(ArrayList<Training> trainingArrayList){
-
+    public TrainingAdapter(Context context, ArrayList<Training> trainingArrayList){
+        this.mContext = context;
         this.mTrainingArrayList = trainingArrayList;
     }
 
@@ -52,12 +57,13 @@ public class TrainingAdapter extends BaseAdapter {
         if (convertView == null) {
             Context context = parent.getContext();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.training_item, parent, false);
+            //convertView = inflater.inflate(R.layout.training_item, parent, false);
+            convertView = inflater.inflate(R.layout.training_item1, parent, false);
             mViewHolder = new ViewHolder();
             mViewHolder.imageView = (ImageView) convertView.findViewById(R.id.training_IV);
             mViewHolder.imageView.setImageResource(mTrainingArrayList.get(position).getImageResourceId());
             mViewHolder.lockImageView = (ImageView) convertView.findViewById(R.id.lock_IV);
-            mViewHolder.imagesRL = (RelativeLayout) convertView.findViewById(R.id.images_RL);
+            /*mViewHolder.imagesRL = (RelativeLayout) convertView.findViewById(R.id.images_RL);*/
             convertView.setTag(mViewHolder);
         }else{
             mViewHolder = (ViewHolder)convertView.getTag();
@@ -66,14 +72,19 @@ public class TrainingAdapter extends BaseAdapter {
         int userPoints = 150;
 
         if (userPoints > requiredPoints){
-            mViewHolder.lockImageView.setVisibility(View.INVISIBLE);
-            mViewHolder.imageView.setVisibility(View.VISIBLE);
-            mViewHolder.imagesRL.setBackgroundColor(Color.parseColor("#ffffff"));
+            mViewHolder.lockImageView.setVisibility(View.GONE);
+            Picasso.with(mContext)
+                    .load(mTrainingArrayList.get(position).getImageResourceId())
+                    .into(mViewHolder.imageView);
         }else{
             mViewHolder.lockImageView.setVisibility(View.VISIBLE);
-            mViewHolder.imageView.setVisibility(View.INVISIBLE);
-            mViewHolder.imagesRL.setBackgroundColor(Color.parseColor("#e5e5e5"));
+            mViewHolder.lockImageView.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+            Picasso.with(mContext)
+                    .load(mTrainingArrayList.get(position).getImageResourceId())
+                    .transform(new BlurTransformation(mContext, 20, 4))
+                    .into(mViewHolder.imageView);
         }
+
         mViewHolder.textView = (TextView) convertView.findViewById(R.id.training_title_TV);
         mViewHolder.textView.setText(mTrainingArrayList.get(position).getTitle());
 
@@ -84,7 +95,7 @@ public class TrainingAdapter extends BaseAdapter {
     static class ViewHolder{
         ImageView imageView;
         ImageView lockImageView;
-        RelativeLayout imagesRL;
+        /*RelativeLayout imagesRL;*/
         TextView textView;
     }
 

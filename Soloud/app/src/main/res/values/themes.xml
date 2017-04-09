@@ -12,7 +12,7 @@
         <item name="accountStyle">@style/MaterialAccountTheme</item>
         <item name="multipaneSupport">false</item>
         <item name="defaultSectionLoaded">0</item>
-        <item name="learningPattern">true</item>
+        <item name="learningPattern">false</item>
         <item name="toolbarElevation">false</item>
     </style>
 
@@ -27,7 +27,7 @@
         <item name="accountStyle">@style/MaterialAccountTheme</item>
         <item name="multipaneSupport">false</item>
         <item name="defaultSectionLoaded">0</item>
-        <item name="learningPattern">true</item>
+        <item name="learningPattern">false</item>
         <item name="toolbarElevation">false</item>
     </style>
 
@@ -44,7 +44,7 @@
         <item name="accountStyle">@style/MaterialAccountTheme</item>
         <item name="multipaneSupport">false</item>
         <item name="defaultSectionLoaded">0</item>
-        <item name="learningPattern">true</item>
+        <item name="learningPattern">false</item>
         <item name="toolbarElevation">false</item>
     </style>
 

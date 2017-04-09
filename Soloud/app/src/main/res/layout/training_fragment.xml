@@ -2,18 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/training_RL"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#e5e5e5">
 
     <GridView
         android:id="@+id/training_grid_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:background="#e5e5e5"
         android:horizontalSpacing="4dp"
         android:numColumns="2"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="4dp" />
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:verticalSpacing="4dp"
+        android:paddingTop="8dp"/>
 
 </RelativeLayout>

@@ -1,3 +1,4 @@
+/*
 package com.android.soloud;
 
 import org.junit.runners.model.InitializationError;
@@ -8,9 +9,11 @@ import org.robolectric.res.FsFile;
 
 import java.io.File;
 
+*/
 /**
  * Created by f.stamopoulos on 21/3/2017.
- */
+ *//*
+
 
 public class CustomTestRunner extends RobolectricTestRunner {
 
@@ -55,3 +58,4 @@ public class CustomTestRunner extends RobolectricTestRunner {
         return new File(testDir, MANIFEST_FILE_NAME).isFile();
     }
 }
+*/

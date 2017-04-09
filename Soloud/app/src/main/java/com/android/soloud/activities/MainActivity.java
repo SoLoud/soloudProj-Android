@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 import com.android.soloud.materialnavigationdrawer.elements.MaterialSection;
 import com.android.soloud.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
 import com.android.soloud.training.TrainingFragment;
+import com.android.soloud.utils.LogoutHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
@@ -39,8 +41,6 @@ public class MainActivity extends MaterialNavigationDrawer{
     public static final String TRAINING = "Training";
     public static final String GALLERY = "Gallery";
     public static final String LOGOUT = "Logout";
-
-    public static final String MATERIAL_DRAWER_COLOR = "#e6004c";
     private static final String TAG = "MainActivity";
 
     private Tracker mTracker;
@@ -75,14 +75,15 @@ public class MainActivity extends MaterialNavigationDrawer{
         setDrawerHeaderCustom(view);
         this.allowArrowAnimation();
 
-        this.addSection(newSection(CATEGORIES, R.drawable.ic_view_list_white_24dp, new CategoriesFragment()).setSectionColor(Color.parseColor(MATERIAL_DRAWER_COLOR)));
+        int primaryColor = ContextCompat.getColor(this, R.color.colorPrimary);
+        this.addSection(newSection(CATEGORIES, R.drawable.ic_view_list_white_24dp, new CategoriesFragment()).setSectionColor(primaryColor));
 
         Intent intent = new Intent(this, UserProfileActivity.class);
         this.addSection(newSection(PROFILE, R.drawable.ic_account_circle_white_24dp, intent));
 
-        this.addSection(newSection(GALLERY, R.drawable.ic_collections_white_24, new GalleryFragment()).setSectionColor(Color.parseColor(MATERIAL_DRAWER_COLOR)));
+        this.addSection(newSection(GALLERY, R.drawable.ic_collections_white_24, new GalleryFragment()).setSectionColor(primaryColor));
 
-        this.addSection(newSection(TRAINING, R.drawable.ic_import_contacts_white_24dp, new TrainingFragment()).setSectionColor(Color.parseColor(MATERIAL_DRAWER_COLOR)));
+        this.addSection(newSection(TRAINING, R.drawable.ic_import_contacts_white_24dp, new TrainingFragment()).setSectionColor(primaryColor));
 
 
         /*MaterialSection training = this.newSection(TRAINING, R.drawable.ic_import_contacts_white_24dp, new MaterialSectionListener() {
@@ -100,21 +101,14 @@ public class MainActivity extends MaterialNavigationDrawer{
             @Override
             public void onClick(MaterialSection section) {
                 section.unSelect();
-                // Delete user fb token and user fb id
-                String[] prefsToDelete = {SharedPrefsHelper.USER_FB_ID, SharedPrefsHelper.FB_TOKEN};
-                SharedPrefsHelper.deleteFromPrefs(MainActivity.this, prefsToDelete);
 
-                // TODO: 25/1/2017 Na tsekarw oti den skaei
-                FacebookSdk.sdkInitialize(getApplicationContext());
-                LoginManager.getInstance().logOut();
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                LogoutHelper logoutHelper = new LogoutHelper(MainActivity.this);
+                logoutHelper.logOut();
             }
         });
         this.addBottomSection(sign_out);
-        this.enableToolbarElevation();
 
+        this.enableToolbarElevation();
         this.setBackPattern(BACKPATTERN_BACK_TO_FIRST);
 
         /*MediaPlayer mPlayer = MediaPlayer.create(this, R.raw.sosoloud_sound);
