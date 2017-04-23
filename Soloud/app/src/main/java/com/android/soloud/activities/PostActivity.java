@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 
 import android.net.Uri;
@@ -24,6 +25,8 @@ import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.soloud.R;
@@ -50,6 +53,10 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -92,6 +99,10 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private Bitmap orientatedImage;
     private TextView post_info_TV;
     private String tagsWithoutHashString;
+    private LinearLayout autoComplete_LL;
+    private RelativeLayout checkIn_RL;
+    private TextView addLocation_TV;
+    private String placeID;
 
 
     @Override
@@ -106,9 +117,15 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         ImageButton rotate_Btn = (ImageButton) findViewById(R.id.rotate_btn);
         shareButton = (Button) findViewById(R.id.share_button);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        autoComplete_LL = (LinearLayout) findViewById(R.id.autocomplete_LL);
+        checkIn_RL = (RelativeLayout) findViewById(R.id.check_in_RL);
+        addLocation_TV = (TextView) findViewById(R.id.add_location_TV);
+        checkIn_RL.setOnClickListener(onClickListener);
         shareButton.setOnClickListener(onClickListener);
         rotate_Btn.setOnClickListener(onClickListener);
         photo_IV.setOnClickListener(onClickListener);
+        ImageView place_IV = (ImageView) findViewById(R.id.place_IV);
+        place_IV.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP );
 
         loginFailureRequestsCounter =0;
         postFailureRequestsCounter = 0;
@@ -135,6 +152,32 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         }
 
         googleAnalyticsTrack();
+
+
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName());
+
+                String placeDetailsStr = place.getName() + "\n"
+                        + place.getId() + "\n"
+                        + place.getLatLng().toString() + "\n"
+                        + place.getAddress() + "\n"
+                        + place.getAttributions();
+
+                placeID = place.getId();
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
     }
 
     private void displayTagsAndDescription() {
@@ -487,6 +530,12 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 case R.id.post_photo_IV:
                     showFullScreenImageDialog();
                     break;
+                case R.id.check_in_RL:
+                    if (autoComplete_LL.getVisibility() == View.GONE){
+                        addLocation_TV.setVisibility(View.GONE);
+                        autoComplete_LL.setVisibility(View.VISIBLE);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -543,4 +592,5 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }
