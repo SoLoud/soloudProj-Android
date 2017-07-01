@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#cc0044</color>
     <color name="colorAccent">#ff5252</color>
     <color name="mySecondary">#0e94a5</color>
+
+    <color name="dark_grey">#212121</color>
+    <color name="medium_grey">#757575</color>
+    <color name="light_grey">#BDBDBD</color>
 </resources>

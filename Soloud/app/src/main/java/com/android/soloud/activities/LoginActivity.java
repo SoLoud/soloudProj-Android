@@ -1,13 +1,10 @@
 package com.android.soloud.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,14 +18,13 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.models.User;
-import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
+import com.android.soloud.wizard.WizardActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -81,7 +77,7 @@ public class LoginActivity extends Activity {
         //String fbk_token = AccessToken.getCurrentAccessToken().getToken();
 
         if(fb_token != null && userFbId != null && soLoudToken != null){
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, WizardActivity.class);
             startActivity(intent);
             finish();
         }
@@ -189,7 +185,7 @@ public class LoginActivity extends Activity {
                     String soLoudToken = soLoudUser.getSoloudToken();
                     SharedPrefsHelper.storeInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
 
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, WizardActivity.class);
                     startActivity(intent);
                     finish();
 

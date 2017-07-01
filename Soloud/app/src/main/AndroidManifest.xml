@@ -104,6 +104,10 @@
                 android:value=".activities.HashTagsActivity" />-->
         </activity>
         <activity android:name=".activities.UserProfileActivity" />
+        <activity
+            android:name=".wizard.WizardActivity"
+            android:theme="@style/AppFullScreenTheme">
+        </activity>
     </application>
 
 </manifest>

@@ -148,5 +148,10 @@
     <string name="training_narration_2">Narration 2</string>
     <string name="add_your_location">Add your location</string>
 
+    <string name="wizard_0_description">Pick a contest category</string>
+    <string name="wizard_1_description">Choose a contest to participate</string>
+    <string name="wizard_2_description">Add your photo!</string>
+    <string name="wizard_3_description">Add some tags and you are done!</string>
+
 
 </resources>
