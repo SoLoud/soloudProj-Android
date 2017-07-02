@@ -2,6 +2,7 @@ package com.android.soloud.activities;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -39,7 +40,8 @@ public class UserProfileActivity extends AppCompatActivity {
     //private PieChart mChart;
     private PieChart pieChart1;
     private PieChart pieChart2;
-    boolean currentContestExpanded = false;
+    private boolean currentContestExpanded = false;
+    private int[] MATERIAL_COLORS;
 
 
     @Override
@@ -58,6 +60,12 @@ public class UserProfileActivity extends AppCompatActivity {
             userName_TV.setText("User Name");
         }
 
+        int primaryColor = ContextCompat.getColor(this, R.color.colorPrimary);
+        int secondaryColor = ContextCompat.getColor(this, R.color.mySecondary);
+        int greyColor = ContextCompat.getColor(this, R.color.colorAccent);
+        MATERIAL_COLORS = new int[]{
+                primaryColor, secondaryColor, greyColor
+        };
 
         RoundCornerProgressBar progressBar = (RoundCornerProgressBar) findViewById(R.id.userProgressBar);
 
@@ -85,10 +93,6 @@ public class UserProfileActivity extends AppCompatActivity {
         entries.add(new PieEntry(4f, "Likes"));
         entries.add(new PieEntry(8f, "Shares"));
         entries.add(new PieEntry(6f, "Comments"));
-
-        int[] MATERIAL_COLORS = {
-                rgb("#8ec4f7"), rgb("#fffe8a"), rgb("#d7f58d")
-        };
 
         PieDataSet dataset = new PieDataSet(entries, "");
         dataset.setColors(MATERIAL_COLORS); // set the color
@@ -132,9 +136,6 @@ public class UserProfileActivity extends AppCompatActivity {
         entries.add(new PieEntry(8f, "Shares"));
         entries.add(new PieEntry(6f, "Comments"));
 
-        int[] MATERIAL_COLORS = {
-                rgb("#8ec4f7"), rgb("#fffe8a"), rgb("#d7f58d")
-        };
 
         PieDataSet dataset = new PieDataSet(entries, "");
         dataset.setColors(MATERIAL_COLORS); // set the color
