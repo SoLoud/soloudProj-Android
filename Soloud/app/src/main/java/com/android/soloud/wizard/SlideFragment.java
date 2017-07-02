@@ -29,17 +29,19 @@ public class SlideFragment extends Fragment {
     private int backgroundColorId;
     private com.github.clans.fab.FloatingActionButton fab;
     private int fabImageResourceId;
+    private boolean showFab;
 
     public SlideFragment() {
         // Empty Constructor
     }
 
-    public static SlideFragment newInstance(int resourceImageId, String description, int backgroundColorId, int fabImageResourceId) {
+    public static SlideFragment newInstance(int resourceImageId, String description, int backgroundColorId, int fabImageResourceId, boolean showFab) {
         Bundle args = new Bundle();
         args.putInt("resourceImageId", resourceImageId);
         args.putString("description", description);
         args.putInt("backgroundColorId", backgroundColorId);
         args.putInt("fabImageResourceId", fabImageResourceId);
+        args.putBoolean("showFab", showFab);
         SlideFragment fragment = new SlideFragment();
         fragment.setArguments(args);
         return fragment;
@@ -53,6 +55,7 @@ public class SlideFragment extends Fragment {
         description = getArguments().getString("description");
         backgroundColorId = getArguments().getInt("backgroundColorId");
         fabImageResourceId = getArguments().getInt("fabImageResourceId");
+        showFab = getArguments().getBoolean("showFab");
     }
 
     @Nullable
@@ -88,5 +91,9 @@ public class SlideFragment extends Fragment {
                 getActivity().finish();
             }
         });
+
+        if (!showFab){
+            fab.setVisibility(View.INVISIBLE);
+        }
     }
 }

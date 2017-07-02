@@ -32,7 +32,7 @@ public class WizardActivity extends AppCompatActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setPageTransformer(true, new DepthPageTransformer());
+        mPager.setPageTransformer(true, new ViewPageTransformer(ViewPageTransformer.TransformType.FADE));
     }
 
 
@@ -46,15 +46,15 @@ public class WizardActivity extends AppCompatActivity {
         public Fragment getItem(int pos) {
             switch(pos) {
                 case 0:
-                    return SlideFragment.newInstance(R.drawable.categories_screenshot, getString(R.string.wizard_0_description), R.color.mySecondary, R.drawable.ic_navigate_next_white);
+                    return SlideFragment.newInstance(R.drawable.categories_screenshot, getString(R.string.wizard_0_description), R.color.mySecondary, R.drawable.ic_navigate_next_white, false);
                 case 1:
-                    return SlideFragment.newInstance(R.drawable.contests_screenshot, getString(R.string.wizard_1_description), R.color.dark_grey, R.drawable.ic_navigate_next_white);
+                    return SlideFragment.newInstance(R.drawable.contests_screenshot, getString(R.string.wizard_1_description), R.color.dark_grey, R.drawable.ic_navigate_next_white, false);
                 case 2:
-                    return SlideFragment.newInstance(R.drawable.add_photo_screenshot, getString(R.string.wizard_2_description), R.color.mySecondary, R.drawable.ic_navigate_next_white);
+                    return SlideFragment.newInstance(R.drawable.add_photo_screenshot, getString(R.string.wizard_2_description), R.color.mySecondary, R.drawable.ic_navigate_next_white, false);
                 case 3:
-                    return SlideFragment.newInstance(R.drawable.add_tags_screenshot, getString(R.string.wizard_3_description), R.color.medium_grey, R.drawable.ic_check_white_24dp);
+                    return SlideFragment.newInstance(R.drawable.add_tags_screenshot, getString(R.string.wizard_3_description), R.color.medium_grey, R.drawable.ic_check_white_24dp, true);
                 default:
-                    return SlideFragment.newInstance(R.drawable.categories_screenshot, getString(R.string.wizard_0_description), R.color.mySecondary, R.drawable.ic_navigate_next_white);
+                    return SlideFragment.newInstance(R.drawable.categories_screenshot, getString(R.string.wizard_0_description), R.color.mySecondary, R.drawable.ic_navigate_next_white, false);
             }
         }
 
