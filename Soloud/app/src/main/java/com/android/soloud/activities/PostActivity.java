@@ -34,6 +34,7 @@ import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
 import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.apiCalls.PostUserPhoto;
+import com.android.soloud.contests.ContestsActivity;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.dialogs.UserPostDialog;
@@ -71,8 +72,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.android.soloud.activities.ContestsActivity.CONTEST;
-import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
+import static com.android.soloud.contests.ContestsActivity.CONTEST;
+import static com.android.soloud.contests.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.POST_SN;
 import static com.android.soloud.utils.MyStringHelper.isNoE;
 import static com.android.soloud.utils.SharedPrefsHelper.POST_POP_UP_DISPLAYED;

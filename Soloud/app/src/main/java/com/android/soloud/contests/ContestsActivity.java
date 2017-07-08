@@ -1,11 +1,10 @@
-package com.android.soloud.activities;
+package com.android.soloud.contests;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,7 +16,9 @@ import android.widget.ListView;
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
-import com.android.soloud.adapters.ContestsAdapter;
+import com.android.soloud.activities.ContestDetails;
+import com.android.soloud.activities.LoginActivity;
+import com.android.soloud.activities.MainActivity;
 import com.android.soloud.apiCalls.ContestsService;
 import com.android.soloud.apiCalls.LoginService;
 import com.android.soloud.models.Contest;
@@ -27,7 +28,6 @@ import com.android.soloud.utils.LogoutHelper;
 import com.android.soloud.utils.MyStringHelper;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
-import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.HitBuilders;
@@ -134,7 +134,7 @@ public class ContestsActivity extends AppCompatActivity {
     }
 
     private void initializeListView() {
-        listView.setAdapter(new ContestsAdapter(ContestsActivity.this, contestsList));
+        listView.setAdapter(new ContestsAdapter1(ContestsActivity.this, contestsList));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

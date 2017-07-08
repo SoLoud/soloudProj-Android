@@ -28,11 +28,11 @@ import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
+import com.android.soloud.contests.ContestsActivity;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
-import com.android.soloud.utils.MyStringHelper;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -47,8 +47,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.android.soloud.activities.ContestsActivity.CONTEST;
-import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
+import static com.android.soloud.contests.ContestsActivity.CONTEST;
+import static com.android.soloud.contests.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.CONTEST_DETAILS_SN;
 import static com.android.soloud.utils.MyStringHelper.isNoE;
 

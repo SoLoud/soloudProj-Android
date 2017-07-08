@@ -1,10 +1,7 @@
-package com.android.soloud.adapters;
+package com.android.soloud.contests;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +12,6 @@ import android.widget.TextView;
 import com.android.soloud.R;
 import com.android.soloud.models.Contest;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.joda.time.DateTime;
 
@@ -24,21 +20,20 @@ import java.util.ArrayList;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 /**
- * Created by f.stamopoulos on 28/10/2016.
+ * Created by f.stamopoulos on 8/7/2017.
  */
 
-public class ContestsAdapter extends ArrayAdapter {
+public class ContestsAdapter1 extends ArrayAdapter {
 
     private Context mContext;
     private LayoutInflater layoutInflater;
     private ArrayList<Contest> mContestsList;
 
-    private Target mTarget;
+    public ContestsAdapter1(@NonNull Context context, ArrayList<Contest> contestsList) {
+        super(context, R.layout.contest_row, contestsList);
 
-    public ContestsAdapter(Context context, ArrayList<Contest> contestsList) {
-        super(context, R.layout.contest_row_card, contestsList);
-        layoutInflater = LayoutInflater.from(context);
         mContext = context;
+        layoutInflater = LayoutInflater.from(context);
         mContestsList = contestsList;
     }
 
@@ -47,22 +42,19 @@ public class ContestsAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        final ContestsAdapter.ViewHolder holder;
+        ViewHolder holder;
         if (convertView == null) {
             if (layoutInflater == null)
-                layoutInflater = (LayoutInflater) mContext
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.contest_row_card, parent, false);
-            holder = new ContestsAdapter.ViewHolder();
-
+                layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.contest_row, parent, false);
+            holder = new ViewHolder();
             holder.companyName_TV = (TextView) convertView.findViewById(R.id.companyName_TV);
             holder.product_IV = (ImageView) convertView.findViewById(R.id.product_IV);
             holder.prize_TV = (TextView) convertView.findViewById(R.id.prize_TV);
             holder.endingDate_TV = (TextView) convertView.findViewById(R.id.ending_date_TV);
-
             convertView.setTag(holder);
-        }else{
-            holder = (ContestsAdapter.ViewHolder) convertView.getTag();
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
         Contest contestItem = mContestsList.get(position);
@@ -76,13 +68,12 @@ public class ContestsAdapter extends ArrayAdapter {
         Picasso.with(mContext).cancelRequest(holder.product_IV);
 
         Contest.Photo[] photosArray = contestItem.getmProductPhotos();
-        if (photosArray != null && photosArray.length > 0){
+        if (photosArray != null && photosArray.length > 0) {
 
             String photoUrl = photosArray[0].getmUrl();
             Picasso.with(mContext).load(photoUrl).placeholder(R.drawable.ic_view_list_white_24dp).
-                    transform(new CropCircleTransformation()).
                     error(R.drawable.ic_view_list_white_24dp).into(holder.product_IV);
-        }else{
+        } else {
             Picasso.with(mContext).cancelRequest(holder.product_IV);
             holder.product_IV.setImageResource(R.drawable.bazo);
         }
@@ -97,7 +88,7 @@ public class ContestsAdapter extends ArrayAdapter {
         int day = dateTime.getDayOfMonth();
         int year = dateTime.getYear();
         int month = dateTime.getMonthOfYear();
-        String endingDate = day + "-" + month + "-" +year;
+        String endingDate = day + "-" + month + "-" + year;
         holder.endingDate_TV.setText(endingDate);
 
         return convertView;
@@ -110,4 +101,5 @@ public class ContestsAdapter extends ArrayAdapter {
         TextView prize_TV;
         TextView endingDate_TV;
     }
+
 }

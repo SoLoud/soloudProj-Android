@@ -7,13 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
@@ -30,8 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.android.soloud.activities.ContestsActivity.CONTEST;
-import static com.android.soloud.activities.ContestsActivity.CURRENT_STATE;
+import static com.android.soloud.contests.ContestsActivity.CONTEST;
+import static com.android.soloud.contests.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.TAGS_SN;
 import static com.android.soloud.utils.MyStringHelper.isNoE;
 
