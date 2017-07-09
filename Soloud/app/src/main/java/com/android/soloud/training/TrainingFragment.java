@@ -12,11 +12,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.activities.TutorialActivity;
 import com.android.soloud.models.Training;
+
 import java.util.ArrayList;
 
 /**
@@ -39,9 +39,6 @@ public class TrainingFragment extends Fragment implements TrainingContract.View 
         super.onCreate(savedInstanceState);
 
         mActionsListener = new TrainingPresenter(this);
-
-
-
 
     }
 

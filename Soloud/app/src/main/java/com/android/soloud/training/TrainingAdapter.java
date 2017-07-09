@@ -57,8 +57,7 @@ public class TrainingAdapter extends BaseAdapter {
         if (convertView == null) {
             Context context = parent.getContext();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            //convertView = inflater.inflate(R.layout.training_item, parent, false);
-            convertView = inflater.inflate(R.layout.training_item1, parent, false);
+            convertView = inflater.inflate(R.layout.training_item2, parent, false);
             mViewHolder = new ViewHolder();
             mViewHolder.imageView = (ImageView) convertView.findViewById(R.id.training_IV);
             mViewHolder.imageView.setImageResource(mTrainingArrayList.get(position).getImageResourceId());
