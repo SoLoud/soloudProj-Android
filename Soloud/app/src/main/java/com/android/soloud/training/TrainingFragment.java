@@ -27,7 +27,7 @@ public class TrainingFragment extends Fragment implements TrainingContract.View 
 
     private GridView gridView;
     private TrainingContract.UserActionsListener mActionsListener;
-    private TrainingAdapter trainingAdapter;
+    private TrainingAdapter1 trainingAdapter;
     private RelativeLayout trainingGallery_RL;
 
     public TrainingFragment(){
@@ -74,7 +74,7 @@ public class TrainingFragment extends Fragment implements TrainingContract.View 
         trainingArrayList.add(new Training(getString(R.string.training_narration_1), R.drawable.bazo, 300));
         trainingArrayList.add(new Training(getString(R.string.training_narration_2), R.drawable.bazo1, 300));
 
-        trainingAdapter = new TrainingAdapter(getActivity(), trainingArrayList);
+        trainingAdapter = new TrainingAdapter1(getActivity(), trainingArrayList);
         gridView.setAdapter(trainingAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

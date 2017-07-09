@@ -77,7 +77,7 @@ public class LoginActivity extends Activity {
         //String fbk_token = AccessToken.getCurrentAccessToken().getToken();
 
         if(fb_token != null && userFbId != null && soLoudToken != null){
-            Intent intent = new Intent(this, WizardActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
         }

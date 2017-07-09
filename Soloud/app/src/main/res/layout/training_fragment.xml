@@ -3,14 +3,14 @@
     android:id="@+id/training_RL"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="#e5e5e5">
 
     <GridView
         android:id="@+id/training_grid_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:background="@android:color/black"
+        android:background="#e5e5e5"
         android:horizontalSpacing="4dp"
         android:numColumns="2"
         android:stretchMode="columnWidth"
