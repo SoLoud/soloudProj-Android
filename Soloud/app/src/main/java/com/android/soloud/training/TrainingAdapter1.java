@@ -13,8 +13,6 @@ import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.models.Training;
-import com.android.soloud.utils.GridViewSquareItem;
-import com.android.soloud.utils.SquareRL;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -29,13 +27,15 @@ public class TrainingAdapter1 extends BaseAdapter {
 
     private Context mContext;
     private ArrayList<Training> mTrainingArrayList;
-    private ImageView imageView;
+    /*private ImageView imageView;
     private ImageView lockImageView;
-    private TextView textView;
+    private TextView textView;*/
+    private LayoutInflater inflater;
 
     public TrainingAdapter1(@NonNull Context context, @NonNull ArrayList<Training> trainingArrayList) {
         this.mContext = context;
         this.mTrainingArrayList = trainingArrayList;
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
 
@@ -56,46 +56,53 @@ public class TrainingAdapter1 extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View grid;
-        Context context = parent.getContext();
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        ViewHolder holder;
+
+        //View grid;
 
         if (convertView == null) {
-
-            grid = new View(mContext);
-            grid = inflater.inflate(R.layout.training_item3, null);
+            //grid = new View(mContext);
+            convertView = inflater.inflate(R.layout.training_item3, null);
+            holder = new ViewHolder();
             //SquareRL relativeLayout = (SquareRL)grid.findViewById(R.id.square_item_RL);
-            imageView = (ImageView) grid.findViewById(R.id.training_IV);
-            lockImageView = (ImageView) grid.findViewById(R.id.lock_IV);
-            textView = (TextView) grid.findViewById(R.id.training_title_TV);
-
+            holder.imageView = (ImageView) convertView.findViewById(R.id.training_IV);
+            holder.lockImageView = (ImageView) convertView.findViewById(R.id.lock_IV);
+            holder.textView = (TextView) convertView.findViewById(R.id.training_title_TV);
+            convertView.setTag(holder);
         } else {
-            grid = (View) convertView;
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        imageView.setImageResource(mTrainingArrayList.get(position).getImageResourceId());
+        holder.imageView.setImageResource(mTrainingArrayList.get(position).getImageResourceId());
 
         int requiredPoints = mTrainingArrayList.get(position).getRequiredPoints();
         int userPoints = 150;
 
         if (userPoints > requiredPoints){
-            lockImageView.setVisibility(View.GONE);
+            holder.lockImageView.setVisibility(View.GONE);
             Picasso.with(mContext)
                     .load(mTrainingArrayList.get(position).getImageResourceId())
-                    .into(imageView);
+                    .into(holder.imageView);
         }else{
-            lockImageView.setVisibility(View.VISIBLE);
-            lockImageView.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+            holder.lockImageView.setVisibility(View.VISIBLE);
+            holder.lockImageView.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
             Picasso.with(mContext)
                     .load(mTrainingArrayList.get(position).getImageResourceId())
                     .transform(new BlurTransformation(mContext, 20, 4))
-                    .into(imageView);
+                    .into(holder.imageView);
         }
 
 
-        textView.setText(mTrainingArrayList.get(position).getTitle());
+        holder.textView.setText(mTrainingArrayList.get(position).getTitle());
 
-        return grid;
+        return convertView;
+    }
+
+    private static class ViewHolder{
+        ImageView imageView;
+        ImageView lockImageView;
+        TextView textView;
     }
 
 }
