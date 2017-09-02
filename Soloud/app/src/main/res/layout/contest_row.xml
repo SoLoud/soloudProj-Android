@@ -1,85 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/card_view"
+    android:id="@+id/info_layout"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
-    android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardCornerRadius="4dp">
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    >
 
-    <RelativeLayout
-        android:id="@+id/info_layout"
+    <LinearLayout
+        android:id="@+id/text_info_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/product_IV"
+        android:layout_toStartOf="@+id/product_IV"
+        android:orientation="vertical">
 
-
-        <LinearLayout
-            android:id="@+id/text_info_layout"
+        <TextView
+            android:id="@+id/companyName_TV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_toLeftOf="@+id/product_IV"
-            android:layout_toStartOf="@+id/product_IV"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            >
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/dark_grey"
+            tools:text="Company Name"
+            android:textSize="16sp"/>
 
-            <TextView
-                android:id="@+id/companyName_TV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textStyle="bold"
-                tools:text="Company Name"
-                android:textColor="@android:color/black"/>
+        <TextView
+            android:id="@+id/prize_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/dark_grey"
+            android:textSize="14sp"
+            tools:text="Prize description mpla mpla mpla mpla polu wraio dwro" />
 
-            <TextView
-                android:id="@+id/prize_TV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="8dp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="Prize description"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                tools:text="Prize description mpla mpla mpla mpla polu wraio dwro" />
-
-            <TextView
-                android:id="@+id/ending_date_TV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="8dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="15-6-2016"
-                tools:text="Start Date" />
-
-        </LinearLayout>
-
-
-        <ImageView
-            android:id="@+id/product_IV"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginEnd="4dp"
-            tools:src="@drawable/bazo"
-            android:layout_centerVertical="true"
+        <TextView
+            android:id="@+id/ending_date_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/medium_grey"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="15-6-2016"
+            android:textSize="14sp"
             />
 
-    </RelativeLayout>
-</android.support.v7.widget.CardView>
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/product_IV"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        tools:src="@drawable/bazo" />
+
+</RelativeLayout>
+

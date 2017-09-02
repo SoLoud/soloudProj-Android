@@ -50,17 +50,9 @@ public class CategoriesFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        categoriesList = new ArrayList<>();
-        categoriesList.add(new Category("Charity", R.drawable.charity));
-        categoriesList.add(new Category("Cosmetics", R.drawable.cosmetics));
-        categoriesList.add(new Category("Home Decoration", R.drawable.decoration));
-        categoriesList.add(new Category("Entertainment", R.drawable.entertainment));
-        categoriesList.add(new Category("Fashion", R.drawable.fashion));
-        categoriesList.add(new Category("Fitness", R.drawable.fitness));
-        categoriesList.add(new Category("Food", R.drawable.food));
-        categoriesList.add(new Category("Pets", R.drawable.pets));
-        categoriesList.add(new Category("Travel", R.drawable.travel));
+        initializeList();
     }
+
 
     @Nullable
     @Override
@@ -85,21 +77,20 @@ public class CategoriesFragment extends Fragment {
 
         initializeToolbar();
 
-        //String[] categoriesArray = {"Charity", "Cosmetics", "Home Decoration", "Entertainment", "Fashion", "Fitness", "Food", "Pets", "Travel"};
-
         listView.setAdapter(new CategoryAdapter(getActivity(), categoriesList));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String contestName = categoriesList.get(position).getName();
-                Intent intent = new Intent(getActivity(), ContestsActivity.class);
-                intent.putExtra(CONTEST_NAME,contestName);
-                startActivity(intent);
-                getActivity().finish();
-            }
-        });
-
+        listView.setOnItemClickListener(onItemClickListener);
     }
+
+    AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            String contestName = categoriesList.get(position).getName();
+            Intent intent = new Intent(getActivity(), ContestsActivity.class);
+            intent.putExtra(CONTEST_NAME, contestName);
+            startActivity(intent);
+            getActivity().finish();
+        }
+    };
 
     private void initializeToolbar() {
         Toolbar toolbar = ((MaterialNavigationDrawer)this.getActivity()).getToolbar();
@@ -163,5 +154,18 @@ public class CategoriesFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    private void initializeList() {
+        categoriesList = new ArrayList<>();
+        categoriesList.add(new Category("Charity", R.drawable.charity));
+        categoriesList.add(new Category("Cosmetics", R.drawable.cosmetics));
+        categoriesList.add(new Category("Home Decoration", R.drawable.decoration));
+        categoriesList.add(new Category("Entertainment", R.drawable.entertainment));
+        categoriesList.add(new Category("Fashion", R.drawable.fashion));
+        categoriesList.add(new Category("Fitness", R.drawable.fitness));
+        categoriesList.add(new Category("Food", R.drawable.food));
+        categoriesList.add(new Category("Pets", R.drawable.pets));
+        categoriesList.add(new Category("Travel", R.drawable.travel));
     }
 }

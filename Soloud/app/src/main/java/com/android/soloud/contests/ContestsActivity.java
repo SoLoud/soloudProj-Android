@@ -1,17 +1,26 @@
 package com.android.soloud.contests;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
@@ -21,6 +30,7 @@ import com.android.soloud.activities.LoginActivity;
 import com.android.soloud.activities.MainActivity;
 import com.android.soloud.apiCalls.ContestsService;
 import com.android.soloud.apiCalls.LoginService;
+import com.android.soloud.models.Category;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.User;
@@ -30,8 +40,14 @@ import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
+import com.github.ksoichiro.android.observablescrollview.ObservableListView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.nineoldandroids.view.ViewHelper;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,20 +60,29 @@ import static com.android.soloud.activities.LoginActivity.FACEBOOK_PROVIDER;
 import static com.android.soloud.activities.MainActivity.CATEGORY_CONTESTS_SN;
 import static com.android.soloud.fragments.CategoriesFragment.CONTEST_NAME;
 
-public class ContestsActivity extends AppCompatActivity {
+public class ContestsActivity extends AppCompatActivity implements ObservableScrollViewCallbacks{
 
     public static final String COMPANY_NAME = "CompanyName";
     public static final String CONTEST = "contest";
     public static final String CURRENT_STATE = "currentState";
     private static final String TAG = "ContestsActivity";
     private Tracker mTracker;
-    private ListView listView;
+    //private ListView listView;
+    ObservableListView listView;
     public static ArrayList<Contest> contestsList;
     private CoordinatorLayout coordinatorLayout;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private int contestsFailureRequestsCounter;
     private CurrentState currentState;
     private String contestName;
+
+    private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
+
+    private View mImageView;
+    private View mOverlayView;
+    private View mListBackgroundView;
+    private TextView mTitleView;
+    private int mActionBarSize;
+    private int mFlexibleSpaceImageHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +92,29 @@ public class ContestsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        listView = (ListView) findViewById(R.id.listView);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.mySecondary);
-        mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
+        mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
+        mActionBarSize = getActionBarHeight();
+        mImageView = findViewById(R.id.image);
+        mOverlayView = findViewById(R.id.overlay);
+        listView = (ObservableListView) findViewById(R.id.list);
+        listView.setScrollViewCallbacks(ContestsActivity.this);
+        View paddingView = new View(this);
+        AbsListView.LayoutParams lp = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
+                mFlexibleSpaceImageHeight);
+        paddingView.setLayoutParams(lp);
 
+        // This is required to disable header's list selector effect
+        paddingView.setClickable(true);
+
+        listView.addHeaderView(paddingView);
+        //setDummyData(listView);
+        mTitleView = (TextView) findViewById(R.id.title);
+        //mTitleView.setText(getTitle());
+        setTitle(null);
+        // mListBackgroundView makes ListView's background except header view.
+        mListBackgroundView = findViewById(R.id.list_background);
+
+        //////////////////////////////////
         if (getIntent() != null) {
             if (getIntent().getStringExtra(CONTEST_NAME) != null){
                 contestName = getIntent().getStringExtra(CONTEST_NAME);
@@ -79,6 +122,7 @@ public class ContestsActivity extends AppCompatActivity {
                     getSupportActionBar().setTitle(contestName);
                 }
             }
+
             if (getIntent().getSerializableExtra(CURRENT_STATE) != null){
                 currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
                 if (currentState != null && !MyStringHelper.isNoE(currentState.getContestCategoryName())){
@@ -86,6 +130,7 @@ public class ContestsActivity extends AppCompatActivity {
                     getSupportActionBar().setTitle(contestName);
                 }
             }
+            mImageView.setBackgroundResource(getImageResourceId(contestName));
         }
 
         contestsFailureRequestsCounter = 0;
@@ -102,8 +147,7 @@ public class ContestsActivity extends AppCompatActivity {
             if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
                 getContestsFromBackend();
             } else {
-                //displayNoConnectionMessage(networkStatusHelper);
-                displayNoConnectionMessage();
+                //displayNoConnectionMessage();
             }
         }
 
@@ -111,13 +155,40 @@ public class ContestsActivity extends AppCompatActivity {
         googleAnalyticsTrack();
     }
 
+
+    private int getImageResourceId(String categoryName){
+        switch (categoryName){
+            case "Charity":
+                return R.drawable.charity;
+            case "Cosmetics":
+                return R.drawable.cosmetics;
+            case "Home Decoration":
+                return R.drawable.decoration;
+            case "Entertainment":
+                return R.drawable.entertainment;
+            case "Fashion":
+                return R.drawable.fashion;
+            case "Fitness":
+                return R.drawable.fitness;
+            case "Food":
+                return R.drawable.food;
+            case "Pets":
+                return R.drawable.pets;
+            case "Travel":
+                return R.drawable.travel;
+            default:
+                return R.drawable.charity;
+        }
+    }
+
+
     private void googleAnalyticsTrack() {
         // Obtain the shared Tracker instance.
         SoLoudApplication application = (SoLoudApplication) getApplication();
         mTracker = application.getDefaultTracker();
     }
 
-    private void displayNoConnectionMessage() {
+    /*private void displayNoConnectionMessage() {
         Snackbar.make(coordinatorLayout, getResources().
                 getString(R.string.error_no_internet_connection), Snackbar.LENGTH_LONG).
                 setAction(R.string.retry, new View.OnClickListener() {
@@ -131,6 +202,16 @@ public class ContestsActivity extends AppCompatActivity {
                         }
                     }
                 }).setActionTextColor(ContextCompat.getColor(this, R.color.mySecondary)).show();
+    }*/
+
+    private int getActionBarHeight(){
+        // Calculate ActionBar height
+        TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            return TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+        }
+        return 0;
     }
 
     private void initializeListView() {
@@ -139,7 +220,7 @@ public class ContestsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Contest contest = contestsList.get(position);
+                Contest contest = contestsList.get(position-1);
 
                 Contest.User user = contest.getmUser();
                 String companyName = user.getmUserName();
@@ -175,7 +256,7 @@ public class ContestsActivity extends AppCompatActivity {
 
     private void getContestsFromBackend() {
 
-        mSwipeRefreshLayout.setRefreshing(true);
+        //mSwipeRefreshLayout.setRefreshing(true);
         // Create a very simple REST adapter which points the API endpoint.
         ContestsService client = ServiceGenerator.createService(ContestsService.class);
 
@@ -187,7 +268,7 @@ public class ContestsActivity extends AppCompatActivity {
             public void onResponse(Call<List<Contest>> call, Response<List<Contest>> response) {
                 if (response.isSuccessful()) {
                     contestsList = (ArrayList<Contest>) response.body();
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    //mSwipeRefreshLayout.setRefreshing(false);
                     initializeListView();
                 } else {
                     // error response, no access to resource?
@@ -215,7 +296,7 @@ public class ContestsActivity extends AppCompatActivity {
                     Call<List<Contest>> newCall = call.clone();
                     newCall.enqueue(this);
                 } else {
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    //mSwipeRefreshLayout.setRefreshing(false);
                     Snackbar.make(coordinatorLayout, R.string.error_requesting_contests, Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -229,8 +310,8 @@ public class ContestsActivity extends AppCompatActivity {
             if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
                 getContestsFromBackend();
             } else {
-                mSwipeRefreshLayout.setRefreshing(false);
-                displayNoConnectionMessage();
+                /*mSwipeRefreshLayout.setRefreshing(false);
+                displayNoConnectionMessage();*/
             }
         }
     };
@@ -253,7 +334,7 @@ public class ContestsActivity extends AppCompatActivity {
                 } else {
                     // error response, no access to resource?
                     //Log.d(TAG, "Backend login error in response: " + response.toString());
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    //mSwipeRefreshLayout.setRefreshing(false);
                     logout();
                 }
             }
@@ -262,7 +343,7 @@ public class ContestsActivity extends AppCompatActivity {
             public void onFailure(Call<User> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 //Log.d(TAG, "Backend login Failure: " + t.getMessage());
-                mSwipeRefreshLayout.setRefreshing(false);
+                //mSwipeRefreshLayout.setRefreshing(false);
                 logout();
             }
         };
@@ -298,4 +379,58 @@ public class ContestsActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    @Override
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+        // Translate overlay and image
+        float flexibleRange = mFlexibleSpaceImageHeight - mActionBarSize;
+        int minOverlayTransitionY = mActionBarSize - mOverlayView.getHeight();
+        ViewHelper.setTranslationY(mOverlayView, ScrollUtils.getFloat(-scrollY, minOverlayTransitionY, 0));
+        ViewHelper.setTranslationY(mImageView, ScrollUtils.getFloat(-scrollY / 2, minOverlayTransitionY, 0));
+
+        // Translate list background
+        ViewHelper.setTranslationY(mListBackgroundView, Math.max(0, -scrollY + mFlexibleSpaceImageHeight));
+
+        // Change alpha of overlay
+        ViewHelper.setAlpha(mOverlayView, ScrollUtils.getFloat((float) scrollY / flexibleRange, 0, 1));
+
+        // Scale title text
+        scaleTitleText(scrollY, flexibleRange);
+    }
+
+    private void scaleTitleText(int scrollY, float flexibleRange) {
+        float scale = 1 + ScrollUtils.getFloat((flexibleRange - scrollY) / flexibleRange, 0, MAX_TEXT_SCALE_DELTA);
+        setPivotXToTitle();
+        ViewHelper.setPivotY(mTitleView, 0);
+        ViewHelper.setScaleX(mTitleView, scale);
+        ViewHelper.setScaleY(mTitleView, scale);
+
+        // Translate title text
+        int maxTitleTranslationY = (int) (mFlexibleSpaceImageHeight - mTitleView.getHeight() * scale);
+        int titleTranslationY = maxTitleTranslationY - scrollY;
+        ViewHelper.setTranslationY(mTitleView, titleTranslationY);
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void setPivotXToTitle() {
+        Configuration config = getResources().getConfiguration();
+        if (Build.VERSION_CODES.JELLY_BEAN_MR1 <= Build.VERSION.SDK_INT
+                && config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+            ViewHelper.setPivotX(mTitleView, findViewById(android.R.id.content).getWidth());
+        } else {
+            ViewHelper.setPivotX(mTitleView, 0);
+        }
+    }
+
+
 }

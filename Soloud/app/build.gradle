@@ -85,6 +85,8 @@ dependencies {
     compile 'joda-time:joda-time:2.9.6'
     compile 'com.android.support:customtabs:24.0.0'
     compile 'com.github.nirhart:parallaxscroll:1.0'
+
+    compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
