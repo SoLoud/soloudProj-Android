@@ -3,7 +3,6 @@ package com.android.soloud.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -19,11 +18,11 @@ import com.android.soloud.fragments.GalleryFragment;
 import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 import com.android.soloud.materialnavigationdrawer.elements.MaterialSection;
 import com.android.soloud.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
+import com.android.soloud.profile.ProfileActivity;
+import com.android.soloud.profile.UserProfileActivity;
 import com.android.soloud.training.TrainingFragment;
 import com.android.soloud.utils.LogoutHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
@@ -63,7 +62,7 @@ public class MainActivity extends MaterialNavigationDrawer{
         profilePicture_IV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });

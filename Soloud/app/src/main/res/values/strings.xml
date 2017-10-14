@@ -152,6 +152,6 @@
     <string name="wizard_1_description">Choose a contest to participate</string>
     <string name="wizard_2_description">Add your photo!</string>
     <string name="wizard_3_description">Add some tags and you are done!</string>
-
+    <string name="profile">Profile</string>
 
 </resources>

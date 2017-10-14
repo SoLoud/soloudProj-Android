@@ -1,4 +1,4 @@
-package com.android.soloud.activities;
+package com.android.soloud.profile;
 
 import android.graphics.Color;
 import android.os.Bundle;

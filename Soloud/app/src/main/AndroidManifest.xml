@@ -103,10 +103,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.HashTagsActivity" />-->
         </activity>
-        <activity android:name=".activities.UserProfileActivity" />
+        <activity android:name=".profile.UserProfileActivity" />
         <activity
             android:name=".wizard.WizardActivity"
             android:theme="@style/AppFullScreenTheme">
+        </activity>
+
+        <activity
+            android:name=".profile.ProfileActivity"
+            android:theme="@style/profileTheme"
+            >
         </activity>
     </application>
 
