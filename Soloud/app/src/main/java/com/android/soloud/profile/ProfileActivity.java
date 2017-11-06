@@ -16,6 +16,7 @@ import com.android.soloud.R;
 import com.android.soloud.activities.MainActivity;
 import com.android.soloud.utils.ConvertUnitsHelper;
 import com.github.ksoichiro.android.observablescrollview.CacheFragmentStatePagerAdapter;
+import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -36,6 +37,7 @@ public class ProfileActivity extends AppCompatActivity implements ObservableScro
     private ViewPager mPager;
     private NavigationAdapter mPagerAdapter;
     private float imageHeight;
+    private static int positionViewPager = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,18 +177,35 @@ public class ProfileActivity extends AppCompatActivity implements ObservableScro
             if (view == null) {
                 continue;
             }
-            ObservableScrollView scrollView = (ObservableScrollView) view.findViewById(R.id.scroll);
-            if (isShown) {
-                // Scroll up
-                if (0 < scrollView.getCurrentScrollY()) {
-                    scrollView.scrollTo(0, 0);
+
+            if (positionViewPager ==0 || positionViewPager >1){
+                ObservableScrollView scrollView = (ObservableScrollView) view.findViewById(R.id.scroll);
+                if (isShown) {
+                    // Scroll up
+                    if (0 < scrollView.getCurrentScrollY()) {
+                        scrollView.scrollTo(0, 0);
+                    }
+                } else {
+                    // Scroll down (to hide padding)
+                    if (scrollView.getCurrentScrollY() < toolbarHeight) {
+                        scrollView.scrollTo(0, toolbarHeight);
+                    }
                 }
-            } else {
-                // Scroll down (to hide padding)
-                if (scrollView.getCurrentScrollY() < toolbarHeight) {
-                    scrollView.scrollTo(0, toolbarHeight);
+            }else{
+                ObservableListView listView = (ObservableListView) view.findViewById(R.id.scroll);
+                if (isShown) {
+                    // Scroll up
+                    if (0 < listView.getCurrentScrollY()) {
+                        listView.setSelection(0);
+                    }
+                } else {
+                    // Scroll down (to hide padding)
+                    if (listView.getCurrentScrollY() < toolbarHeight) {
+                        listView.setSelection(1);
+                    }
                 }
             }
+
         }
     }
 
@@ -240,11 +259,22 @@ public class ProfileActivity extends AppCompatActivity implements ObservableScro
 
         @Override
         protected Fragment createItem(int position) {
-            Fragment f = newFragment();
-            if (0 <= mScrollY) {
-                Bundle args = new Bundle();
-                args.putInt(ViewPagerTabScrollViewFragment.ARG_SCROLL_Y, mScrollY);
-                f.setArguments(args);
+            positionViewPager = position;
+            Fragment f;
+            if (position == 0 || position >1) {
+                f = newFragment();
+                if (0 <= mScrollY) {
+                    Bundle args = new Bundle();
+                    args.putInt(ViewPagerTabScrollViewFragment.ARG_SCROLL_Y, mScrollY);
+                    f.setArguments(args);
+                }
+            }else{
+                f = new ViewPagerTabListViewFragment();
+                if (0 < mScrollY) {
+                    Bundle args = new Bundle();
+                    args.putInt(ViewPagerTabListViewFragment.ARG_INITIAL_POSITION, 1);
+                    f.setArguments(args);
+                }
             }
             return f;
         }
