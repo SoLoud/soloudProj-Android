@@ -3,6 +3,7 @@ package com.android.soloud.activities;
 
 import android.content.Intent;
 
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PorterDuff;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -29,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.soloud.Manifest;
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
@@ -50,8 +53,13 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.places.PlaceManager;
+import com.facebook.places.model.CurrentPlaceRequestParams;
+import com.facebook.places.model.PlaceFields;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.api.Status;
@@ -532,10 +540,11 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     showFullScreenImageDialog();
                     break;
                 case R.id.check_in_RL:
-                    if (autoComplete_LL.getVisibility() == View.GONE){
+                    getCurrentPlace();
+                    /*if (autoComplete_LL.getVisibility() == View.GONE){
                         addLocation_TV.setVisibility(View.GONE);
                         autoComplete_LL.setVisibility(View.VISIBLE);
-                    }
+                    }*/
                     break;
                 default:
                     break;
@@ -593,5 +602,57 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+    private void getCurrentPlace(){
+        CurrentPlaceRequestParams.Builder builder = new CurrentPlaceRequestParams.Builder();
+
+        builder.setMinConfidenceLevel(CurrentPlaceRequestParams.ConfidenceLevel.LOW);
+        builder.setLimit(20);
+        builder.addField(PlaceFields.NAME);
+        builder.addField(PlaceFields.CONFIDENCE_LEVEL);
+        builder.addField(PlaceFields.LOCATION);
+        builder.addField(PlaceFields.COVER);
+
+        CurrentPlaceRequestCallback callback = new CurrentPlaceRequestCallback();
+
+        PlaceManager.newCurrentPlaceRequest(builder.build(), callback);
+    }
+
+    private class CurrentPlaceRequestCallback implements PlaceManager.OnRequestReadyCallback, GraphRequest.Callback {
+
+        @Override
+        public void onRequestReady(GraphRequest graphRequest) {
+            // The place search request is ready to be executed.
+            // You can customize the request here (if needed).
+
+            // Sets the callback, and executes the request.
+            graphRequest.setCallback(this);
+            graphRequest.executeAsync();
+        }
+
+        @Override
+        public void onCompleted(GraphResponse response) {
+            // Event invoked when the place search response is received.
+            // Parse the places from the response object.
+            Log.d(TAG, "onCompleted: " + response.toString());
+        }
+
+        @Override
+        public void onLocationError(PlaceManager.LocationError error) {
+            // Invoked if the Places Graph SDK failed to retrieve
+            // the device location.
+            Log.d(TAG, "onLocationError: " + error.toString());
+        }
+    }
+
+    /*private void requestLocationPermission(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }else{
+            // Write you code here if permission already given.
+        }
+    }*/
 
 }
