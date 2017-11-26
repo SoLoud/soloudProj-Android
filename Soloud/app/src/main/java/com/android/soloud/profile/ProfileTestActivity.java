@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -13,8 +12,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.soloud.R;
+import com.android.soloud.utils.ConvertUnitsHelper;
+import com.android.soloud.utils.SharedPrefsHelper;
 import com.github.ksoichiro.android.observablescrollview.CacheFragmentStatePagerAdapter;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -23,6 +26,11 @@ import com.github.ksoichiro.android.observablescrollview.Scrollable;
 import com.github.ksoichiro.android.observablescrollview.TouchInterceptionFrameLayout;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
+import com.squareup.picasso.Picasso;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 /**
  * Created by f.stamopoulos on 4/11/2017.
@@ -32,23 +40,29 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
 
     private View mToolbarView;
     private TouchInterceptionFrameLayout mInterceptionLayout;
-    private ViewPager mPager;
+    private NonSwipeableViewPager mPager;
     private NavigationAdapter mPagerAdapter;
     private int mSlop;
     private boolean mScrolled;
     private ScrollState mLastScrollState;
+
+    @BindView(R.id.user_IV) ImageView userIV;
+    @BindView(R.id.user_cover_IV) ImageView userCoverIV;
+    @BindView(R.id.user_name_TV) TextView userNameTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_viewpagertab2);
 
+        ButterKnife.bind(this);
+
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         ViewCompat.setElevation(findViewById(R.id.header), getResources().getDimension(R.dimen.toolbar_elevation));
         mToolbarView = findViewById(R.id.toolbar);
         mPagerAdapter = new NavigationAdapter(getSupportFragmentManager());
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = (NonSwipeableViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
         // Padding for ViewPager must be set outside the ViewPager itself
         // because with padding, EdgeEffect of ViewPager become strange.
@@ -65,6 +79,9 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
         mSlop = vc.getScaledTouchSlop();
         mInterceptionLayout = (TouchInterceptionFrameLayout) findViewById(R.id.container);
         mInterceptionLayout.setScrollInterceptionListener(mInterceptionListener);
+
+        loadUserProfileIV();
+        loadUserCover();
     }
 
     protected int getActionBarSize() {
@@ -74,6 +91,8 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
         TypedArray a = obtainStyledAttributes(typedValue.data, textSizeAttr);
         int actionBarSize = a.getDimensionPixelSize(indexOfAttrTextSize, -1);
         a.recycle();
+        // TODO: 26/11/2017 egw to ebala
+        actionBarSize += (int)ConvertUnitsHelper.convertDpToPixel(180, this);
         return actionBarSize;
     }
 
@@ -94,7 +113,7 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
 
             // If interceptionLayout can move, it should intercept.
             // And once it begins to move, horizontal scroll shouldn't work any longer.
-            int toolbarHeight = mToolbarView.getHeight();
+            int toolbarHeight = mToolbarView.getHeight() + (int)ConvertUnitsHelper.convertDpToPixel(180, ProfileTestActivity.this);
             int translationY = (int) ViewHelper.getTranslationY(mInterceptionLayout);
             boolean scrollingUp = 0 < diffY;
             boolean scrollingDown = diffY < 0;
@@ -121,7 +140,7 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
 
         @Override
         public void onMoveMotionEvent(MotionEvent ev, float diffX, float diffY) {
-            float translationY = ScrollUtils.getFloat(ViewHelper.getTranslationY(mInterceptionLayout) + diffY, -mToolbarView.getHeight(), 0);
+            float translationY = ScrollUtils.getFloat(ViewHelper.getTranslationY(mInterceptionLayout) + diffY, -(mToolbarView.getHeight()+ (int)ConvertUnitsHelper.convertDpToPixel(180, ProfileTestActivity.this)), 0);
             ViewHelper.setTranslationY(mInterceptionLayout, translationY);
             if (translationY < 0) {
                 FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mInterceptionLayout.getLayoutParams();
@@ -150,7 +169,7 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
     }
 
     private void adjustToolbar(ScrollState scrollState) {
-        int toolbarHeight = mToolbarView.getHeight();
+        int toolbarHeight = mToolbarView.getHeight() + (int)ConvertUnitsHelper.convertDpToPixel(180, ProfileTestActivity.this);
         final Scrollable scrollable = getCurrentScrollable();
         if (scrollable == null) {
             return;
@@ -184,7 +203,7 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
     }
 
     private boolean toolbarIsHidden() {
-        return ViewHelper.getTranslationY(mInterceptionLayout) == -mToolbarView.getHeight();
+        return ViewHelper.getTranslationY(mInterceptionLayout) == -(mToolbarView.getHeight()+ (int)ConvertUnitsHelper.convertDpToPixel(180, ProfileTestActivity.this));
     }
 
     private void showToolbar() {
@@ -273,4 +292,16 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
 
     }
+
+    private void loadUserProfileIV(){
+        Picasso.with(this).load(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_PROFILE_PICTURE_URL)).placeholder(R.drawable.ic_account_circle_white_24dp).
+                error(R.drawable.ic_account_circle_white_24dp).transform(new CropCircleTransformation()).into(userIV);
+        userNameTV.setText(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_NAME));
+    }
+
+    private void loadUserCover(){
+        Picasso.with(this).load(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_COVER_URL)).fit().
+                error(R.drawable.ic_account_circle_white_24dp).into(userCoverIV);
+    }
+
 }

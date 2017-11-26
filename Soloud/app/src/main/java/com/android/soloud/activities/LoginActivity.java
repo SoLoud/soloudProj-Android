@@ -103,7 +103,7 @@ public class LoginActivity extends Activity {
                 // App code
                 GraphRequest request = getGraphRequestMe(loginResult.getAccessToken());
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, name, email, gender, birthday, picture.type(large)");
+                parameters.putString("fields", "id, name, email, gender, birthday, picture.type(large), cover");
                 request.setParameters(parameters);
                 request.executeAsync();
 
@@ -146,9 +146,11 @@ public class LoginActivity extends Activity {
                                         //String picture = object.getString("picture");
                                         //String birthday = object.getString("birthday"); // 01/31/1980 format
                                         String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                                        String coverUrl = object.getJSONObject("cover").getString("source");
 
                                         SharedPrefsHelper.storeInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
                                         SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
+                                        SharedPrefsHelper.storeInPrefs(LoginActivity.this, coverUrl, SharedPrefsHelper.USER_COVER_URL);
 
                                         progressWheel.setVisibility(View.VISIBLE);
                                         progressWheel.spin();

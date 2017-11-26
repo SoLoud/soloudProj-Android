@@ -27,8 +27,8 @@ public class ViewPagerTabScrollViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_scrollview, container, false);
 
-        LinearLayout paddingView = (LinearLayout) view.findViewById(R.id.paddingView);
-        paddingView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2*getActionBarHeight() + (int)ConvertUnitsHelper.convertDpToPixel(120, getActivity())));
+        /*LinearLayout paddingView = (LinearLayout) view.findViewById(R.id.paddingView);
+        paddingView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2*getActionBarHeight() + (int)ConvertUnitsHelper.convertDpToPixel(120, getActivity())));*/
 
         final ObservableScrollView scrollView = (ObservableScrollView) view.findViewById(R.id.scroll);
         Activity parentActivity = getActivity();

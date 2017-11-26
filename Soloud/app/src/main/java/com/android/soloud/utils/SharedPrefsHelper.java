@@ -16,6 +16,7 @@ public class SharedPrefsHelper {
     public static final String USER_FB_ID = "userid" ;
     public static final String USER_NAME = "username";
     public static final String USER_PROFILE_PICTURE_URL = "userprofilepicture";
+    public static final String USER_COVER_URL = "usercover";
     public static final String SOLOUD_TOKEN = "sltoken";
     public static final String POST_POP_UP_DISPLAYED = "post_pop_up_displayed";
 
