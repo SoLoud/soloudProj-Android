@@ -126,7 +126,7 @@
     <string name="error_no_internet_connection">No internet connection</string>
     <string name="retry">Retry</string>
     <string name="error_login">Could not login to SoLoud</string>
-    <string name="error_requesting_contests">Could not load Contests</string>
+    <string name="error_requesting_contests">Could not load contests</string>
     <string name="error_login_facebook">Facebook login attempt failed</string>
     <string name="cancel_login_facebook">Facebook login attempt canceled</string>
     <string name="please_try_again">Please try again</string>

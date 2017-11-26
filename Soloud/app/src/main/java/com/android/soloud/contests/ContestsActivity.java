@@ -7,9 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -17,9 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.soloud.R;
@@ -30,7 +26,6 @@ import com.android.soloud.activities.LoginActivity;
 import com.android.soloud.activities.MainActivity;
 import com.android.soloud.apiCalls.ContestsService;
 import com.android.soloud.apiCalls.LoginService;
-import com.android.soloud.models.Category;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.User;
@@ -47,11 +42,13 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.nineoldandroids.view.ViewHelper;
-import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -75,6 +72,11 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
     private CurrentState currentState;
     private String contestName;
 
+
+    @BindView(R.id.progress_wheel) ProgressWheel progressWheel;
+
+    @BindView(R.id.offline_IV) ImageView offlineIV;
+
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
 
     private View mImageView;
@@ -88,6 +90,8 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contests);
+
+        ButterKnife.bind(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -144,10 +148,12 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
         } else if (contestsList != null) {
             initializeListView();
         } else {
-            if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
+            if (NetworkStatusHelper.isNetworkAvailable(this)) {
+                progressWheel.setVisibility(View.VISIBLE);
                 getContestsFromBackend();
             } else {
-                //displayNoConnectionMessage();
+                offlineIV.setVisibility(View.VISIBLE);
+                displayFailMessage();
             }
         }
 
@@ -256,7 +262,6 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
 
     private void getContestsFromBackend() {
 
-        //mSwipeRefreshLayout.setRefreshing(true);
         // Create a very simple REST adapter which points the API endpoint.
         ContestsService client = ServiceGenerator.createService(ContestsService.class);
 
@@ -268,17 +273,19 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
             public void onResponse(Call<List<Contest>> call, Response<List<Contest>> response) {
                 if (response.isSuccessful()) {
                     contestsList = (ArrayList<Contest>) response.body();
-                    //mSwipeRefreshLayout.setRefreshing(false);
+                    progressWheel.setVisibility(View.GONE);
                     initializeListView();
                 } else {
                     // error response, no access to resource?
                     if (response.code() == 401){
+                        progressWheel.setVisibility(View.GONE);
                         LogoutHelper logoutHelper = new LogoutHelper(ContestsActivity.this);
                         logoutHelper.logOut();
                     }else{
                         handleResponseFailure(call);
                     }
                 }
+
             }
 
             @Override
@@ -296,25 +303,18 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
                     Call<List<Contest>> newCall = call.clone();
                     newCall.enqueue(this);
                 } else {
-                    //mSwipeRefreshLayout.setRefreshing(false);
-                    Snackbar.make(coordinatorLayout, R.string.error_requesting_contests, Snackbar.LENGTH_LONG).show();
+                    progressWheel.setVisibility(View.GONE);
+                    if (!NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)){
+                        offlineIV.setVisibility(View.VISIBLE);
+                    }
+                    displayFailMessage();
+                    //Snackbar.make(coordinatorLayout, R.string.error_requesting_contests, Snackbar.LENGTH_LONG).show();
                 }
             }
         };
         call.enqueue(contestsCallback);
     }
 
-    private SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            if (NetworkStatusHelper.isNetworkAvailable(ContestsActivity.this)) {
-                getContestsFromBackend();
-            } else {
-                /*mSwipeRefreshLayout.setRefreshing(false);
-                displayNoConnectionMessage();*/
-            }
-        }
-    };
 
     private void loginToBackend(String facebookToken) {
         // Create a very simple REST adapter which points the API endpoint.
@@ -334,16 +334,12 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
                 } else {
                     // error response, no access to resource?
                     //Log.d(TAG, "Backend login error in response: " + response.toString());
-                    //mSwipeRefreshLayout.setRefreshing(false);
                     logout();
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                // something went completely south (like no internet connection)
-                //Log.d(TAG, "Backend login Failure: " + t.getMessage());
-                //mSwipeRefreshLayout.setRefreshing(false);
                 logout();
             }
         };
@@ -431,6 +427,22 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
             ViewHelper.setPivotX(mTitleView, 0);
         }
     }
+
+    private void displayFailMessage(){
+        Snackbar mySnackbar = Snackbar.make(findViewById(R.id.coordinatorLayout),
+                R.string.error_requesting_contests, Snackbar.LENGTH_INDEFINITE);
+        mySnackbar.setAction(R.string.retry, onClickListener);
+        mySnackbar.show();
+    }
+
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            offlineIV.setVisibility(View.GONE);
+            progressWheel.setVisibility(View.VISIBLE);
+            getContestsFromBackend();
+        }
+    };
 
 
 }

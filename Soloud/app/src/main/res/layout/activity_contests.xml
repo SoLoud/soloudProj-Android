@@ -1,4 +1,8 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -6,14 +10,12 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="@dimen/flexible_space_image_height"
-        android:scaleType="centerCrop"
-        />
+        android:scaleType="centerCrop" />
 
     <View
         android:id="@+id/overlay"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/flexible_space_image_height"
-        />
+        android:layout_height="@dimen/flexible_space_image_height" />
 
     <View
         android:id="@+id/list_background"
@@ -49,6 +51,29 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/flexible_space_image_height"
             android:background="@android:color/transparent" />
+
     </LinearLayout>
 
-</FrameLayout>
+    <com.pnikosis.materialishprogress.ProgressWheel
+        android:id="@+id/progress_wheel"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="48dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        wheel:matProg_barColor="@color/colorPrimary"
+        wheel:matProg_barWidth="2dp"
+        wheel:matProg_progressIndeterminate="true" />
+
+    <ImageView
+        android:id="@+id/offline_IV"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="48dp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_cloud_off_black_24dp"
+        tools:visibility="visible" />
+
+</android.support.design.widget.CoordinatorLayout>

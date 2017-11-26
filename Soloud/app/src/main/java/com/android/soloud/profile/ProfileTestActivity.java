@@ -221,9 +221,9 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
      */
     private static class NavigationAdapter extends CacheFragmentStatePagerAdapter {
 
-        private static final String[] TITLES = new String[]{"Applepie", "Butter Cookie", "Cupcake"};
+        private static final String[] TITLES = new String[]{"Profile", "Contests", "Gallery"};
 
-        public NavigationAdapter(FragmentManager fm) {
+        NavigationAdapter(FragmentManager fm) {
             super(fm);
         }
 

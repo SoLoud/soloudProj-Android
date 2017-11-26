@@ -111,9 +111,14 @@
 
         <activity
             android:name=".profile.ProfileActivity"
-            android:theme="@style/profileTheme"
-            >
+            android:theme="@style/profileTheme">
         </activity>
+
+        <activity
+            android:name=".profile.ProfileTestActivity"
+            android:theme="@style/profileTheme">
+        </activity>
+
     </application>
 
 </manifest>
