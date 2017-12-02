@@ -61,7 +61,8 @@ public class CategoryAdapter extends ArrayAdapter {
 
         Picasso.with(mContext).cancelRequest(holder.category_IV);
         Picasso.with(mContext).load(item.getImageResourceId()).
-                transform(new BlurTransformation(mContext, 7)).into(holder.category_IV);
+                transform(new BlurTransformation(mContext, 4)).into(holder.category_IV);
+        //Picasso.with(mContext).load(item.getImageResourceId()).into(holder.category_IV);
 
         return convertView;
     }

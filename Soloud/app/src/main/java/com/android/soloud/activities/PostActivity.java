@@ -2,19 +2,14 @@ package com.android.soloud.activities;
 
 
 import android.content.Intent;
-
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
-
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -31,7 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.soloud.Manifest;
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
@@ -53,19 +47,10 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.places.PlaceManager;
-import com.facebook.places.model.CurrentPlaceRequestParams;
-import com.facebook.places.model.PlaceFields;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -80,9 +65,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.android.soloud.activities.MainActivity.POST_SN;
 import static com.android.soloud.contests.ContestsActivity.CONTEST;
 import static com.android.soloud.contests.ContestsActivity.CURRENT_STATE;
-import static com.android.soloud.activities.MainActivity.POST_SN;
 import static com.android.soloud.utils.MyStringHelper.isNoE;
 import static com.android.soloud.utils.SharedPrefsHelper.POST_POP_UP_DISPLAYED;
 import static com.android.soloud.utils.SharedPrefsHelper.SOLOUD_TOKEN;
@@ -163,7 +148,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         googleAnalyticsTrack();
 
 
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+        /*PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
 
@@ -186,7 +171,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                 // TODO: Handle the error.
                 Log.i(TAG, "An error occurred: " + status);
             }
-        });
+        });*/
     }
 
     private void displayTagsAndDescription() {
@@ -540,7 +525,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
                     showFullScreenImageDialog();
                     break;
                 case R.id.check_in_RL:
-                    getCurrentPlace();
+                    //getCurrentPlace();
                     /*if (autoComplete_LL.getVisibility() == View.GONE){
                         addLocation_TV.setVisibility(View.GONE);
                         autoComplete_LL.setVisibility(View.VISIBLE);
@@ -604,7 +589,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     }
 
 
-    private void getCurrentPlace(){
+/*    private void getCurrentPlace(){
         CurrentPlaceRequestParams.Builder builder = new CurrentPlaceRequestParams.Builder();
 
         builder.setMinConfidenceLevel(CurrentPlaceRequestParams.ConfidenceLevel.LOW);
@@ -644,7 +629,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
             // the device location.
             Log.d(TAG, "onLocationError: " + error.toString());
         }
-    }
+    }*/
 
     /*private void requestLocationPermission(){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

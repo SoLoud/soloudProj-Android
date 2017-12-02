@@ -1,6 +1,5 @@
 package com.android.soloud.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,16 +11,19 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.apiCalls.LoginService;
+import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.models.User;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.android.soloud.wizard.WizardActivity;
@@ -36,6 +38,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,12 +47,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends AppCompatActivity {
 
     public static final String TAG = "LoginActivity";
     private CallbackManager callbackManager;
@@ -58,7 +64,11 @@ public class LoginActivity extends Activity {
     private CoordinatorLayout coordinatorLayout;
     private int loginFailureRequestsCounter;
     private LoginButton loginButton;
-    private com.pnikosis.materialishprogress.ProgressWheel progressWheel;
+    private ProgressWheel progressWheel;
+    @BindView(R.id.background_IV)
+    ImageView backgroundIV;
+    private ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +92,11 @@ public class LoginActivity extends Activity {
             finish();
         }
 
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_login1);
+        ButterKnife.bind(this);
 
+        //int color = ContextCompat.getColor(this, R.color.colorPrimary);
+        Picasso.with(this).load(R.drawable.soloud_login).fit().transform(new BlurTransformation(this, 4)).into(backgroundIV);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         loginButton = (LoginButton)findViewById(R.id.login_button);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
@@ -152,8 +165,9 @@ public class LoginActivity extends Activity {
                                         SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
                                         SharedPrefsHelper.storeInPrefs(LoginActivity.this, coverUrl, SharedPrefsHelper.USER_COVER_URL);
 
-                                        progressWheel.setVisibility(View.VISIBLE);
-                                        progressWheel.spin();
+                                        /*progressWheel.setVisibility(View.VISIBLE);
+                                        progressWheel.spin();*/
+                                        showProgressDialog();
                                         loginToBackend(accessToken.getToken());
 
                                     } catch (JSONException e) {
@@ -216,7 +230,8 @@ public class LoginActivity extends Activity {
                     LoginManager.getInstance().logOut();
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
                     loginButton.setVisibility(View.VISIBLE);
-                    progressWheel.stopSpinning();
+                    //progressWheel.stopSpinning();
+                    progressDialog.dismiss();
               }
             }
         };
@@ -259,6 +274,13 @@ public class LoginActivity extends Activity {
             }
         }
     };
+
+
+    private void showProgressDialog(){
+        progressDialog = new ProgressDialog();
+        progressDialog.setCancelable(false);
+        progressDialog.show(getSupportFragmentManager(), "progressDialog");
+    }
 
 
 

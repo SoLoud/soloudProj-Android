@@ -29,7 +29,7 @@
             android:name=".activities.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/LoginStyle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
