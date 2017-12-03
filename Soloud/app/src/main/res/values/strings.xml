@@ -153,5 +153,60 @@
     <string name="wizard_2_description">Add your photo!</string>
     <string name="wizard_3_description">Add some tags and you are done!</string>
     <string name="profile">Profile</string>
+    <string name="permission_prompt_location">Soloud requires location access to search for nearby places.</string>
+
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+
+    <string name="place_field_about">About</string>
+    <string name="place_field_address">Address</string>
+    <string name="place_field_app_link">App Link</string>
+    <string name="place_field_categories">Categories</string>
+    <string name="place_field_checkins">Checkins</string>
+    <string name="place_field_description">Description</string>
+    <string name="place_field_engagement">Engagement</string>
+    <string name="place_field_hours">Business hours</string>
+    <string name="place_field_link">Link</string>
+    <string name="place_field_parking">Parking</string>
+    <string name="place_field_payment_options">Payment options</string>
+    <string name="place_field_phone">Phone</string>
+    <string name="place_field_price_range">Price range</string>
+    <string name="place_field_rating">Rating</string>
+    <string name="place_field_rating_count">Rating count</string>
+    <string name="place_field_specialties">Specialties</string>
+    <string name="place_field_services">Services</string>
+    <string name="place_field_website">Website</string>
+
+    <string name="location_error_disabled">Location services are disabled. Enable location services to use this application.</string>
+    <string name="location_error_unknown">An error has occurred retrieving the current location.</string>
+
+    <string name="place_info_checkins">%1$d checkins</string>
+    <string name="place_info_is_permanently_closed">Permanently closed</string>
+    <string name="place_info_parking_lot">Parking lot</string>
+    <string name="place_info_parking_street">Street</string>
+    <string name="place_info_parking_valet">Valet</string>
+    <string name="place_info_rating">%1$s stars (%2$d ratings)</string>
+    <string name="place_info_fan_count">%1$d fans</string>
+
+    <string name="place_always_open">This place is open 24H</string>
+    <string name="place_permanently_closed">This place is permanently closed</string>
+
+    <string name="place_app_link">Open this place in Facebook</string>
+
+    <string name="cancelled">Cancelled</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="error">Error</string>
+    <string name="exception">Exception: %1$s</string>
+
+    <string name="permission_prompt_call_phone">This sample app requires permission to place a phone call.</string>
+    <string name="current_place">Current place</string>
+    <string name="add_my_location">Add my location</string>
+    <string name="place_search_hint">Search for nearby places…</string>
 
 </resources>

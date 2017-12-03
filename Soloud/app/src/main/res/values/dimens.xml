@@ -19,7 +19,7 @@
 
     <dimen name="toolbar_elevation">4dp</dimen>
 
-    <dimen name="toolbar_margin_start">72dp</dimen>
+    <!--<dimen name="toolbar_margin_start">72dp</dimen>-->
     <dimen name="flexible_space_height">72dp</dimen>
     <dimen name="flexible_space_image_height">240dp</dimen>
     <dimen name="flexible_space_show_fab_offset">120dp</dimen>
@@ -32,4 +32,20 @@
 
     <dimen name="sliding_slop">32dp</dimen>
     <dimen name="sliding_overlay_blur_size">4dp</dimen>
+
+    <dimen name="cards_margin">16dp</dimen>
+    <dimen name="search_resting_elevation">2dp</dimen>
+    <dimen name="search_scrolling_elevation">16dp</dimen>
+    <dimen name="cardview_padding">10dp</dimen>
+    <dimen name="action_button_margin">24dp</dimen>
+    <dimen name="toolbar_margin_start">16dp</dimen>
+    <dimen name="toolbar_margin_end">64dp</dimen>
+    <dimen name="toolbar_height">192dp</dimen>
+    <dimen name="place_list_margin_top">-16dp</dimen>
+    <dimen name="body_text_size">16sp</dimen>
+    <dimen name="current_place_confidence_text_size">12sp</dimen>
+    <dimen name="place_search_list_header_height">32dp</dimen>
+    <dimen name="place_detail_text_size">18sp</dimen>
+    <dimen name="place_detail_item_margin_vertical">5dp</dimen>
+    <dimen name="action_button_elevation">6dp</dimen>
 </resources>

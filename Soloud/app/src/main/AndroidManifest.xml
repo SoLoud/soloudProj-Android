@@ -97,7 +97,7 @@
                 android:value=".activities.MainActivity" />-->
         </activity>
         <activity
-            android:name=".activities.PostActivity"
+            android:name=".userPost.PostActivity"
             android:label="@string/title_post"
             android:theme="@style/AppTheme">
             <!--<meta-data

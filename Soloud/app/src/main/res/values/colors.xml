@@ -11,4 +11,10 @@
 
     <color name="default_gray">#FDFDFD</color>
     <color name="holo_light_gray">#ff9e9e9e</color>
+
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#303F9F</color>
+    <color name="accent">#FF4081</color>
+    <color name="white">#FFFFFF</color>
+    <color name="dark_text_color">#515151</color>
 </resources>

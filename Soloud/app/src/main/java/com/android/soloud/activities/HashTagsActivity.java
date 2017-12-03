@@ -17,6 +17,7 @@ import com.android.soloud.SoLoudApplication;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.TagClass;
+import com.android.soloud.userPost.PostActivity;
 import com.android.soloud.utils.MyStringHelper;
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
