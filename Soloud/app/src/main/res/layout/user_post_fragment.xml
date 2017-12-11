@@ -7,17 +7,27 @@
     android:layout_height="match_parent"
     tools:context="com.android.soloud.userPost.PostActivity">
 
+
     <RelativeLayout
         android:id="@+id/activity_post"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            android:theme="@style/MyToolbar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            />
 
         <RelativeLayout
             android:id="@+id/image_LL"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:background="#000000"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_below="@+id/toolbar">
 
             <ImageView
                 android:id="@+id/post_photo_IV"

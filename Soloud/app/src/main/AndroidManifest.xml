@@ -99,7 +99,7 @@
         <activity
             android:name=".userPost.PostActivity"
             android:label="@string/title_post"
-            android:theme="@style/AppTheme">
+            android:theme="@style/LoginStyle">
             <!--<meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.HashTagsActivity" />-->

@@ -84,7 +84,7 @@ import static com.android.soloud.utils.SharedPrefsHelper.POST_POP_UP_DISPLAYED;
 import static com.android.soloud.utils.SharedPrefsHelper.SOLOUD_TOKEN;
 
 public class PostActivity extends AppCompatActivity implements UserPostDialog.OnOkPressedListener, LoginFragment.Listener,
-        PlaceSearchFragment.Listener, PlaceInfoFragment.Listener{
+        PlaceSearchFragment.Listener, PlaceInfoFragment.Listener, UserPostFragment.OnLocationPressedListener{
 
     public static final String TAG = "PostActivity";
 
@@ -106,7 +106,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         if (savedInstanceState != null){
@@ -367,6 +367,12 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private boolean hasPermission(String permission) {
         return ActivityCompat.checkSelfPermission(this, permission)
                 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onLocationPressed() {
+        //displayPlaceListFragment();
+        onPlacesButtonClicked();
     }
 
     private enum AuthenticationType {

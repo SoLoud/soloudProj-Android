@@ -1,5 +1,6 @@
 package com.android.soloud.userPost;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -13,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -92,6 +94,13 @@ public class UserPostFragment extends Fragment {
     private CurrentState currentState;
     private Contest contest;
     private ArrayList<String> hashTagsList;
+    private Toolbar toolbar;
+
+    public interface OnLocationPressedListener {
+        void onLocationPressed();
+    }
+
+    private OnLocationPressedListener mListener;
 
 
     public static UserPostFragment newInstance(Contest contest, CurrentState currentState, ArrayList<String> hashTagList) {
@@ -105,6 +114,17 @@ public class UserPostFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mListener = (OnLocationPressedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnLocationPressedListener");
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,6 +156,7 @@ public class UserPostFragment extends Fragment {
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
         checkIn_RL = (RelativeLayout) view.findViewById(R.id.check_in_RL);
         addLocation_TV = (TextView) view.findViewById(R.id.add_location_TV);
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         checkIn_RL.setOnClickListener(onClickListener);
         shareButton.setOnClickListener(onClickListener);
         rotate_Btn.setOnClickListener(onClickListener);
@@ -151,6 +172,9 @@ public class UserPostFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+
+        toolbar.setTitle("Post preview");
 
         displayTagsAndDescription();
         displayUserPhoto();
@@ -183,7 +207,7 @@ public class UserPostFragment extends Fragment {
                     showFullScreenImageDialog();
                     break;
                 case R.id.check_in_RL:
-                    //onPlacesButtonClicked();
+                    mListener.onLocationPressed();
                     break;
                 default:
                     break;
