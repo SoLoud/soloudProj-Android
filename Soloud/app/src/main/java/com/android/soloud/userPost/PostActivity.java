@@ -1,46 +1,24 @@
 package com.android.soloud.userPost;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.android.soloud.R;
-import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
 import com.android.soloud.activities.HashTagsActivity;
-import com.android.soloud.activities.LoginActivity;
-import com.android.soloud.apiCalls.LoginService;
-import com.android.soloud.apiCalls.PostUserPhoto;
-import com.android.soloud.contests.ContestsActivity;
-import com.android.soloud.dialogs.ImagePreviewDialog;
-import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.dialogs.UserPostDialog;
 import com.android.soloud.facebookPlaces.fragments.LoginFragment;
 import com.android.soloud.facebookPlaces.fragments.PlaceInfoFragment;
@@ -48,40 +26,16 @@ import com.android.soloud.facebookPlaces.fragments.PlaceSearchFragment;
 import com.android.soloud.facebookPlaces.model.Place;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
-import com.android.soloud.models.User;
-import com.android.soloud.utils.ImageHelper;
-import com.android.soloud.utils.LogoutHelper;
-import com.android.soloud.utils.NetworkStatusHelper;
-import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.android.soloud.activities.MainActivity.POST_SN;
 import static com.android.soloud.contests.ContestsActivity.CONTEST;
 import static com.android.soloud.contests.ContestsActivity.CURRENT_STATE;
-import static com.android.soloud.utils.MyStringHelper.isNoE;
-import static com.android.soloud.utils.SharedPrefsHelper.POST_POP_UP_DISPLAYED;
-import static com.android.soloud.utils.SharedPrefsHelper.SOLOUD_TOKEN;
 
 public class PostActivity extends AppCompatActivity implements UserPostDialog.OnOkPressedListener, LoginFragment.Listener,
         PlaceSearchFragment.Listener, PlaceInfoFragment.Listener, UserPostFragment.OnLocationPressedListener{
@@ -115,7 +69,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
             /*displayTagsAndDescription();
             displayUserPhoto();*/
-            displayUserPostFragment(contest, currentState, null);
+            displayUserPostFragment(contest, currentState, null ,null);
         }
 
         if(getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null &&
@@ -126,7 +80,7 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
             /*displayTagsAndDescription();
             displayUserPhoto();*/
-            displayUserPostFragment(contest, currentState, getIntent().getStringArrayListExtra("hashTagsList"));
+            displayUserPostFragment(contest, currentState, getIntent().getStringArrayListExtra("hashTagsList"), null);
         }
 
         googleAnalyticsTrack();
@@ -134,10 +88,10 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     }
 
 
-    private void displayUserPostFragment(Contest contest, CurrentState currentState, ArrayList<String> hasTagsList) {
+    private void displayUserPostFragment(Contest contest, CurrentState currentState, ArrayList<String> hasTagsList, Place selectedPlace) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.fragment_placeholder, UserPostFragment.newInstance(contest, currentState, hasTagsList)); // newInstance() is a static factory method.
+        transaction.replace(R.id.fragment_placeholder, UserPostFragment.newInstance(contest, currentState, hasTagsList, selectedPlace)); // newInstance() is a static factory method.
         transaction.commit();
     }
 
@@ -206,9 +160,12 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     protected void onResume() {
         super.onResume();
 
+        locationStatusCheck();
+
         Log.i(TAG, "Setting screen name: " + POST_SN);
         mTracker.setScreenName("Screen: " + POST_SN);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
     }
 
 
@@ -350,7 +307,9 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
     @Override
     public void onPlaceSelected(Place place) {
-        displayPlaceInfoFragment(place);
+        // TODO: 17/12/2017 Na perasw to selected place sto User Post Fragment
+        //displayPlaceInfoFragment(place);
+        displayUserPostFragment(contest, currentState, getIntent().getStringArrayListExtra("hashTagsList"), place);
     }
 
     @Override
@@ -384,6 +343,33 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    public void locationStatusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            buildAlertMessageNoGps();
+
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 
 }

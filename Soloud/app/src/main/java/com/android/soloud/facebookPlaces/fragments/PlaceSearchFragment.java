@@ -51,6 +51,7 @@ import com.android.soloud.facebookPlaces.model.Place;
 import com.android.soloud.facebookPlaces.model.PlaceTextUtils;
 import com.facebook.GraphResponse;
 import com.facebook.places.PlaceManager;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -60,6 +61,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,12 +82,12 @@ public class PlaceSearchFragment extends Fragment implements
     private static final int REQUEST_CODE_GET_CURRENT_PLACE = 1;
 
     private Listener listener;
-    private ProgressBar progressBar;
+    private ProgressWheel progressBar;
     private RecyclerView recyclerView;
     private PlaceListAdapter placeListAdapter;
     private TextView currentPlaceNameTextView;
     private TextView currentPlaceAddressTextView;
-    private CardView searchCardView;
+    //private CardView searchCardView;
     private CardView currentPlaceCardView;
     private EditText searchEditText;
     private FloatingActionButton actionButton;
@@ -133,7 +135,7 @@ public class PlaceSearchFragment extends Fragment implements
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        progressBar = (ProgressBar) view.findViewById(R.id.place_search_progressbar);
+        progressBar = (ProgressWheel) view.findViewById(R.id.place_search_progressbar);
         recyclerView = (RecyclerView) view.findViewById(R.id.place_search_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -155,7 +157,7 @@ public class PlaceSearchFragment extends Fragment implements
 
         currentPlaceNameTextView = (TextView) view.findViewById(R.id.current_place_name);
         currentPlaceAddressTextView = (TextView) view.findViewById(R.id.current_place_address);
-        searchCardView = (CardView) view.findViewById(R.id.place_search_cardview);
+        //searchCardView = (CardView) view.findViewById(R.id.place_search_cardview);
         searchEditText = (EditText) view.findViewById(R.id.place_search_edittext);
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -198,15 +200,22 @@ public class PlaceSearchFragment extends Fragment implements
                     elevation = getResources().getDimension(R.dimen.search_resting_elevation);
                 }
                 ViewCompat.setElevation(currentPlaceCardView, elevation);
-                ViewCompat.setElevation(searchCardView, elevation);
+                //ViewCompat.setElevation(searchCardView, elevation);
             }
         });
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        searchPlace(null);
     }
 
     public void onDestroyView() {
         recyclerView = null;
         searchEditText = null;
-        searchCardView = null;
+        //searchCardView = null;
         actionButton = null;
         progressBar = null;
         mapFragment = null;
@@ -397,8 +406,10 @@ public class PlaceSearchFragment extends Fragment implements
             if (resultCode == Activity.RESULT_OK) {
                 Place place = (Place) data.getParcelableExtra(
                         CurrentPlaceDialogFragment.EXTRA_CURRENT_PLACE);
-                onCurrentPlaceSelected(place);
+                // TODO: 17/12/2017 Redirect user to User Post Fragment
+                listener.onPlaceSelected(place);
             }
         }
     }
+
 }

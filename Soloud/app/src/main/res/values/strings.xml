@@ -146,7 +146,7 @@
     <string name="training_title_story">Put a story behind the image</string>
     <string name="training_narration_1">Narration 1</string>
     <string name="training_narration_2">Narration 2</string>
-    <string name="add_your_location">Add your location</string>
+    <string name="check_in">Check In</string>
 
     <string name="wizard_0_description">Pick a contest category</string>
     <string name="wizard_1_description">Choose a contest to participate</string>
@@ -207,6 +207,6 @@
     <string name="permission_prompt_call_phone">This sample app requires permission to place a phone call.</string>
     <string name="current_place">Current place</string>
     <string name="add_my_location">Add my location</string>
-    <string name="place_search_hint">Search for nearby places…</string>
+    <string name="place_search_hint">Search for nearby places</string>
 
 </resources>

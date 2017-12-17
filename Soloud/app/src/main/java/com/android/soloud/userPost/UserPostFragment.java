@@ -36,6 +36,7 @@ import com.android.soloud.contests.ContestsActivity;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.dialogs.UserPostDialog;
+import com.android.soloud.facebookPlaces.model.Place;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.User;
@@ -50,6 +51,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.places.Places;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,7 +84,6 @@ public class UserPostFragment extends Fragment {
     private Bitmap orientatedImage;
     private TextView post_info_TV;
     private String tagsWithoutHashString;
-    //private LinearLayout autoComplete_LL;
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout checkIn_RL;
     private TextView addLocation_TV;
@@ -95,6 +96,7 @@ public class UserPostFragment extends Fragment {
     private Contest contest;
     private ArrayList<String> hashTagsList;
     private Toolbar toolbar;
+    private Place mPlace;
 
     public interface OnLocationPressedListener {
         void onLocationPressed();
@@ -103,12 +105,13 @@ public class UserPostFragment extends Fragment {
     private OnLocationPressedListener mListener;
 
 
-    public static UserPostFragment newInstance(Contest contest, CurrentState currentState, ArrayList<String> hashTagList) {
+    public static UserPostFragment newInstance(Contest contest, CurrentState currentState, ArrayList<String> hashTagList, Place selectedPlace) {
 
         Bundle args = new Bundle();
         args.putSerializable(ContestsActivity.CONTEST, contest);
         args.putSerializable(ContestsActivity.CURRENT_STATE, currentState);
         args.putStringArrayList("hashTagsList", hashTagList);
+        args.putParcelable("selectedPlace", selectedPlace);
         UserPostFragment fragment = new UserPostFragment();
         fragment.setArguments(args);
         return fragment;
@@ -134,6 +137,7 @@ public class UserPostFragment extends Fragment {
         contest = (Contest) getArguments().getSerializable(ContestsActivity.CONTEST);
         hashTagsList = getArguments().getStringArrayList("hashTagsList");
         postText = "";
+        mPlace = getArguments().getParcelable("selectedPlace");
     }
 
 
@@ -161,8 +165,6 @@ public class UserPostFragment extends Fragment {
         shareButton.setOnClickListener(onClickListener);
         rotate_Btn.setOnClickListener(onClickListener);
         photo_IV.setOnClickListener(onClickListener);
-        ImageView place_IV = (ImageView) view.findViewById(R.id.place_IV);
-        place_IV.setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP );
 
         loginFailureRequestsCounter =0;
         postFailureRequestsCounter = 0;
@@ -178,6 +180,11 @@ public class UserPostFragment extends Fragment {
 
         displayTagsAndDescription();
         displayUserPhoto();
+
+        if (mPlace != null) {
+            addLocation_TV.setText(mPlace.get(Place.NAME));
+        }
+
 
     }
 
