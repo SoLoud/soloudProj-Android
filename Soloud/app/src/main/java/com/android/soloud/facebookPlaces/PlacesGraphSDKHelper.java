@@ -158,7 +158,7 @@ public class PlacesGraphSDKHelper {
      * @param listener Invoked when the place search response is received,
      *                 and when the place search request fails.
      */
-    public static void searchPlace(String searchQuery, PlaceSearchRequestListener listener) {
+    public static void searchPlace(String searchQuery, PlaceSearchRequestListener listener, int distance) {
 
         // Creates the place search request builder.
         PlaceSearchRequestParams.Builder builder = new PlaceSearchRequestParams.Builder();
@@ -166,9 +166,9 @@ public class PlacesGraphSDKHelper {
         // then places of importance within the maximum distance radius will be returned.
         builder.setSearchText(searchQuery);
         // The maximum search radius in meters.
-        builder.setDistance(1000);
+        builder.setDistance(distance);
         // The maximum number of places to return.
-        builder.setLimit(10);
+        builder.setLimit(20);
         // The place fields to be returned.
         builder.addField(Place.NAME);
         builder.addField(Place.LOCATION);

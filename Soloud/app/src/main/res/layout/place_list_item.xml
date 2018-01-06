@@ -15,8 +15,8 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/dark_text_color"
+        android:textSize="17sp"
+        android:textColor="@android:color/black"
         tools:text="Veso Mare"/>
 
     <TextView
@@ -26,8 +26,7 @@
         android:layout_below="@+id/place_name"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="@color/dark_text_color"
-        android:textSize="@dimen/body_text_size"
+        android:textSize="15sp"
         tools:text="Ethniki Odos Patron Pyrgou"/>
 
 </RelativeLayout>

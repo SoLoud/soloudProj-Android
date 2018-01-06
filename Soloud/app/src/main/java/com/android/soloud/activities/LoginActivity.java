@@ -182,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabsIntent = builder.build();
         builder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        builder.setStartAnimations(this , R.anim.slide_in_right, R.anim.slide_out_left);
+        builder.setStartAnimations(this , R.anim.slide_in_from_right, R.anim.slide_out_to_the_left);
         builder.setExitAnimations(this, R.anim.slide_in_left, R.anim.slide_out_right);
         customTabsIntent.launchUrl(this, Uri.parse(url));
     }

@@ -193,11 +193,16 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(PostActivity.this, HashTagsActivity.class);
-        intent.putExtra(CONTEST, contest);
-        intent.putExtra(CURRENT_STATE, currentState);
-        startActivity(intent);
-        finish();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        }else {
+            Intent intent = new Intent(PostActivity.this, HashTagsActivity.class);
+            intent.putExtra(CONTEST, contest);
+            intent.putExtra(CURRENT_STATE, currentState);
+            startActivity(intent);
+            finish();
+        }
     }
 
 
@@ -249,7 +254,9 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     private void displayPlaceListFragment() {
         PlaceSearchFragment placeListFragment = PlaceSearchFragment.newInstance();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_the_left);
         transaction.replace(R.id.fragment_placeholder, placeListFragment);
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 
@@ -309,6 +316,10 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
     public void onPlaceSelected(Place place) {
         // TODO: 17/12/2017 Na perasw to selected place sto User Post Fragment
         //displayPlaceInfoFragment(place);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        }
         displayUserPostFragment(contest, currentState, getIntent().getStringArrayListExtra("hashTagsList"), place);
     }
 
@@ -371,5 +382,8 @@ public class PostActivity extends AppCompatActivity implements UserPostDialog.On
         final AlertDialog alert = builder.create();
         alert.show();
     }
+
+
+
 
 }

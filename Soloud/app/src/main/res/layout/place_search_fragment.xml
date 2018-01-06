@@ -24,39 +24,45 @@
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/default_gray">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_height="?attr/actionBarSize"
+    <include android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:theme="@style/MyToolbar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        />
+        android:layout_height="wrap_content"
+        layout="@layout/toolbar_layout"/>
 
     <FrameLayout
         android:id="@+id/place_search_map_placeholder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-
         <EditText
             android:id="@+id/place_search_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/place_search_hint"
+            android:hint="@string/find_location_hint"
             android:maxLines="1"
             android:background="@android:color/transparent"
             android:inputType="text"
             android:imeOptions="actionSearch"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="4dp"
             android:layout_below="@id/toolbar"
             android:drawableLeft="@drawable/ic_search_black_24dp"
             android:drawableStart="@drawable/ic_search_black_24dp"
             android:drawablePadding="8dp"/>
+
+    <View
+        android:id="@+id/row"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/accent"
+        android:layout_below="@id/place_search_edittext"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"/>
 
     <android.support.v7.widget.CardView
         android:id="@+id/current_place_cardview"
@@ -66,7 +72,8 @@
         android:layout_marginLeft="@dimen/cards_margin"
         android:layout_marginRight="@dimen/cards_margin"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground">
+        android:foreground="?attr/selectableItemBackground"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -105,9 +112,8 @@
         android:id="@+id/place_search_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/current_place_cardview"
-        android:layout_marginTop="@dimen/place_list_margin_top"
-        android:overScrollMode="never"/>
+        android:layout_below="@id/row"
+        android:overScrollMode="never" />
 
     <android.support.design.widget.FloatingActionButton
         xmlns:app="http://schemas.android.com/apk/res-auto"

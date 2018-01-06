@@ -30,9 +30,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,6 +98,7 @@ public class PlaceSearchFragment extends Fragment implements
     private State state = State.LIST;
 
     private List<Place> placesToDisplay = new ArrayList<>(0);
+    private Toolbar toolbar;
 
     public enum State {
         LIST,
@@ -135,6 +138,8 @@ public class PlaceSearchFragment extends Fragment implements
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.add_location);
         progressBar = (ProgressWheel) view.findViewById(R.id.place_search_progressbar);
         recyclerView = (RecyclerView) view.findViewById(R.id.place_search_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -168,7 +173,7 @@ public class PlaceSearchFragment extends Fragment implements
                     InputMethodManager imm = (InputMethodManager) getActivity()
                             .getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
-                    searchPlace(searchEditText.getText().toString());
+                    searchPlace(searchEditText.getText().toString(), 10000000);
                 }
                 return true;
             }
@@ -209,7 +214,10 @@ public class PlaceSearchFragment extends Fragment implements
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        searchPlace(null);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        searchPlace(null, 1000);
     }
 
     public void onDestroyView() {
@@ -227,9 +235,9 @@ public class PlaceSearchFragment extends Fragment implements
         progressBar.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private void searchPlace(String searchQuery) {
+    private void searchPlace(String searchQuery, int distance) {
         setLoading(true);
-        PlacesGraphSDKHelper.searchPlace(searchQuery, this);
+        PlacesGraphSDKHelper.searchPlace(searchQuery, this, distance);
     }
 
     private void onActionButtonClicked() {
@@ -411,5 +419,6 @@ public class PlaceSearchFragment extends Fragment implements
             }
         }
     }
+
 
 }

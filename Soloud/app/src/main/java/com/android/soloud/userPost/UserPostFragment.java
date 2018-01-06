@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,10 +13,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -31,7 +32,6 @@ import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.activities.LoginActivity;
 import com.android.soloud.apiCalls.LoginService;
-import com.android.soloud.apiCalls.PostUserPhoto;
 import com.android.soloud.contests.ContestsActivity;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.ProgressDialog;
@@ -51,7 +51,6 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.places.Places;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -176,7 +175,9 @@ public class UserPostFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
 
-        toolbar.setTitle("Post preview");
+        toolbar.setTitle(R.string.post_preview);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         displayTagsAndDescription();
         displayUserPhoto();
@@ -556,5 +557,18 @@ public class UserPostFragment extends Fragment {
 
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
         Log.d("UserPostFragment", "onActivityResult: " + data.toString());
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Log.d("UserPostFragment", "home pressed");
+                return true;
+            default:
+                Log.d("UserPostFragment", "default");
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

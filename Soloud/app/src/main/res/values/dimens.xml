@@ -44,7 +44,7 @@
     <dimen name="place_list_margin_top">-16dp</dimen>
     <dimen name="body_text_size">16sp</dimen>
     <dimen name="current_place_confidence_text_size">12sp</dimen>
-    <dimen name="place_search_list_header_height">32dp</dimen>
+    <dimen name="place_search_list_header_height">16dp</dimen>
     <dimen name="place_detail_text_size">18sp</dimen>
     <dimen name="place_detail_item_margin_vertical">5dp</dimen>
     <dimen name="action_button_elevation">6dp</dimen>

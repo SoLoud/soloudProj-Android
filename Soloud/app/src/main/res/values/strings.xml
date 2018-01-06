@@ -207,6 +207,8 @@
     <string name="permission_prompt_call_phone">This sample app requires permission to place a phone call.</string>
     <string name="current_place">Current place</string>
     <string name="add_my_location">Add my location</string>
-    <string name="place_search_hint">Search for nearby places</string>
+    <string name="find_location_hint">Find a location</string>
+    <string name="add_location">Add Location</string>
+    <string name="post_preview">Post preview</string>
 
 </resources>

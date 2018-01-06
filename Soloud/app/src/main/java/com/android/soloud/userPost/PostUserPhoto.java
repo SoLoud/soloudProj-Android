@@ -1,4 +1,4 @@
-package com.android.soloud.apiCalls;
+package com.android.soloud.userPost;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

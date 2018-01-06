@@ -13,13 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_height="?attr/actionBarSize"
+        <include android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:theme="@style/MyToolbar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            />
+            android:layout_height="wrap_content"
+            layout="@layout/toolbar_layout"/>
 
         <RelativeLayout
             android:id="@+id/image_LL"
