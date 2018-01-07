@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
 
     You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
@@ -18,51 +17,64 @@
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_gray">
 
-    <include android:id="@+id/toolbar"
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/toolbar_layout"/>
+        android:layout_height="wrap_content" />
 
     <FrameLayout
         android:id="@+id/place_search_map_placeholder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
-        <EditText
-            android:id="@+id/place_search_edittext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/find_location_hint"
-            android:maxLines="1"
-            android:background="@android:color/transparent"
-            android:inputType="text"
-            android:imeOptions="actionSearch"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="4dp"
-            android:layout_below="@id/toolbar"
-            android:drawableLeft="@drawable/ic_search_black_24dp"
-            android:drawableStart="@drawable/ic_search_black_24dp"
-            android:drawablePadding="8dp"/>
-
-    <View
-        android:id="@+id/row"
+    <!--<EditText
+        android:id="@+id/place_search_edittext"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/accent"
-        android:layout_below="@id/place_search_edittext"
+        android:layout_height="wrap_content"
+        android:hint="@string/find_location_hint"
+        android:maxLines="1"
+        android:background="@android:color/transparent"
+        android:inputType="text"
+        android:imeOptions="actionSearch"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="4dp"
+        android:layout_below="@id/toolbar"
+        android:drawableLeft="@drawable/ic_search_black_24dp"
+        android:drawableStart="@drawable/ic_search_black_24dp"
+        android:drawablePadding="8dp"/>-->
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/place_search_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"/>
+        android:layout_marginRight="16dp"
+        android:drawableLeft="@drawable/ic_search_black_24dp"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/ic_search_black_24dp"
+        android:hint="@string/find_location_hint"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingTop="16dp"
+        android:textCursorDrawable="@drawable/text_cursor_red"
+        android:textSize="15sp"
+        app:met_clearButton="true"
+        app:met_floatingLabel="none"
+        app:met_primaryColor="@color/accent" />
+
 
     <android.support.v7.widget.CardView
         android:id="@+id/current_place_cardview"
@@ -78,8 +90,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/cardview_padding"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/cardview_padding">
 
             <TextView
                 android:id="@+id/current_place_title"
@@ -87,7 +99,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/add_my_location"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textColor="@color/dark_text_color"/>
+                android:textColor="@color/dark_text_color" />
+
             <TextView
                 android:id="@+id/current_place_name"
                 android:layout_width="match_parent"
@@ -96,14 +109,15 @@
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textColor="@color/dark_text_color"
-                android:visibility="gone"/>
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/current_place_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textSize="@dimen/body_text_size"
-                android:visibility="gone"/>
+                android:visibility="gone" />
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
@@ -112,11 +126,10 @@
         android:id="@+id/place_search_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/row"
+        android:layout_below="@id/place_search_edittext"
         android:overScrollMode="never" />
 
-    <android.support.design.widget.FloatingActionButton
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.design.widget.FloatingActionButton xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/place_search_toggle_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -124,11 +137,11 @@
         android:layout_alignParentRight="true"
         android:layout_margin="@dimen/action_button_margin"
         android:src="@android:drawable/ic_dialog_map"
+        android:visibility="gone"
         app:backgroundTint="@color/primary"
         app:borderWidth="0dp"
         app:elevation="@dimen/action_button_elevation"
-        app:fabSize="normal"
-        android:visibility="gone"/>
+        app:fabSize="normal" />
 
 
     <com.pnikosis.materialishprogress.ProgressWheel
@@ -136,8 +149,8 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_above="@id/terms_and_policy_TV"
-        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
         android:visibility="gone"
         tools:visibility="visible"
         wheel:matProg_barColor="@color/colorPrimary"

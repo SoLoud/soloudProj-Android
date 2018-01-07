@@ -37,11 +37,13 @@ import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.dialogs.UserPostDialog;
 import com.android.soloud.facebookPlaces.model.Place;
+import com.android.soloud.facebookPlaces.model.PlaceTextUtils;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.User;
 import com.android.soloud.utils.ImageHelper;
 import com.android.soloud.utils.LogoutHelper;
+import com.android.soloud.utils.MyStringHelper;
 import com.android.soloud.utils.NetworkStatusHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.AccessToken;
@@ -57,6 +59,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -86,6 +91,10 @@ public class UserPostFragment extends Fragment {
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout checkIn_RL;
     private TextView addLocation_TV;
+
+    @BindView(R.id.address_TV) TextView addressTV;
+    @BindView(R.id.clearIV) ImageView clearIV;
+
     private CallbackManager mCallbackManager;
     private String postText;
 
@@ -143,8 +152,9 @@ public class UserPostFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //return super.onCreateView(inflater, container, savedInstanceState);
-        return inflater.inflate(R.layout.user_post_fragment, container, false);
+        View view = inflater.inflate(R.layout.user_post_fragment, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
 
@@ -184,8 +194,18 @@ public class UserPostFragment extends Fragment {
 
         if (mPlace != null) {
             addLocation_TV.setText(mPlace.get(Place.NAME));
+            String address = PlaceTextUtils.getAddress(mPlace);
+            if (!MyStringHelper.isNoE(address)) {
+                addressTV.setVisibility(View.VISIBLE);
+                addressTV.setText(PlaceTextUtils.getAddress(mPlace));
+                clearIV.setVisibility(View.VISIBLE);
+            } else {
+                addressTV.setVisibility(View.GONE);
+            }
+        } else {
+            addressTV.setVisibility(View.GONE);
+            clearIV.setVisibility(View.GONE);
         }
-
 
     }
 
@@ -571,4 +591,13 @@ public class UserPostFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+    @OnClick(R.id.clearIV)
+    public void onClearPressed() {
+        addLocation_TV.setText(R.string.check_in);
+        addressTV.setVisibility(View.GONE);
+        clearIV.setVisibility(View.GONE);
+    }
+
 }
