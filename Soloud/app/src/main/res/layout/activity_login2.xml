@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.LoginActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/mySecondary">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/background_IV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:layout_gravity="top"
+                android:src="@drawable/soloud_login" />
+
+            <ImageView
+                android:id="@+id/soloud_logo"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="48dp"
+                android:background="@drawable/ic_launcher1"
+                />
+
+            <RelativeLayout
+                android:id="@+id/card_RL"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/rounded_upper_corners">
+
+                <TextView
+                    android:id="@+id/soloud_TV"
+                    android:layout_width="200dp"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="24dp"
+                    android:text="SoLoud"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="36sp"
+                    />
+
+                <TextView
+                    android:id="@+id/promo_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/soloud_TV"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="@string/promo_text"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+
+
+                <TextView
+                    android:id="@+id/terms_and_policy_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"
+                    tools:text="@string/terms_and_privacy_policy" />
+
+                <com.facebook.login.widget.LoginButton
+                    android:id="@+id/login_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/terms_and_policy_TV"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="36dp" />
+
+            </RelativeLayout>
+
+        </FrameLayout>
+
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:id="@+id/progress_wheel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            wheel:matProg_barColor="@android:color/white"
+            wheel:matProg_barWidth="2dp"
+            wheel:matProg_progressIndeterminate="true" />
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

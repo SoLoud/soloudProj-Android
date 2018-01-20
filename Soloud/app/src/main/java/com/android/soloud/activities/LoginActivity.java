@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
@@ -17,6 +19,8 @@ import android.text.Spanned;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -68,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.background_IV)
     ImageView backgroundIV;
     private ProgressDialog progressDialog;
+    @BindView(R.id.soloud_TV) TextView soloudTV;
 
 
     @Override
@@ -92,11 +97,18 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
 
-        setContentView(R.layout.activity_login1);
+        setContentView(R.layout.activity_login2);
         ButterKnife.bind(this);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow(); // in Activity's onCreate() for instance
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+
+        Typeface font=Typeface.createFromAsset(getAssets(), "fonts/Lobster.otf");
+        soloudTV.setTypeface(font);
         //int color = ContextCompat.getColor(this, R.color.colorPrimary);
-        Picasso.with(this).load(R.drawable.soloud_login).fit().transform(new BlurTransformation(this, 4)).into(backgroundIV);
+        //Picasso.with(this).load(R.drawable.soloud_login).fit().transform(new BlurTransformation(this, 4)).into(backgroundIV);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         loginButton = (LoginButton)findViewById(R.id.login_button);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
