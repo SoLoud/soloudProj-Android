@@ -68,7 +68,7 @@ public class WizardActivity extends AppCompatActivity {
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
 
-        public MyPagerAdapter(FragmentManager fm) {
+        MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

@@ -398,10 +398,11 @@ public class UserPostFragment extends Fragment {
         MultipartBody.Part body = MultipartBody.Part.createFormData("upload", imageFile.getName(), reqFile);
         RequestBody desc = RequestBody.create(MediaType.parse("text/plain"), description);
         RequestBody contestId = RequestBody.create(MediaType.parse("text/plain"), contest.getmId());
+        RequestBody placeId = RequestBody.create(MediaType.parse("text/plain"), mPlace.get(Place.ID));
         RequestBody hashTags = RequestBody.create(MediaType.parse("text/plain"), tagsWithoutHashString);
 
         String soLoudToken = "Bearer " + SharedPrefsHelper.getFromPrefs(getActivity(), SOLOUD_TOKEN);
-        Call<ResponseBody> request = service.postImage(soLoudToken, body, desc, contestId, hashTags);
+        Call<ResponseBody> request = service.postImage(soLoudToken, body, desc, contestId, hashTags, placeId);
         Callback<ResponseBody> postImageCallback = new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

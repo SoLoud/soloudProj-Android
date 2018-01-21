@@ -1,6 +1,7 @@
 package com.android.soloud.wizard;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.activities.MainActivity;
+import com.android.soloud.utils.SharedPrefsHelper;
 import com.github.clans.fab.FloatingActionButton;
 
 /**
@@ -86,6 +88,8 @@ public class SlideFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPrefsHelper.storeBooleanInPrefs(getActivity(), true, SharedPrefsHelper.WIZARD_DISPLAYED);
+
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
                 getActivity().finish();

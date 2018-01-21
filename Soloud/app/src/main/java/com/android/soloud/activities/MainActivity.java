@@ -18,7 +18,6 @@ import com.android.soloud.fragments.GalleryFragment;
 import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 import com.android.soloud.materialnavigationdrawer.elements.MaterialSection;
 import com.android.soloud.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
-import com.android.soloud.profile.ProfileActivity;
 import com.android.soloud.profile.ProfileTestActivity;
 import com.android.soloud.profile.UserProfileActivity;
 import com.android.soloud.training.TrainingFragment;
@@ -110,9 +109,6 @@ public class MainActivity extends MaterialNavigationDrawer{
 
         this.enableToolbarElevation();
         this.setBackPattern(BACKPATTERN_BACK_TO_FIRST);
-
-        /*MediaPlayer mPlayer = MediaPlayer.create(this, R.raw.sosoloud_sound);
-        mPlayer.start();*/
 
         // Obtain the shared Tracker instance.
         SoLoudApplication application = (SoLoudApplication) getApplication();

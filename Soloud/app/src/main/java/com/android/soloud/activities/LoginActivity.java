@@ -41,8 +41,6 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.pnikosis.materialishprogress.ProgressWheel;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,7 +51,6 @@ import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import jp.wasabeef.picasso.transformations.BlurTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -65,14 +62,14 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
 
     public static final String FACEBOOK_PROVIDER = "facebook";
-    private CoordinatorLayout coordinatorLayout;
+
     private int loginFailureRequestsCounter;
     private LoginButton loginButton;
-    private ProgressWheel progressWheel;
     @BindView(R.id.background_IV)
     ImageView backgroundIV;
     private ProgressDialog progressDialog;
     @BindView(R.id.soloud_TV) TextView soloudTV;
+    @BindView(R.id.coordinatorLayout) CoordinatorLayout coordinatorLayout;
 
 
     @Override
@@ -100,93 +97,103 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login2);
         ButterKnife.bind(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window w = getWindow(); // in Activity's onCreate() for instance
-            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
+        //setStatusBarTranslucent(true);
+        makeStatusBarTransparent();
 
-        Typeface font=Typeface.createFromAsset(getAssets(), "fonts/Lobster.otf");
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/Lobster.otf");
         soloudTV.setTypeface(font);
         //int color = ContextCompat.getColor(this, R.color.colorPrimary);
         //Picasso.with(this).load(R.drawable.soloud_login).fit().transform(new BlurTransformation(this, 4)).into(backgroundIV);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         loginButton = (LoginButton)findViewById(R.id.login_button);
-        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         TextView terms_and_policy_TV = (TextView) findViewById(R.id.terms_and_policy_TV);
         Spanned sp = Html.fromHtml(getString(R.string.terms_and_privacy_policy));
         terms_and_policy_TV.setText(sp);
         terms_and_policy_TV.setOnClickListener(clickListener);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "onSuccess: " + "User ID:  " + loginResult.getAccessToken().getUserId() + "\n" +
-                        "Auth Token: " + loginResult.getAccessToken().getToken());
+        loginButton.registerCallback(callbackManager, facebookCallback);
 
-                //final String token = loginResult.getAccessToken().getToken();
-
-                // App code
-                GraphRequest request = getGraphRequestMe(loginResult.getAccessToken());
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, name, email, gender, birthday, picture.type(large), cover");
-                request.setParameters(parameters);
-                request.executeAsync();
-
-                SharedPrefsHelper.storeInPrefs(LoginActivity.this, loginResult.getAccessToken().getToken(), SharedPrefsHelper.FB_TOKEN);
-                SharedPrefsHelper.storeInPrefs(LoginActivity.this, loginResult.getAccessToken().getUserId(), SharedPrefsHelper.USER_FB_ID);
-            }
-
-            @Override
-            public void onCancel() {
-                //Log.d(TAG, "onCancel: Facebook login attempt cancelled.");
-                //Snackbar.make(coordinatorLayout, "Login attempt cancelled", Snackbar.LENGTH_LONG).show();
-                loginButton.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                //Log.d(TAG, "onError: Facebook login attempt failed.");
-                loginButton.setVisibility(View.VISIBLE);
-                Snackbar.make(coordinatorLayout, R.string.error_login_facebook, Snackbar.LENGTH_LONG).show();
-            }
-        });
 
         // Hash Key H3iwRkLWe23Sh+pZxlndHY+HtFg=
         //generateHashKey();
     }
 
+    private void makeStatusBarTransparent() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
+
+    private FacebookCallback facebookCallback = new FacebookCallback<LoginResult>() {
+        @Override
+        public void onSuccess(LoginResult loginResult) {
+            Log.d(TAG, "onSuccess: " + "User ID:  " + loginResult.getAccessToken().getUserId() + "\n" +
+                    "Auth Token: " + loginResult.getAccessToken().getToken());
+
+            //final String token = loginResult.getAccessToken().getToken();
+
+            // App code
+            GraphRequest request = getGraphRequestMe(loginResult.getAccessToken());
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "id, name, email, gender, birthday, picture.type(large), cover");
+            request.setParameters(parameters);
+            request.executeAsync();
+
+            SharedPrefsHelper.storeInPrefs(LoginActivity.this, loginResult.getAccessToken().getToken(), SharedPrefsHelper.FB_TOKEN);
+            SharedPrefsHelper.storeInPrefs(LoginActivity.this, loginResult.getAccessToken().getUserId(), SharedPrefsHelper.USER_FB_ID);
+        }
+
+        @Override
+        public void onCancel() {
+            //Log.d(TAG, "onCancel: Facebook login attempt cancelled.");
+            //Snackbar.make(coordinatorLayout, "Login attempt cancelled", Snackbar.LENGTH_LONG).show();
+            loginButton.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onError(FacebookException e) {
+            //Log.d(TAG, "onError: Facebook login attempt failed.");
+            loginButton.setVisibility(View.VISIBLE);
+            Snackbar.make(coordinatorLayout, R.string.error_login_facebook, Snackbar.LENGTH_LONG).show();
+        }
+    };
+
+    protected void setStatusBarTranslucent(boolean makeTranslucent) {
+        if (makeTranslucent) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+    }
+
     @NonNull
     private GraphRequest getGraphRequestMe(final AccessToken accessToken) {
-        return GraphRequest.newMeRequest(
-                            accessToken,
-                            new GraphRequest.GraphJSONObjectCallback() {
-                                @Override
-                                public void onCompleted(JSONObject object, GraphResponse response) {
-                                    Log.d(TAG, response.toString());
+        return GraphRequest.newMeRequest(accessToken,
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.d(TAG, response.toString());
 
-                                    // Application code
-                                    try {
-                                        String name = object.getString("name");
-                                        String email = object.getString("email");
-                                        //String picture = object.getString("picture");
-                                        //String birthday = object.getString("birthday"); // 01/31/1980 format
-                                        String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
-                                        String coverUrl = object.getJSONObject("cover").getString("source");
+                        try {
+                            String name = object.getString("name");
+                            String email = object.getString("email");
+                            //String picture = object.getString("picture");
+                            //String birthday = object.getString("birthday"); // 01/31/1980 format
+                            String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                            String coverUrl = object.getJSONObject("cover").getString("source");
 
-                                        SharedPrefsHelper.storeInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
-                                        SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
-                                        SharedPrefsHelper.storeInPrefs(LoginActivity.this, coverUrl, SharedPrefsHelper.USER_COVER_URL);
+                            SharedPrefsHelper.storeInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
+                            SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
+                            SharedPrefsHelper.storeInPrefs(LoginActivity.this, coverUrl, SharedPrefsHelper.USER_COVER_URL);
 
-                                        /*progressWheel.setVisibility(View.VISIBLE);
-                                        progressWheel.spin();*/
-                                        showProgressDialog();
-                                        loginToBackend(accessToken.getToken());
+                            showProgressDialog();
+                            loginToBackend(accessToken.getToken());
 
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     private void openWithChromeCustomTabs(){
@@ -203,25 +210,34 @@ public class LoginActivity extends AppCompatActivity {
         // Create a very simple REST adapter which points the API endpoint.
         LoginService client = ServiceGenerator.createService(LoginService.class);
 
-        // Post the user's Facebook Token
+        // Post the user's Facebook Token to SoLoud backend
         Call<User> call = client.login(FACEBOOK_PROVIDER, facebookToken, "password");
         Callback<User> loginCallback = new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
-                    User soLoudUser = response.body();
-                    String soLoudToken = soLoudUser.getSoloudToken();
-                    SharedPrefsHelper.storeInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
-
-                    Intent intent = new Intent(LoginActivity.this, WizardActivity.class);
-                    startActivity(intent);
-                    finish();
+                    parseResponseAndProceed(response);
 
                 } else {
                     // error response, no access to resource?
                     //Log.d(TAG, "Backend login error in response: " + response.toString());
                     handleResponseFailure(call);
                 }
+            }
+
+            private void parseResponseAndProceed(Response<User> response) {
+                User soLoudUser = response.body();
+                String soLoudToken = soLoudUser.getSoloudToken();
+                SharedPrefsHelper.storeInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
+                Intent intent;
+                boolean isWizardAlreadyDisplayed = SharedPrefsHelper.getBooleanFromPrefs(LoginActivity.this, SharedPrefsHelper.WIZARD_DISPLAYED);
+                if (isWizardAlreadyDisplayed) {
+                    intent = new Intent(LoginActivity.this, MainActivity.class);
+                } else {
+                    intent = new Intent(LoginActivity.this, WizardActivity.class);
+                }
+                startActivity(intent);
+                finish();
             }
 
             @Override
@@ -242,7 +258,6 @@ public class LoginActivity extends AppCompatActivity {
                     LoginManager.getInstance().logOut();
                     Snackbar.make(coordinatorLayout, R.string.error_login, Snackbar.LENGTH_LONG).show();
                     loginButton.setVisibility(View.VISIBLE);
-                    //progressWheel.stopSpinning();
                     progressDialog.dismiss();
               }
             }

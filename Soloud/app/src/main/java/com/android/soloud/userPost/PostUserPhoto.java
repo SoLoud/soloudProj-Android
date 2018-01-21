@@ -21,7 +21,7 @@ public interface PostUserPhoto {
                                  @Part MultipartBody.Part image,
                                  @Part("caption") RequestBody description,
                                  @Part("ContestId") RequestBody contestId,
-                                 @Part("Hashtags") RequestBody hashTags);
-
+                                 @Part("Hashtags") RequestBody hashTags,
+                                 @Part("PlaceId") RequestBody placeId);
 
 }

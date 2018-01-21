@@ -19,6 +19,8 @@ public class SharedPrefsHelper {
     public static final String USER_COVER_URL = "usercover";
     public static final String SOLOUD_TOKEN = "sltoken";
     public static final String POST_POP_UP_DISPLAYED = "post_pop_up_displayed";
+    public static final String WIZARD_DISPLAYED = "wizard_displayed";
+
 
     public static boolean getBooleanFromPrefs(Context context, String PREF_CONSTANT){
         SharedPreferences sharedPref = context.getSharedPreferences(
@@ -55,9 +57,7 @@ public class SharedPrefsHelper {
         for (int i=0; i< pref_constants_array.length -1; i++){
             editor.remove(pref_constants_array[i]).apply();
         }
-        /*editor.remove(USER_FB_ID).apply();
-        editor.remove(FB_TOKEN).apply();*/
-        editor.clear().apply();
+        //editor.clear().apply();
     }
 
 }
