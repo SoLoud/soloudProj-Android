@@ -17,4 +17,8 @@
     <color name="accent">#FF4081</color>
     <color name="white">#FFFFFF</color>
     <color name="dark_text_color">#515151</color>
+
+    <color name="background_layout">#dedede</color>
+
+
 </resources>

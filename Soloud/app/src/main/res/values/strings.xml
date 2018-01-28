@@ -210,5 +210,9 @@
     <string name="find_location_hint">Find a location</string>
     <string name="add_location">Add Location</string>
     <string name="post_preview">Post preview</string>
+    <string name="likes">Likes</string>
+    <string name="shares">Shares</string>
+    <string name="comments">Comments</string>
+    <string name="total_statistics">Total statistics</string>
 
 </resources>

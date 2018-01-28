@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.github.ksoichiro.android.observablescrollview.ObservableScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.github.ksoichiro.android.observablescrollview.ObservableScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/background_layout"
     android:fillViewport="true"
     android:overScrollMode="never">
 
@@ -15,15 +17,208 @@
 
         <!--<include layout="@layout/padding" />-->
 
-        <TextView
+        <!--<TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
-            android:text="@string/large_text" />
+            android:text="THa doume" />-->
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="#ffffff"
+            card_view:cardCornerRadius="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
+
+                <TextView
+                    android:id="@+id/total_contests_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/total_statistics"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/black"/>
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/likesProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_below="@id/total_contests_TV"
+                    android:layout_marginTop="24dp"
+                    app:rcBackgroundColor="@color/background_layout"
+                    app:rcMax="100"
+                    app:rcProgress="75"
+                    app:rcProgressColor="@color/colorPrimary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false" />
+
+                <RelativeLayout
+                    android:id="@+id/likes_RL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/likesProgressBar"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/likes_percent_TV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="40%"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="40%"
+                        android:textColor="@android:color/black"/>
+
+                    <View
+                        android:id="@+id/likes_hr"
+                        android:layout_width="1dp"
+                        android:layout_height="18dp"
+                        android:layout_alignBottom="@id/likes_percent_TV"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_toEndOf="@id/likes_percent_TV"
+                        android:layout_toRightOf="@id/likes_percent_TV"
+                        android:background="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/likes_label_TV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/likes_hr"
+                        android:layout_toRightOf="@id/likes_hr"
+                        android:text="@string/likes"
+                        android:textSize="16sp"
+                        android:textColor="@android:color/black"/>
+
+                </RelativeLayout>
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/sharesProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_below="@id/likes_RL"
+                    android:layout_marginTop="24dp"
+                    android:labelFor="@id/likes_label_TV"
+                    app:rcBackgroundColor="@color/background_layout"
+                    app:rcMax="100"
+                    app:rcProgress="20"
+                    app:rcProgressColor="@color/mySecondary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false" />
+
+
+                <RelativeLayout
+                    android:id="@+id/shares_RL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/sharesProgressBar"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/shares_percent_TV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="35%"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="35%"
+                        android:textColor="@android:color/black"/>
+
+                    <View
+                        android:id="@+id/shares_hr"
+                        android:layout_width="1dp"
+                        android:layout_height="18dp"
+                        android:layout_alignBottom="@id/shares_percent_TV"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_toEndOf="@id/shares_percent_TV"
+                        android:layout_toRightOf="@id/shares_percent_TV"
+                        android:background="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/shares_label_TV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/shares_hr"
+                        android:layout_toRightOf="@id/shares_hr"
+                        android:text="@string/shares"
+                        android:textSize="16sp"
+                        android:textColor="@android:color/black"/>
+
+                </RelativeLayout>
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/commentsProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_below="@id/shares_RL"
+                    android:layout_marginTop="24dp"
+                    android:labelFor="@id/likes_label_TV"
+                    app:rcBackgroundColor="@color/background_layout"
+                    app:rcMax="100"
+                    app:rcProgress="20"
+                    app:rcProgressColor="@color/colorPrimary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false" />
+
+                <RelativeLayout
+                    android:id="@+id/comments_RL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/commentsProgressBar"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/comments_percent_TV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="35%"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="35%"
+                        android:textColor="@android:color/black"/>
+
+                    <View
+                        android:id="@+id/comments_hr"
+                        android:layout_width="1dp"
+                        android:layout_height="18dp"
+                        android:layout_alignBottom="@id/comments_percent_TV"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_toEndOf="@id/comments_percent_TV"
+                        android:layout_toRightOf="@id/comments_percent_TV"
+                        android:background="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/comments_label_TV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/comments_hr"
+                        android:layout_toRightOf="@id/comments_hr"
+                        android:text="@string/comments"
+                        android:textSize="16sp"
+                        android:textColor="@android:color/black"/>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
     </LinearLayout>
 
 </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
