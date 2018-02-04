@@ -131,6 +131,14 @@
             android:theme="@style/profileTheme">
         </activity>
 
+        <activity
+            android:name=".facebookPlaces.CheckInActivity"
+            android:label="@string/check_in"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoToolbarStyle">
+        </activity>
+
+
     </application>
 
 </manifest>

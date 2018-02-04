@@ -51,6 +51,7 @@ import com.android.soloud.facebookPlaces.PlacesGraphSDKHelper;
 import com.android.soloud.facebookPlaces.adapters.PlaceListAdapter;
 import com.android.soloud.facebookPlaces.model.Place;
 import com.android.soloud.facebookPlaces.model.PlaceTextUtils;
+import com.android.soloud.utils.MyStringHelper;
 import com.facebook.GraphResponse;
 import com.facebook.places.PlaceManager;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -100,6 +101,8 @@ public class PlaceSearchFragment extends Fragment implements
     private List<Place> placesToDisplay = new ArrayList<>(0);
     private Toolbar toolbar;
 
+    private String placeName;
+
     public enum State {
         LIST,
         MAP
@@ -115,10 +118,28 @@ public class PlaceSearchFragment extends Fragment implements
         return new PlaceSearchFragment();
     }
 
+    public static PlaceSearchFragment newInstance(String placeName) {
+
+        Bundle args = new Bundle();
+        args.putString("placeName", placeName);
+        PlaceSearchFragment fragment = new PlaceSearchFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof Activity) {
             listener = (Listener) context;
+        }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null && getArguments().containsKey("placeName")) {
+            placeName = getArguments().getString("placeName");
         }
     }
 
@@ -164,6 +185,9 @@ public class PlaceSearchFragment extends Fragment implements
         currentPlaceAddressTextView = (TextView) view.findViewById(R.id.current_place_address);
         //searchCardView = (CardView) view.findViewById(R.id.place_search_cardview);
         searchEditText = (EditText) view.findViewById(R.id.place_search_edittext);
+        if (!MyStringHelper.isNoE(placeName)) {
+            searchEditText.setText(placeName);
+        }
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

@@ -1,6 +1,5 @@
 package com.android.soloud.userPost;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -23,9 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.soloud.R;
@@ -61,7 +58,6 @@ import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -89,11 +85,11 @@ public class UserPostFragment extends Fragment {
     private TextView post_info_TV;
     private String tagsWithoutHashString;
     private CoordinatorLayout coordinatorLayout;
-    private RelativeLayout checkIn_RL;
-    private TextView addLocation_TV;
+    //private RelativeLayout checkIn_RL;
+    private TextView location_TV, address_TV;
 
     @BindView(R.id.address_TV) TextView addressTV;
-    @BindView(R.id.clearIV) ImageView clearIV;
+    //@BindView(R.id.clearIV) ImageView clearIV;
 
     private CallbackManager mCallbackManager;
     private String postText;
@@ -106,11 +102,11 @@ public class UserPostFragment extends Fragment {
     private Toolbar toolbar;
     private Place mPlace;
 
-    public interface OnLocationPressedListener {
+    /*public interface OnLocationPressedListener {
         void onLocationPressed();
     }
 
-    private OnLocationPressedListener mListener;
+    private OnLocationPressedListener mListener;*/
 
 
     public static UserPostFragment newInstance(Contest contest, CurrentState currentState, ArrayList<String> hashTagList, Place selectedPlace) {
@@ -125,7 +121,7 @@ public class UserPostFragment extends Fragment {
         return fragment;
     }
 
-    @Override
+    /*@Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
@@ -135,7 +131,7 @@ public class UserPostFragment extends Fragment {
             throw new ClassCastException(context.toString()
                     + " must implement OnLocationPressedListener");
         }
-    }
+    }*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -152,7 +148,7 @@ public class UserPostFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.user_post_fragment, container, false);
+        View view = inflater.inflate(R.layout.user_post_fragment1, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -162,17 +158,17 @@ public class UserPostFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        post_info_TV = (TextView) view.findViewById(R.id.post_info_TV);
+        post_info_TV = (TextView) view.findViewById(R.id.hashTags_TV);
         photo_IV = (ImageView) view.findViewById(R.id.post_photo_IV);
-        ImageButton rotate_Btn = (ImageButton) view.findViewById(R.id.rotate_btn);
+        //ImageButton rotate_Btn = (ImageButton) view.findViewById(R.id.rotate_btn);
         shareButton = (Button) view.findViewById(R.id.share_button);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
-        checkIn_RL = (RelativeLayout) view.findViewById(R.id.check_in_RL);
-        addLocation_TV = (TextView) view.findViewById(R.id.add_location_TV);
+        /*checkIn_RL = (RelativeLayout) view.findViewById(R.id.check_in_RL);*/
+        location_TV = (TextView) view.findViewById(R.id.location_TV);
+        addressTV =  (TextView) view.findViewById(R.id.address_TV);
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        checkIn_RL.setOnClickListener(onClickListener);
         shareButton.setOnClickListener(onClickListener);
-        rotate_Btn.setOnClickListener(onClickListener);
+        //rotate_Btn.setOnClickListener(onClickListener);
         photo_IV.setOnClickListener(onClickListener);
 
         loginFailureRequestsCounter =0;
@@ -193,18 +189,18 @@ public class UserPostFragment extends Fragment {
         displayUserPhoto();
 
         if (mPlace != null) {
-            addLocation_TV.setText(mPlace.get(Place.NAME));
+            location_TV.setText(mPlace.get(Place.NAME));
             String address = PlaceTextUtils.getAddress(mPlace);
             if (!MyStringHelper.isNoE(address)) {
                 addressTV.setVisibility(View.VISIBLE);
                 addressTV.setText(PlaceTextUtils.getAddress(mPlace));
-                clearIV.setVisibility(View.VISIBLE);
+                //clearIV.setVisibility(View.VISIBLE);
             } else {
                 addressTV.setVisibility(View.GONE);
             }
         } else {
             addressTV.setVisibility(View.GONE);
-            clearIV.setVisibility(View.GONE);
+            //clearIV.setVisibility(View.GONE);
         }
 
     }
@@ -228,15 +224,15 @@ public class UserPostFragment extends Fragment {
                 case R.id.share_button:
                     onSharePressed();
                     break;
-                case R.id.rotate_btn:
+                /*case R.id.rotate_btn:
                     onRotatePressed();
-                    break;
+                    break;*/
                 case R.id.post_photo_IV:
                     showFullScreenImageDialog();
                     break;
-                case R.id.check_in_RL:
+                /*case R.id.check_in_RL:
                     mListener.onLocationPressed();
-                    break;
+                    break;*/
                 default:
                     break;
             }
@@ -594,11 +590,11 @@ public class UserPostFragment extends Fragment {
     }
 
 
-    @OnClick(R.id.clearIV)
+    /*@OnClick(R.id.clearIV)
     public void onClearPressed() {
         addLocation_TV.setText(R.string.check_in);
         addressTV.setVisibility(View.GONE);
         clearIV.setVisibility(View.GONE);
-    }
+    }*/
 
 }

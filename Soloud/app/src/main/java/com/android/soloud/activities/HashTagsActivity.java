@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
+import com.android.soloud.facebookPlaces.CheckInActivity;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.TagClass;
@@ -264,7 +265,7 @@ public class HashTagsActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.action_proceed:
-                Intent intent = new Intent(HashTagsActivity.this, PostActivity.class);
+                Intent intent = new Intent(HashTagsActivity.this, CheckInActivity.class);
                 intent.putExtra(CONTEST, contest);
                 intent.putStringArrayListExtra("hashTagsList",getHashTags());
                 removeRequiredHashTags();
