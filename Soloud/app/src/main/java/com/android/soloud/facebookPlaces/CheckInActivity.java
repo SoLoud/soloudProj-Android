@@ -11,6 +11,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.android.soloud.R;
@@ -26,8 +28,6 @@ import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-
-import java.util.ArrayList;
 
 import static com.android.soloud.activities.MainActivity.POST_SN;
 import static com.android.soloud.contests.ContestsActivity.CONTEST;
@@ -52,10 +52,11 @@ public class CheckInActivity extends AppCompatActivity implements PlaceSearchFra
     private String placeID;
     private static final int REQUEST_LOCATION = 537;
 
-    private ArrayList<String> tagsList;
     public static final String PLACE = "place";
 
     private String placeName;
+    private Place mPlace;
+    private boolean isNextActionEnabled;
 
 
     @Override
@@ -63,24 +64,23 @@ public class CheckInActivity extends AppCompatActivity implements PlaceSearchFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.check_in_activity);
 
-        /*if (savedInstanceState != null){
-            contest = (Contest) getIntent().getSerializableExtra(CONTEST);
-            currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
-
-        }*/
+        isNextActionEnabled = false;
 
         if(getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null &&
-                getIntent().getSerializableExtra(CURRENT_STATE) != null && getIntent().getStringArrayListExtra("hashTagsList") != null){
+                getIntent().getSerializableExtra(CURRENT_STATE) != null){
 
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
             currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
-
-            tagsList = getIntent().getStringArrayListExtra("hashTagsList");
 
             if (getIntent().hasExtra(PLACE)) {
                 Place mPlace = getIntent().getParcelableExtra(PLACE);
                 placeName = mPlace.get(Place.NAME);
             }
+        }
+
+        if (savedInstanceState != null){
+            contest = (Contest) getIntent().getSerializableExtra(CONTEST);
+            currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
         }
 
         checkToken();
@@ -137,13 +137,11 @@ public class CheckInActivity extends AppCompatActivity implements PlaceSearchFra
 
     @Override
     public void onPlaceSelected(Place place) {
-        Intent intent = new Intent(this, PostActivity.class);
-        intent.putExtra(CONTEST, contest);
-        intent.putStringArrayListExtra("hashTagsList", tagsList);
-        intent.putExtra(CURRENT_STATE, currentState);
-        intent.putExtra(PLACE, place);
-        startActivity(intent);
-        finish();
+
+        // TODO: 11/2/2018 Enable Next button
+        isNextActionEnabled = true;
+        mPlace = place;
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -154,6 +152,12 @@ public class CheckInActivity extends AppCompatActivity implements PlaceSearchFra
     @Override
     public boolean hasLocationPermission() {
         return false;
+    }
+
+    @Override
+    public void onNothingSelected() {
+        isNextActionEnabled = false;
+        invalidateOptionsMenu();
     }
 
 
@@ -261,6 +265,13 @@ public class CheckInActivity extends AppCompatActivity implements PlaceSearchFra
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.hashtags_menu, menu);
+        return true;
+    }
+
 
 
     @Override
@@ -269,8 +280,28 @@ public class CheckInActivity extends AppCompatActivity implements PlaceSearchFra
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_proceed:
+                goToPostPreviewActivity();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        /*MenuItem actionNext = menu.findItem(R.id.action_proceed);
+        actionNext.setEnabled(isNextActionEnabled);*/
+        return isNextActionEnabled;
+    }
+
+    private void goToPostPreviewActivity() {
+        Intent intent = new Intent(this, PostActivity.class);
+        intent.putExtra(CONTEST, contest);
+        intent.putExtra(CURRENT_STATE, currentState);
+        intent.putExtra(PLACE, mPlace);
+        startActivity(intent);
+        finish();
     }
 }

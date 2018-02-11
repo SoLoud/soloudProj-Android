@@ -35,6 +35,8 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,6 +70,8 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.OnTextChanged;
 
 /**
  * This fragment illustrates how to use the Places Graph SDK to:
@@ -112,6 +116,7 @@ public class PlaceSearchFragment extends Fragment implements
         void onPlaceSelected(Place place);
         void onLocationPermissionsError();
         boolean hasLocationPermission();
+        void onNothingSelected();
     }
 
     public static PlaceSearchFragment newInstance() {
@@ -185,6 +190,7 @@ public class PlaceSearchFragment extends Fragment implements
         currentPlaceAddressTextView = (TextView) view.findViewById(R.id.current_place_address);
         //searchCardView = (CardView) view.findViewById(R.id.place_search_cardview);
         searchEditText = (EditText) view.findViewById(R.id.place_search_edittext);
+        searchEditText.addTextChangedListener(onTextChanged);
         if (!MyStringHelper.isNoE(placeName)) {
             searchEditText.setText(placeName);
         }
@@ -325,6 +331,7 @@ public class PlaceSearchFragment extends Fragment implements
 
                     setLoading(false);
 
+                    listener.onNothingSelected();
                     if (places == null) {
                         // The response object does contain more information on the error
                         Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
@@ -422,6 +429,7 @@ public class PlaceSearchFragment extends Fragment implements
 
     @Override
     public void onPlaceSelected(Place place) {
+        placeListAdapter.notifyDataSetChanged();
         listener.onPlaceSelected(place);
     }
 
@@ -444,5 +452,26 @@ public class PlaceSearchFragment extends Fragment implements
         }
     }
 
+
+    private TextWatcher onTextChanged = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (!s.toString().isEmpty()) {
+                searchPlace(s.toString(), 10000000);
+            } else {
+                searchPlace(null, 1000);
+            }
+        }
+    };
 
 }

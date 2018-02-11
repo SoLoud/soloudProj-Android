@@ -40,8 +40,6 @@ public class PostActivity extends AppCompatActivity {
     private final AuthenticationType authenticationType = AuthenticationType.USER_TOKEN;
     private static final String CLIENT_TOKEN = "";
 
-    private ArrayList<String> tagsList;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,17 +47,14 @@ public class PostActivity extends AppCompatActivity {
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if(getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null &&
-                getIntent().getStringArrayListExtra("hashTagsList") != null && getIntent().getParcelableExtra("place") != null){
+        if(getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null && getIntent().getParcelableExtra("place") != null){
 
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
             currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
 
-            tagsList = getIntent().getStringArrayListExtra("hashTagsList");
-
             place = getIntent().getParcelableExtra("place");
 
-            displayUserPostFragment(contest, currentState, tagsList, place);
+            displayUserPostFragment(contest, currentState, place);
         }
 
         googleAnalyticsTrack();
@@ -67,10 +62,10 @@ public class PostActivity extends AppCompatActivity {
     }
 
 
-    private void displayUserPostFragment(Contest contest, CurrentState currentState, ArrayList<String> hasTagsList, Place selectedPlace) {
+    private void displayUserPostFragment(Contest contest, CurrentState currentState, Place selectedPlace) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.fragment_placeholder, UserPostFragment.newInstance(contest, currentState, hasTagsList, selectedPlace)); // newInstance() is a static factory method.
+        transaction.replace(R.id.fragment_placeholder, UserPostFragment.newInstance(contest, currentState, selectedPlace)); // newInstance() is a static factory method.
         transaction.commit();
     }
 
@@ -119,7 +114,7 @@ public class PostActivity extends AppCompatActivity {
         Intent intent = new Intent(PostActivity.this, CheckInActivity.class);
         intent.putExtra(CONTEST, contest);
         intent.putExtra(CURRENT_STATE, currentState);
-        intent.putExtra("hashTagsList", tagsList);
+        //intent.putExtra("hashTagsList", tagsList);
         intent.putExtra(PLACE, place);
         startActivity(intent);
         finish();

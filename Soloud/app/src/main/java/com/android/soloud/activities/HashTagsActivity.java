@@ -3,6 +3,7 @@ package com.android.soloud.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,7 +19,6 @@ import com.android.soloud.facebookPlaces.CheckInActivity;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.TagClass;
-import com.android.soloud.userPost.PostActivity;
 import com.android.soloud.utils.MyStringHelper;
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.android.soloud.contests.ContestsActivity.CONTEST;
 import static com.android.soloud.contests.ContestsActivity.CURRENT_STATE;
 import static com.android.soloud.activities.MainActivity.TAGS_SN;
@@ -37,18 +40,16 @@ import static com.android.soloud.utils.MyStringHelper.isNoE;
 public class HashTagsActivity extends AppCompatActivity {
 
     private static final String TAG = "HashTagsActivity";
-    private static final String ALL_TAGS_LIST = "allTagsList";
-    private TagView tagGroup;
-    private EditText hashTag_ET;
-    private EditText description_ET;
-    //private ArrayList<TagClass> defaultTagsList;
-    //private ArrayList<TagClass> userTagsList;
     private Tracker mTracker;
     private Contest contest;
     private CurrentState currentState;
-    private ArrayList<String> allTagsList;
+    private int secondaryColor;
 
-    private String userInputHashTags;
+    @BindView(R.id.hashTag_ET) EditText hashTag_ET;
+    @BindView(R.id.description_ET) EditText description_ET;
+    @BindView(R.id.tag_group) TagView tagGroup;
+
+    private String userInputHashTagsString;
 
 
     @Override
@@ -56,7 +57,6 @@ public class HashTagsActivity extends AppCompatActivity {
 
         outState.putSerializable(CONTEST, contest);
         outState.putSerializable(CURRENT_STATE, currentState);
-        //outState.putStringArrayList(ALL_TAGS_LIST, allTagsList);
 
         super.onSaveInstanceState(outState);
     }
@@ -68,96 +68,81 @@ public class HashTagsActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        hashTag_ET = (EditText) findViewById(R.id.hashTag_ET);
-        tagGroup = (TagView)findViewById(R.id.tag_group);
-        description_ET = (EditText) findViewById(R.id.description_ET);
+        ButterKnife.bind(this);
 
-        userInputHashTags = "";
+        secondaryColor = ContextCompat.getColor(this, R.color.mySecondary);
+        userInputHashTagsString = "";
 
-
-        String hashTags = "";
         if (getIntent() != null && getIntent().getSerializableExtra(CONTEST) != null &&
                 getIntent().getSerializableExtra(CURRENT_STATE) != null){
             currentState = (CurrentState) getIntent().getSerializableExtra(CURRENT_STATE);
             contest = (Contest) getIntent().getSerializableExtra(CONTEST);
-
-            if(savedInstanceState != null){
-                contest = (Contest) savedInstanceState.getSerializable(CONTEST);
-                currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
-                //allTagsList = savedInstanceState.getStringArrayList(ALL_TAGS_LIST);
-
-                Log.d(TAG, "savedInstanceState != null");
-            }
-
-            String requiredTags = contest.getmRequiredHashTags();
-            String optionalTags = contest.getmOptionalHashTags();
-            String userHashTags = currentState.getUserHashTags();
-            Log.d(TAG, "code run");
-
-            allTagsList = new ArrayList<>();
-
-            // It means that the user comes from Post Activity
-            if (userHashTags != null){
-                if (!isNoE(requiredTags)){
-                    ArrayList<TagClass> tags = prepareRequiredTags(requiredTags);
-                    showRequiredTags(tags);
-                }
-                addTagsToList(userHashTags);
-
-            }else{
-                if (!isNoE(requiredTags)){
-                    ArrayList<TagClass> tags = prepareRequiredTags(requiredTags);
-                    showRequiredTags(tags);
-                }
-                addTagsToList(optionalTags);
-                //addTagsToList(userHashTags);
-            }
-
-            String description = currentState.getUserPostDescription();
-            description_ET.setText(description);
         }
 
-        hashTag_ET.addTextChangedListener(editTextTextWatcher);
+        if(savedInstanceState != null){
+            contest = (Contest) savedInstanceState.getSerializable(CONTEST);
+            currentState = (CurrentState) savedInstanceState.getSerializable(CURRENT_STATE);
+            userInputHashTagsString = savedInstanceState.getString("userInputHashTagsString");
+            Log.d(TAG, "savedInstanceState != null");
+        }
 
-        //set delete listener
-        /*tagGroup.setOnTagDeleteListener(new TagView.OnTagDeleteListener() {
-            @Override
-            public void onTagDeleted(final TagView view, final Tag tag, final int position) {
-                view.remove(position);
-                allTagsList.remove(position);
-            }
-        });*/
+        String suggestedHashTags = contest.getSuggestedHashTags();
+        ArrayList<String> userHashTagsList = currentState.getUserHashTagsList();
+
+        // It means that the user comes from Check in Activity and has already selected hash tags
+        if (userHashTagsList != null && userHashTagsList.size()>0){
+            userInputHashTagsString = getTagsTextFromList(userHashTagsList);
+            hashTag_ET.setText(userInputHashTagsString);
+            hashTag_ET.setSelection(hashTag_ET.getText().length());
+        }
+        else if (!MyStringHelper.isNoE(userInputHashTagsString)) {
+            hashTag_ET.setText(userInputHashTagsString);
+            hashTag_ET.setSelection(hashTag_ET.getText().length());
+        }
+
+        initializeTagsUI(suggestedHashTags);
+
+        String description = currentState.getUserPostDescription();
+        description_ET.setText(description);
+
+        hashTag_ET.addTextChangedListener(editTextTextWatcher);
 
         tagGroup.setOnTagClickListener(new TagView.OnTagClickListener() {
             @Override
             public void onTagClick(Tag tag, int i) {
-                //Toast.makeText(HashTagsActivity.this, "tag num" + i, Toast.LENGTH_SHORT).show();
                 updateEditText(tag.text);
             }
         });
-
-        description_ET.addTextChangedListener(textWatcher);
 
         googleAnalyticsTrack();
     }
 
 
+    private String getTagsTextFromList(ArrayList<String> list) {
+        StringBuilder text = new StringBuilder("");
+        for (String tag : list) {
+            text.append("#").append(tag.trim()).append(" ");
+        }
+        return text.toString();
+    }
+
+
     private void updateEditText(String input){
-        if (userInputHashTags.length() > 0){
-            char lastChar = userInputHashTags.charAt(userInputHashTags.length()-1) ;
-            if (lastChar == ','){
-                userInputHashTags += input;
+        if (userInputHashTagsString.length() > 0){
+            char lastChar = userInputHashTagsString.charAt(userInputHashTagsString.length()-1) ;
+            if (lastChar == ' '){
+                userInputHashTagsString += input;
             }else{
-                userInputHashTags += "," + input;
+                userInputHashTagsString += " " + input;
             }
         }else{
-            userInputHashTags += input;
+            userInputHashTagsString += input;
         }
-        hashTag_ET.setText(userInputHashTags);
+        hashTag_ET.setText(userInputHashTagsString);
         hashTag_ET.setSelection(hashTag_ET.getText().length());
     }
 
-    private void addTagsToList(String tags) {
+    private void initializeTagsUI(String tags) {
         if (!isNoE(tags)){
             String[] parts = tags.split(",");
             for (String tag : parts) {
@@ -166,29 +151,6 @@ public class HashTagsActivity extends AppCompatActivity {
         }
     }
 
-
-    private List<String> convertStringHashTagsToArrayList(String tags){
-        List<String> tagsList = null;
-        if (!MyStringHelper.isNoE(tags)){
-            String[] parts = tags.split(",");
-            tagsList = Arrays.asList(parts);
-        }
-        return tagsList;
-    }
-
-    private String convertTagsListToString(ArrayList<String> tagsList){
-        StringBuilder sb = new StringBuilder();
-        for (int i=0; i <tagsList.size(); i++) {
-            String text;
-            if (i == tagsList.size() -1){
-                text = tagsList.get(i);
-            }else{
-                text = tagsList.get(i) + ",";
-            }
-            sb.append(text);
-        }
-        return sb.toString();
-    }
 
     private void googleAnalyticsTrack() {
         // Obtain the shared Tracker instance.
@@ -205,49 +167,14 @@ public class HashTagsActivity extends AppCompatActivity {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    private ArrayList<TagClass> prepareRequiredTags(String hashTags){
-        String[] hashTagsArray = hashTags.split(",");
-        ArrayList<TagClass> defaultTagsList = new ArrayList<>();
-        for (int i = 0; i < hashTagsArray.length; i++) {
-            String hashTag = "#" + hashTagsArray[i];
-            defaultTagsList.add(new TagClass(hashTag));
-        }
-        return defaultTagsList;
-    }
-
-    private void showRequiredTags(ArrayList<TagClass> defaultTagsList) {
-        ArrayList<Tag> tags = new ArrayList<>();
-        Tag tag;
-        for (int j = 0; j < defaultTagsList.size(); j++) {
-            tag = new Tag(defaultTagsList.get(j).getName());
-            tag.radius = 10f;
-            tag.layoutColor = Color.parseColor("#e6004c");
-            if (j % 2 == 0) // you can set deletable or not
-                tag.isDeletable = false;
-            tags.add(tag);
-
-            String text = tag.text;
-            if (text.startsWith("#")){
-                allTagsList.add(text.substring(1));
-            }else{
-                allTagsList.add(text);
-            }
-        }
-        tagGroup.addTags(tags);
-    }
 
     private void addUserTagToList(String userInput){
         Tag userTag = new Tag(userInput.trim());
         userTag.radius = 10f;
-        userTag.layoutColor = Color.parseColor("#0e94a5");
+
+        userTag.layoutColor = secondaryColor;
         userTag.isDeletable = false;
         tagGroup.addTag(userTag);
-
-        if (userInput.startsWith("#")){
-            allTagsList.add(userInput.substring(1));
-        }else{
-            allTagsList.add(userInput);
-        }
     }
 
     @Override
@@ -267,9 +194,7 @@ public class HashTagsActivity extends AppCompatActivity {
             case R.id.action_proceed:
                 Intent intent = new Intent(HashTagsActivity.this, CheckInActivity.class);
                 intent.putExtra(CONTEST, contest);
-                intent.putStringArrayListExtra("hashTagsList",getHashTags());
-                removeRequiredHashTags();
-                currentState.setUserHashTags(convertTagsListToString(allTagsList));
+                currentState.setUserHashTagsList(getHashTags());
                 currentState.setUserPostDescription(description_ET.getText().toString());
                 intent.putExtra(CURRENT_STATE, currentState);
                 startActivity(intent);
@@ -280,35 +205,18 @@ public class HashTagsActivity extends AppCompatActivity {
         }
     }
 
-    private void removeRequiredHashTags(){
-        String requiredHashTags = contest.getmRequiredHashTags();
-        if (!MyStringHelper.isNoE(requiredHashTags)){
-            String[] parts = requiredHashTags.split(",");
-            for (int i=0; i<parts.length; i++){
-                allTagsList.remove(0);
-            }
-        }
-    }
 
     private ArrayList<String> getHashTags(){
-        /*List<Tag> tagList = tagGroup.getTags();
         ArrayList<String> tagsArrayList = new ArrayList<>();
-        for (Tag tag : tagList) {
-            tagsArrayList.add(tag.text.trim());
-        }
-        return tagsArrayList;*/
-        ArrayList<String> tagsArrayList = new ArrayList<>();
-        if (userInputHashTags.length() >0){
-            String[] parts = userInputHashTags.split(",");
+        if (userInputHashTagsString.length() >0){
+            String[] parts = userInputHashTagsString.split("#");
             if (parts.length > 0){
                 for (int i=0; i<parts.length; i++){
-                    tagsArrayList.add(parts[i].trim());
+                    String tag = parts[i];
+                    if (!MyStringHelper.isNoE(tag))
+                    tagsArrayList.add(tag);
                 }
-            }else{
-                tagsArrayList.add(userInputHashTags);
             }
-        }else{
-            tagsArrayList.add(userInputHashTags);
         }
         return tagsArrayList;
     }
@@ -317,31 +225,12 @@ public class HashTagsActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent(HashTagsActivity.this, ContestDetails.class);
         intent.putExtra(CONTEST, contest);
-        removeRequiredHashTags();
-        currentState.setUserHashTags(convertTagsListToString(allTagsList));
+        currentState.setUserHashTagsList(getHashTags());
         currentState.setUserPostDescription(description_ET.getText().toString());
         intent.putExtra(CURRENT_STATE, currentState);
         startActivity(intent);
         finish();
     }
-
-    private TextWatcher textWatcher = new TextWatcher() {
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            currentState.setUserPostDescription(s.toString());
-        }
-    };
 
 
     private TextWatcher editTextTextWatcher = new TextWatcher() {
@@ -358,7 +247,7 @@ public class HashTagsActivity extends AppCompatActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-            userInputHashTags = s.toString();
+            userInputHashTagsString = s.toString();
         }
     };
 }

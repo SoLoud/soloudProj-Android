@@ -98,7 +98,6 @@ public class UserPostFragment extends Fragment {
     private ImageHelper imageHelper;
     private CurrentState currentState;
     private Contest contest;
-    private ArrayList<String> hashTagsList;
     private Toolbar toolbar;
     private Place mPlace;
 
@@ -109,12 +108,11 @@ public class UserPostFragment extends Fragment {
     private OnLocationPressedListener mListener;*/
 
 
-    public static UserPostFragment newInstance(Contest contest, CurrentState currentState, ArrayList<String> hashTagList, Place selectedPlace) {
+    public static UserPostFragment newInstance(Contest contest, CurrentState currentState, Place selectedPlace) {
 
         Bundle args = new Bundle();
         args.putSerializable(ContestsActivity.CONTEST, contest);
         args.putSerializable(ContestsActivity.CURRENT_STATE, currentState);
-        args.putStringArrayList("hashTagsList", hashTagList);
         args.putParcelable("selectedPlace", selectedPlace);
         UserPostFragment fragment = new UserPostFragment();
         fragment.setArguments(args);
@@ -139,7 +137,6 @@ public class UserPostFragment extends Fragment {
 
         currentState = (CurrentState) getArguments().getSerializable(ContestsActivity.CURRENT_STATE);
         contest = (Contest) getArguments().getSerializable(ContestsActivity.CONTEST);
-        hashTagsList = getArguments().getStringArrayList("hashTagsList");
         postText = "";
         mPlace = getArguments().getParcelable("selectedPlace");
     }
@@ -519,7 +516,7 @@ public class UserPostFragment extends Fragment {
     private void displayTagsAndDescription() {
         String description;
         description = currentState.getUserPostDescription();
-        ArrayList<String> tagsList = hashTagsList;
+        ArrayList<String> tagsList = currentState.getUserHashTagsList();
         String tags = convertTagsListToString(tagsList);
         tagsWithoutHashString = convertTagsListToStringWithoutHash(tagsList);
         postText = description + " " + tags;

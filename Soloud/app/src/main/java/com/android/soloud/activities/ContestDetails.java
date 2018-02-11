@@ -163,16 +163,16 @@ public class ContestDetails extends AppCompatActivity {
 
     private String prepareHashTags() {
         if (contest != null){
-            String requiredTags = contest.getmRequiredHashTags();
-            String optionalTags = contest.getmOptionalHashTags();
+            //String requiredTags = contest.getmRequiredHashTags();
+            String optionalTags = contest.getSuggestedHashTags();
 
-            String requiredHashTags = splitInputAndAddHashTags(requiredTags);
+            //String requiredHashTags = splitInputAndAddHashTags(requiredTags);
             String optionalHashTags = splitInputAndAddHashTags(optionalTags);
 
             String hashTags = "";
-            if (requiredHashTags != null){
+            /*if (requiredHashTags != null){
                 hashTags += requiredHashTags;
-            }
+            }*/
             if (optionalHashTags != null){
                 if (!hashTags.isEmpty()){
                     hashTags += " " + optionalHashTags;

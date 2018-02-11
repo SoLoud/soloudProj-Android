@@ -32,13 +32,13 @@ public class Contest implements Serializable{
     private String mId;
 
     @SerializedName("optionalHashTags")
-    private String mOptionalHashTags;
+    private String mSuggestedHashTags;
 
     @SerializedName("productPhotos")
     private Photo[] mProductPhotos;
 
-    @SerializedName("requiredHashTags")
-    private String mRequiredHashTags;
+    /*@SerializedName("requiredHashTags")
+    private String mRequiredHashTags;*/
 
     @SerializedName("title")
     private String mTitle;
@@ -98,12 +98,12 @@ public class Contest implements Serializable{
         this.mId = mId;
     }
 
-    public String getmOptionalHashTags() {
-        return mOptionalHashTags;
+    public String getSuggestedHashTags() {
+        return mSuggestedHashTags;
     }
 
-    public void setmOptionalHashTags(String mOptionalHashTags) {
-        this.mOptionalHashTags = mOptionalHashTags;
+    public void setSuggestedHashTags(String mSuggestedHashTags) {
+        this.mSuggestedHashTags = mSuggestedHashTags;
     }
 
     public Photo[] getmProductPhotos() {
@@ -114,13 +114,13 @@ public class Contest implements Serializable{
         this.mProductPhotos = mProductPhotos;
     }
 
-    public String getmRequiredHashTags() {
+    /*public String getmRequiredHashTags() {
         return mRequiredHashTags;
     }
 
     public void setmRequiredHashTags(String mRequiredHashTags) {
         this.mRequiredHashTags = mRequiredHashTags;
-    }
+    }*/
 
     public String getmTitle() {
         return mTitle;

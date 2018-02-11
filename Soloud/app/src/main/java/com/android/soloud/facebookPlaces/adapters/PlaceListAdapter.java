@@ -22,10 +22,13 @@ package com.android.soloud.facebookPlaces.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.facebookPlaces.model.Place;
@@ -38,6 +41,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     private List<Place> places;
     private Listener listener;
     private int layoutId;
+    private int selectedIndex = -1;
 
     public interface Listener {
         void onPlaceSelected(Place place);
@@ -48,16 +52,20 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         private TextView placeNameTextView;
         private TextView placeAddressTextView;
         private Place currentPlace;
+        private ImageView checkIV;
 
         public PlaceViewHolder(View itemView) {
             super(itemView);
             container = itemView.findViewById(R.id.place_container);
             placeNameTextView = (TextView) itemView.findViewById(R.id.place_name);
-            placeAddressTextView =
-                    (TextView) itemView.findViewById(R.id.place_address);
+            placeAddressTextView = (TextView) itemView.findViewById(R.id.place_address);
+            checkIV = (ImageView) itemView.findViewById(R.id.check_IV);
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    int position = places.indexOf(currentPlace);
+                    selectedIndex = position;
+                    //Log.d("PlaceListAdapter", "onClick position: "+ position);
                     listener.onPlaceSelected(currentPlace);
                 }
             });
@@ -70,10 +78,11 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         }
     }
 
-    public PlaceListAdapter(int laoyutId, List<Place> places, Listener listener) {
-        this.layoutId = laoyutId;
+    public PlaceListAdapter(int layoutId, List<Place> places, Listener listener) {
+        this.layoutId = layoutId;
         this.places = places;
         this.listener = listener;
+        this.selectedIndex = -1;
     }
 
     @Override
@@ -89,10 +98,19 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     public void onBindViewHolder(PlaceViewHolder holder, int position) {
         Place place = places.get(position);
         holder.refresh(place);
+        if (position == selectedIndex) {
+            holder.checkIV.setVisibility(View.VISIBLE);
+        } else {
+            holder.checkIV.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
     public int getItemCount() {
         return places.size();
+    }
+
+    public int getSelectedIndex() {
+        return selectedIndex;
     }
 }

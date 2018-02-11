@@ -1,6 +1,7 @@
 package com.android.soloud.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by f.stamopoulos on 16/2/2017.
@@ -15,6 +16,8 @@ public class CurrentState implements Serializable {
     private String userPostDescription;
 
     private String userHashTags;
+
+    private ArrayList<String> userHashTagsList;
 
     private String contestCategoryName;
 
@@ -70,5 +73,13 @@ public class CurrentState implements Serializable {
 
     public void setContestCategoryName(String contestCategoryName) {
         this.contestCategoryName = contestCategoryName;
+    }
+
+    public ArrayList<String> getUserHashTagsList() {
+        return userHashTagsList;
+    }
+
+    public void setUserHashTagsList(ArrayList<String> userHashTagsList) {
+        this.userHashTagsList = userHashTagsList;
     }
 }
