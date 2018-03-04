@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
-import com.android.soloud.activities.LoginActivity;
-import com.android.soloud.activities.MainActivity;
+import com.android.soloud.login.LoginActivity;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 

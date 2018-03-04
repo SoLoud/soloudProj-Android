@@ -27,8 +27,8 @@ import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
-import com.android.soloud.activities.LoginActivity;
-import com.android.soloud.apiCalls.LoginService;
+import com.android.soloud.login.LoginActivity;
+import com.android.soloud.login.LoginApi;
 import com.android.soloud.contests.ContestsActivity;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.ProgressDialog;
@@ -467,7 +467,7 @@ public class UserPostFragment extends Fragment {
     private void loginToBackend(String facebookToken) {
 
         // Create a very simple REST adapter which points the API endpoint.
-        LoginService client = ServiceGenerator.createService(LoginService.class);
+        LoginApi client = ServiceGenerator.createService(LoginApi.class);
 
         // Post the user's Facebook Token
         Call<User> call = client.login(LoginActivity.FACEBOOK_PROVIDER, facebookToken, "password");
@@ -517,7 +517,7 @@ public class UserPostFragment extends Fragment {
         String description;
         description = currentState.getUserPostDescription();
         ArrayList<String> tagsList = currentState.getUserHashTagsList();
-        String tags = convertTagsListToString(tagsList);
+        String tags = convertTagsListToStringWithHashes(tagsList);
         tagsWithoutHashString = convertTagsListToStringWithoutHash(tagsList);
         postText = description + " " + tags;
         String sourceString = description +" " +"<b>" + tags + "</b> ";
@@ -539,6 +539,20 @@ public class UserPostFragment extends Fragment {
         /*Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
                     error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);*/
     }
+
+
+    private String convertTagsListToStringWithHashes(ArrayList<String> tagsList) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tagsList.size(); i++) {
+            if (i < tagsList.size() - 1) {
+                sb.append("#").append(tagsList.get(i)).append(" ");
+            } else {
+                sb.append("#").append(tagsList.get(i));
+            }
+        }
+        return sb.toString();
+    }
+
 
     private String convertTagsListToString(ArrayList<String> tagsList){
         StringBuilder sb = new StringBuilder();

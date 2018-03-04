@@ -26,7 +26,7 @@
             android:value="AIzaSyA4mO3LdIzPLAWclHfN1X_BQ79Z486VRcI"/>
 
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".login.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/TransparentStatusBarStyle">

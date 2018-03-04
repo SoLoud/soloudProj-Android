@@ -1,4 +1,4 @@
-package com.android.soloud.activities;
+package com.android.soloud.login;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
-import com.android.soloud.apiCalls.LoginService;
+import com.android.soloud.activities.MainActivity;
 import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.models.User;
 import com.android.soloud.utils.SharedPrefsHelper;
@@ -208,7 +208,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginToBackend(String facebookToken) {
         // Create a very simple REST adapter which points the API endpoint.
-        LoginService client = ServiceGenerator.createService(LoginService.class);
+        LoginApi client = ServiceGenerator.createService(LoginApi.class);
 
         // Post the user's Facebook Token to SoLoud backend
         Call<User> call = client.login(FACEBOOK_PROVIDER, facebookToken, "password");

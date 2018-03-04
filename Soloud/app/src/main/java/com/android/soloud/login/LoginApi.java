@@ -1,4 +1,4 @@
-package com.android.soloud.apiCalls;
+package com.android.soloud.login;
 
 import com.android.soloud.models.User;
 
@@ -12,7 +12,7 @@ import retrofit2.http.POST;
  * Created by f.stamopoulos on 7/12/2016.
  */
 
-public interface LoginService {
+public interface LoginApi {
 
     @FormUrlEncoded
     @POST("/Token")

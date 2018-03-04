@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -22,10 +21,9 @@ import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
 import com.android.soloud.activities.ContestDetails;
-import com.android.soloud.activities.LoginActivity;
+import com.android.soloud.login.LoginActivity;
 import com.android.soloud.activities.MainActivity;
-import com.android.soloud.apiCalls.ContestsService;
-import com.android.soloud.apiCalls.LoginService;
+import com.android.soloud.login.LoginApi;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
 import com.android.soloud.models.User;
@@ -49,11 +47,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.android.soloud.activities.LoginActivity.FACEBOOK_PROVIDER;
+import static com.android.soloud.login.LoginActivity.FACEBOOK_PROVIDER;
 import static com.android.soloud.activities.MainActivity.CATEGORY_CONTESTS_SN;
 import static com.android.soloud.fragments.CategoriesFragment.CONTEST_NAME;
 
@@ -260,10 +261,38 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
+
+/*    private void getContestsRX() {
+        // Retrofit instance which was created earlier
+        ContestsApi contestsApi = ServiceGenerator.createService(ContestsApi.class);
+        // Return type as defined in TwitterApi interface
+        String soLoudToken = "Bearer " + SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.SOLOUD_TOKEN);
+        //Observable<List<Contest>> ob = contestsApi.getContestsRX(soLoudToken);
+
+        contestsApi.getContestsRX(soLoudToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::handleResults, this::handleError );
+    }
+
+
+    private void handleError(Throwable throwable) {
+
+    }
+
+    private void handleResults(List<Contest> contests) {
+
+        if (contests != null) {
+            Log.d(TAG, "handleResults: " + contests.toString());
+        }
+    }*/
+
+
+
     private void getContestsFromBackend() {
 
         // Create a very simple REST adapter which points the API endpoint.
-        ContestsService client = ServiceGenerator.createService(ContestsService.class);
+        ContestsApi client = ServiceGenerator.createService(ContestsApi.class);
 
         // Fetch the Contests.
         String soLoudToken = "Bearer " + SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.SOLOUD_TOKEN);
@@ -318,7 +347,7 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
 
     private void loginToBackend(String facebookToken) {
         // Create a very simple REST adapter which points the API endpoint.
-        LoginService client = ServiceGenerator.createService(LoginService.class);
+        LoginApi client = ServiceGenerator.createService(LoginApi.class);
 
         // Post the user's Facebook Token
         Call<User> call = client.login(FACEBOOK_PROVIDER, facebookToken, "password");
