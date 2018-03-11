@@ -182,9 +182,13 @@ public class UserPostFragment extends Fragment {
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        displayTagsAndDescription();
         displayUserPhoto();
+        displayTagsAndDescription();
+        displayPlace();
 
+    }
+
+    private void displayPlace() {
         if (mPlace != null) {
             location_TV.setText(mPlace.get(Place.NAME));
             String address = PlaceTextUtils.getAddress(mPlace);
@@ -199,7 +203,6 @@ public class UserPostFragment extends Fragment {
             addressTV.setVisibility(View.GONE);
             //clearIV.setVisibility(View.GONE);
         }
-
     }
 
 
@@ -527,14 +530,13 @@ public class UserPostFragment extends Fragment {
     private void displayUserPhoto() {
 
         imageHelper = new ImageHelper(getActivity());
-        //int orientation = getOrientation(this, Uri.parse(currentState.getPhotoUri()));
 
-        Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(currentState.getPhotoUri())), 960);
-
+        /*Bitmap resizedImage = imageHelper.getResizedImage(imageHelper.getBitmapFromUri(Uri.parse(currentState.getPhotoUri())), 100);
         orientatedImage = Bitmap.createBitmap(resizedImage, 0, 0, resizedImage.getWidth(),
                 resizedImage.getHeight(), imageHelper.getImageOrientation(currentState.getPhotoUri()), true);
-        resizedImage.recycle();
-        photo_IV.setImageBitmap(orientatedImage);
+        resizedImage.recycle();*/
+
+        photo_IV.setImageBitmap(imageHelper.getBitmapFromUri(Uri.parse(currentState.getPhotoUri())));
 
         /*Picasso.with(this).load(currentState.getPhotoUri()).placeholder(R.drawable.ic_account_circle_white_24dp).
                     error(R.drawable.ic_account_circle_white_24dp).into(photo_IV);*/
@@ -600,12 +602,5 @@ public class UserPostFragment extends Fragment {
         }
     }
 
-
-    /*@OnClick(R.id.clearIV)
-    public void onClearPressed() {
-        addLocation_TV.setText(R.string.check_in);
-        addressTV.setVisibility(View.GONE);
-        clearIV.setVisibility(View.GONE);
-    }*/
 
 }

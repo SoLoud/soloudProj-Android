@@ -131,5 +131,10 @@
     <string name="location_message">Your GPS seems to be disabled. Please enable it to proceed the post process!</string>
 
 
+    <string name="categories_description">Choose a category of products you want to promote.</string>
+    <string name="got_it">GOT IT</string>
+    <string name="welcome_to_soloud">Welcome to SoLoud!</string>
+    <string name="contests_description">These are the currently open contests. In every contest you can see the promoted product and the maximum participations left until the contest expires </string>
+
 
 </resources>

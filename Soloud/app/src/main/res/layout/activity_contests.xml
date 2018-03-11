@@ -4,76 +4,138 @@
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
-    <ImageView
-        android:id="@+id/image"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/flexible_space_image_height"
-        android:scaleType="centerCrop" />
+        android:layout_height="match_parent"
+        >
 
-    <View
-        android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/flexible_space_image_height" />
 
-    <View
-        android:id="@+id/list_background"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white" />
 
-    <com.github.ksoichiro.android.observablescrollview.ObservableListView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingEnd="@dimen/margin_standard"
-        android:paddingLeft="@dimen/margin_standard"
-        android:paddingStart="@dimen/margin_standard">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:minHeight="?attr/actionBarSize"
-            android:textColor="@android:color/white"
-            android:textSize="20sp" />
-
-        <View
+        <ImageView
+            android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="@dimen/flexible_space_image_height"
-            android:background="@android:color/transparent" />
+            android:scaleType="centerCrop" />
 
-    </LinearLayout>
+        <View
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/flexible_space_image_height" />
 
-    <com.pnikosis.materialishprogress.ProgressWheel
-        android:id="@+id/progress_wheel"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="48dp"
-        android:visibility="gone"
-        tools:visibility="visible"
-        wheel:matProg_barColor="@color/colorPrimary"
-        wheel:matProg_barWidth="2dp"
-        wheel:matProg_progressIndeterminate="true" />
+        <View
+            android:id="@+id/list_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white" />
 
-    <ImageView
-        android:id="@+id/offline_IV"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="48dp"
-        android:visibility="gone"
-        app:srcCompat="@drawable/ic_cloud_off_black_24dp"
-        tools:visibility="visible" />
+        <com.github.ksoichiro.android.observablescrollview.ObservableListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
+        <LinearLayout
+            android:id="@+id/header_LL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/margin_standard"
+            android:paddingLeft="@dimen/margin_standard"
+            android:paddingStart="@dimen/margin_standard">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:minHeight="?attr/actionBarSize"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/flexible_space_image_height"
+                android:background="@android:color/transparent" />
+
+        </LinearLayout>
+
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:id="@+id/progress_wheel"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginBottom="48dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            wheel:matProg_barColor="@color/colorPrimary"
+            wheel:matProg_barWidth="2dp"
+            wheel:matProg_progressIndeterminate="true" />
+
+        <ImageView
+            android:id="@+id/offline_IV"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginBottom="48dp"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_cloud_off_black_24dp"
+            tools:visibility="visible" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#d9313131"
+            />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center">
+
+            <RelativeLayout
+                android:id="@+id/tutorial_RL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@color/mySecondary"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/description_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/contests_description"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_below="@id/tutorial_RL"
+                android:layout_marginLeft="36dp"
+                android:layout_marginStart="36dp"
+                android:background="@drawable/triangle"
+                android:rotation="180" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_below="@id/tutorial_RL"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/ic_launcher1" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>
