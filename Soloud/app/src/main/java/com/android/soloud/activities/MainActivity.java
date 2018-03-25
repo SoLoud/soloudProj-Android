@@ -67,8 +67,8 @@ public class MainActivity extends MaterialNavigationDrawer{
             }
         });
 
-        name_TV.setText(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_NAME));
-        Picasso.with(this).load(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_PROFILE_PICTURE_URL)).placeholder(R.drawable.ic_account_circle_white_24dp).
+        name_TV.setText(SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.USER_NAME));
+        Picasso.with(this).load(SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.USER_PROFILE_PICTURE_URL)).placeholder(R.drawable.ic_account_circle_white_24dp).
                 error(R.drawable.ic_account_circle_white_24dp).transform(new CropCircleTransformation()).into(profilePicture_IV);
 
         setDrawerHeaderCustom(view);

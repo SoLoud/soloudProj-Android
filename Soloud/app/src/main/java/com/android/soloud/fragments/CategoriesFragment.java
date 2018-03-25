@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.soloud.R;
@@ -20,6 +22,7 @@ import com.android.soloud.adapters.CategoryAdapter;
 import com.android.soloud.materialnavigationdrawer.MaterialNavigationDrawer;
 import com.android.soloud.models.Category;
 import com.android.soloud.utils.NetworkStatusHelper;
+import com.android.soloud.utils.SharedPrefsHelper;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -28,6 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import static com.android.soloud.utils.SharedPrefsHelper.CATEGORIES_WIZARD_DISPLAYED;
 
 /**
  * Created by f.stamopoulos on 9/10/2016.
@@ -38,6 +43,9 @@ public class CategoriesFragment extends Fragment {
     public static final String CONTEST_NAME = "ContestName";
     private ListView listView;
     private ArrayList<Category> categoriesList;
+    private RelativeLayout wizardRL;
+    private RelativeLayout bubbleRL;
+    private View triangleView;
 
 
     public CategoriesFragment(){
@@ -67,6 +75,9 @@ public class CategoriesFragment extends Fragment {
 
         //mRecyclerView = (RecyclerView) view.findViewById(R.id.categories_recycler_view);
         listView = (ListView) view.findViewById(R.id.listView);
+        wizardRL = (RelativeLayout) view.findViewById(R.id.wizard_RL);
+        bubbleRL = (RelativeLayout) view.findViewById(R.id.bubble_RL);
+        triangleView = view.findViewById(R.id.triangle_View);
 
     }
 
@@ -79,6 +90,8 @@ public class CategoriesFragment extends Fragment {
 
         listView.setAdapter(new CategoryAdapter(getActivity(), categoriesList));
         listView.setOnItemClickListener(onItemClickListener);
+
+        displayWizard();
     }
 
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
@@ -168,4 +181,32 @@ public class CategoriesFragment extends Fragment {
         categoriesList.add(new Category("Pets", R.drawable.pets));
         categoriesList.add(new Category("Travel", R.drawable.travel));
     }
+
+
+    private void displayWizard() {
+        boolean wizardDisplayed = SharedPrefsHelper.getBooleanFromPrefs(getActivity(), CATEGORIES_WIZARD_DISPLAYED);
+        if (!wizardDisplayed) {
+            wizardRL.setVisibility(View.VISIBLE);
+            displayWithAnimation(bubbleRL);
+            displayWithAnimation(triangleView);
+            wizardRL.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.setVisibility(View.GONE);
+                    //SharedPrefsHelper.storeBooleanInPrefs(getActivity(), true, CATEGORIES_WIZARD_DISPLAYED);
+                }
+            });
+        }
+    }
+
+
+    private void displayWithAnimation(View view) {
+        AlphaAnimation animation1 = new AlphaAnimation(0.0f, 1.0f);
+        animation1.setDuration(1000);
+        animation1.setStartOffset(100);
+        animation1.setFillAfter(true);
+        view.startAnimation(animation1);
+    }
+
+
 }

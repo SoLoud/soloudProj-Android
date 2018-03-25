@@ -135,6 +135,11 @@
     <string name="got_it">GOT IT</string>
     <string name="welcome_to_soloud">Welcome to SoLoud!</string>
     <string name="contests_description">These are the currently open contests. In every contest you can see the promoted product and the maximum participations left until the contest expires </string>
+    <string name="contest_details_1">Here you can see how a post is suggested to look like in order to take part in the contest</string>
+    <string name="contest_details_2">Start by adding your image!</string>
+    <string name="add_hashtags">Add your hashtags</string>
+    <string name="choose_from_suggested_hashtags">Choose from the suggested</string>
+    <string name="add_description">Write a description</string>
 
 
 </resources>

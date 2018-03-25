@@ -75,7 +75,7 @@
             android:screenOrientation="portrait"
             />
         <activity
-            android:name=".activities.ContestDetails"
+            android:name=".contestDetails.ContestDetails"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_advertisement_details"
             android:theme="@style/AppTheme">

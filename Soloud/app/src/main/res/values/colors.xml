@@ -19,6 +19,7 @@
     <color name="dark_text_color">#515151</color>
 
     <color name="background_layout">#dedede</color>
+    <color name="tutorial_background">#d9313131</color>
 
 
 </resources>

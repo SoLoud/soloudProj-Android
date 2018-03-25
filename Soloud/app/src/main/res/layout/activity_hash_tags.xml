@@ -6,40 +6,44 @@
     android:layout_height="wrap_content"
     android:fillViewport="true">
 
-    <RelativeLayout
-        android:id="@+id/activity_hash_tags"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/activity_horizontal_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_horizontal_margin"
-        tools:context="com.android.soloud.activities.HashTagsActivity">
+        android:layout_height="wrap_content">
 
-        <com.rengwuxian.materialedittext.MaterialEditText
-            android:id="@+id/hashTag_ET"
+        <RelativeLayout
+            android:id="@+id/activity_hash_tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_your_hashtag"
-            android:imeOptions="actionNext"
-            android:inputType="textMultiLine"
-            android:text="#"
-            android:textColor="#000000"
-            android:textCursorDrawable="@drawable/text_cursor_red"
-            app:met_clearButton="true"
-            app:met_floatingLabel="highlight"
-            app:met_primaryColor="@color/colorPrimary"
-            app:met_underlineColor="#b2b2b2" />
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_horizontal_margin"
+            tools:context="com.android.soloud.activities.HashTagsActivity">
 
-        <TextView
-            android:id="@+id/suggested_hashtags_TV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/hashTag_ET"
-            android:layout_marginTop="16dp"
-            android:text="@string/suggested_hashtags"
-            android:textSize="18sp" />
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/hashTag_ET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_your_hashtag"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine"
+                android:text="#"
+                android:textColor="#000000"
+                android:textCursorDrawable="@drawable/text_cursor_red"
+                app:met_clearButton="true"
+                app:met_floatingLabel="highlight"
+                app:met_primaryColor="@color/colorPrimary"
+                app:met_underlineColor="#b2b2b2" />
+
+            <TextView
+                android:id="@+id/suggested_hashtags_TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/hashTag_ET"
+                android:layout_marginTop="16dp"
+                android:text="@string/suggested_hashtags"
+                android:textSize="18sp" />
 
             <com.cunoraz.tagview.TagView
                 android:id="@+id/tag_group"
@@ -56,12 +60,11 @@
                 android:layout_below="@+id/tag_group"
                 android:gravity="top|start"
                 android:hint="@string/description"
-                tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in turpis viverra, elementum sapien eget, consequat felis"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
+                android:lines="3"
                 android:maxLength="500"
                 android:minLines="1"
-                android:lines="3"
                 android:scrollbars="vertical"
                 android:textColor="#000000"
                 android:textCursorDrawable="@drawable/text_cursor_red"
@@ -69,7 +72,110 @@
                 app:met_floatingLabel="highlight"
                 app:met_primaryColor="@color/colorPrimary"
                 app:met_underlineColor="#b2b2b2"
-                />
+                tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in turpis viverra, elementum sapien eget, consequat felis" />
 
-    </RelativeLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/wizard_RL"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@color/tutorial_background"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <RelativeLayout
+                android:id="@+id/message_1_RL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <RelativeLayout
+                    android:id="@+id/bubble_1_RL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@android:color/white"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/description_1_TV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add_hashtags"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/triangle_1_View"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_below="@id/bubble_1_RL"
+                    android:layout_marginLeft="36dp"
+                    android:layout_marginStart="36dp"
+                    android:background="@drawable/triangle"
+                    android:rotation="180" />
+
+                <ImageView
+                    android:id="@+id/logo_IV"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_below="@id/bubble_1_RL"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_launcher1" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/message_2_RL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <RelativeLayout
+                    android:id="@+id/bubble_2_RL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@android:color/white"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/description_2_TV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/choose_from_suggested_hashtags"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/triangle_2_View"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_centerInParent="true"
+                    android:layout_toEndOf="@id/bubble_2_RL"
+                    android:layout_toRightOf="@id/bubble_2_RL"
+                    android:background="@drawable/triangle"
+                    android:rotation="90" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
 </ScrollView>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,59 +10,64 @@
         android:layout_height="match_parent" />
 
     <RelativeLayout
-        android:id="@+id/tutorial_RL"
+        android:id="@+id/wizard_RL"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/mySecondary"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@color/tutorial_background"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <RelativeLayout
-            android:id="@+id/label_RL"
+            android:id="@+id/bubble_RL"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/soloud_logo_IV"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_launcher1" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@android:color/white"
+            android:layout_centerInParent="true"
+            android:padding="16dp">
 
             <TextView
-                android:id="@+id/label_TV"
+                android:id="@+id/welcome_TV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/soloud_logo_IV"
-                android:layout_toRightOf="@id/soloud_logo_IV"
                 android:text="@string/welcome_to_soloud"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/description_TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/categories_description"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:layout_below="@id/welcome_TV"/>
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/description_TV"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/label_RL"
-            android:layout_marginTop="16dp"
-            android:text="@string/categories_description"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
+        <View
+            android:id="@+id/triangle_View"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_below="@id/bubble_RL"
+            android:layout_marginLeft="36dp"
+            android:layout_marginStart="36dp"
+            android:background="@drawable/triangle"
+            android:rotation="180" />
 
-        <Button
-            android:id="@+id/got_it_Btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/description_TV"
+        <ImageView
+            android:id="@+id/logo_IV"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_below="@id/bubble_RL"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="@string/got_it" />
+            android:src="@drawable/ic_launcher1" />
 
     </RelativeLayout>
 
-</RelativeLayout>
+</FrameLayout>

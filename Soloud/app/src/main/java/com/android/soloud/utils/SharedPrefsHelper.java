@@ -20,6 +20,9 @@ public class SharedPrefsHelper {
     public static final String SOLOUD_TOKEN = "sltoken";
     public static final String POST_POP_UP_DISPLAYED = "post_pop_up_displayed";
     public static final String WIZARD_DISPLAYED = "wizard_displayed";
+    public static final String CATEGORIES_WIZARD_DISPLAYED = "categories_wizard_displayed";
+    public static final String CONTESTS_WIZARD_DISPLAYED = "contests_wizard_displayed";
+    public static final String CONTEST_DETAILS_WIZARD_DISPLAYED = "contest_details_wizard_displayed";
 
 
     public static boolean getBooleanFromPrefs(Context context, String PREF_CONSTANT){
@@ -36,13 +39,13 @@ public class SharedPrefsHelper {
         editor.apply();
     }
 
-    public static String getFromPrefs(Context context, String PREF_CONSTANT){
+    public static String getStringFromPrefs(Context context, String PREF_CONSTANT){
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         return  sharedPref.getString(PREF_CONSTANT, null);
     }
 
-    public static void storeInPrefs(Context context, String prefValue, String PREF_CONSTANT){
+    public static void storeStringInPrefs(Context context, String prefValue, String PREF_CONSTANT){
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();

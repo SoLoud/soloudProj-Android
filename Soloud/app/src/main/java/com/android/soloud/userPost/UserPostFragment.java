@@ -307,7 +307,7 @@ public class UserPostFragment extends Fragment {
 
 
     private void checkForPublishPermissions() {
-        String fb_token_from_prefs = SharedPrefsHelper.getFromPrefs(getActivity(), SharedPrefsHelper.FB_TOKEN);
+        String fb_token_from_prefs = SharedPrefsHelper.getStringFromPrefs(getActivity(), SharedPrefsHelper.FB_TOKEN);
         // TODO: 15/1/2017 prepei na elegxw an exw parei token gia publish kai apo ton Kwsta!!
         // TODO: 2/3/2017 An patisei o xristis NOT NOW kai pali exei allo fb token kai den bainei mesa se auto to IF
         if (fb_token_from_prefs.equals(AccessToken.getCurrentAccessToken().getToken())){
@@ -341,8 +341,8 @@ public class UserPostFragment extends Fragment {
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("UserPostFragment", "Login to FB: success with new token which has publish permissions");
 
-                        SharedPrefsHelper.storeInPrefs(getActivity(), loginResult.getAccessToken().getToken(), SharedPrefsHelper.FB_TOKEN);
-                        SharedPrefsHelper.storeInPrefs(getActivity(), loginResult.getAccessToken().getUserId(), SharedPrefsHelper.USER_FB_ID);
+                        SharedPrefsHelper.storeStringInPrefs(getActivity(), loginResult.getAccessToken().getToken(), SharedPrefsHelper.FB_TOKEN);
+                        SharedPrefsHelper.storeStringInPrefs(getActivity(), loginResult.getAccessToken().getUserId(), SharedPrefsHelper.USER_FB_ID);
 
                         loginToBackend(loginResult.getAccessToken().getToken());
                     }
@@ -397,7 +397,7 @@ public class UserPostFragment extends Fragment {
         RequestBody placeId = RequestBody.create(MediaType.parse("text/plain"), mPlace.get(Place.ID));
         RequestBody hashTags = RequestBody.create(MediaType.parse("text/plain"), tagsWithoutHashString);
 
-        String soLoudToken = "Bearer " + SharedPrefsHelper.getFromPrefs(getActivity(), SOLOUD_TOKEN);
+        String soLoudToken = "Bearer " + SharedPrefsHelper.getStringFromPrefs(getActivity(), SOLOUD_TOKEN);
         Call<ResponseBody> request = service.postImage(soLoudToken, body, desc, contestId, hashTags, placeId);
         Callback<ResponseBody> postImageCallback = new Callback<ResponseBody>() {
             @Override
@@ -480,7 +480,7 @@ public class UserPostFragment extends Fragment {
                 if (response.isSuccessful()) {
                     User soLoudUser = response.body();
                     String soLoudToken = soLoudUser.getSoloudToken();
-                    SharedPrefsHelper.storeInPrefs(getActivity(), soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
+                    SharedPrefsHelper.storeStringInPrefs(getActivity(), soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
 
                     initPostUserPhotoService(currentState.getPhotoUri(), postText);
 

@@ -1,4 +1,4 @@
-package com.android.soloud.activities;
+package com.android.soloud.contestDetails;
 
 import android.Manifest;
 import android.content.ContentValues;
@@ -22,17 +22,21 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
+import com.android.soloud.activities.HashTagsActivity;
 import com.android.soloud.contests.ContestsActivity;
 import com.android.soloud.dialogs.ImagePreviewDialog;
 import com.android.soloud.dialogs.ProgressDialog;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
+import com.android.soloud.utils.SharedPrefsHelper;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -47,10 +51,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.android.soloud.activities.MainActivity.CONTEST_DETAILS_SN;
 import static com.android.soloud.contests.ContestsActivity.CONTEST;
 import static com.android.soloud.contests.ContestsActivity.CURRENT_STATE;
-import static com.android.soloud.activities.MainActivity.CONTEST_DETAILS_SN;
 import static com.android.soloud.utils.MyStringHelper.isNoE;
+import static com.android.soloud.utils.SharedPrefsHelper.CONTEST_DETAILS_WIZARD_DISPLAYED;
 
 public class ContestDetails extends AppCompatActivity {
 
@@ -71,6 +76,13 @@ public class ContestDetails extends AppCompatActivity {
     private ImageView prize_IV;
     private TextView prizeDescription_TV;
     private boolean mShowDialog = false;
+    private RelativeLayout wizardRL;
+    private RelativeLayout message1RL;
+    private RelativeLayout message2RL;
+    private RelativeLayout bubble1RL;
+    private View triangle1View;
+    private RelativeLayout bubble2RL;
+    private View triangle2View;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -95,6 +107,13 @@ public class ContestDetails extends AppCompatActivity {
 
         prize_IV = (ImageView) findViewById(R.id.prize_IV);
         prizeDescription_TV = (TextView) findViewById(R.id.prize_description);
+        wizardRL = (RelativeLayout) findViewById(R.id.wizard_RL);
+        message1RL = (RelativeLayout) findViewById(R.id.message_1_RL);
+        message2RL = (RelativeLayout) findViewById(R.id.message_2_RL);
+        bubble1RL = (RelativeLayout) findViewById(R.id.bubble_1_RL);
+        triangle1View = findViewById(R.id.triangle_1_View);
+        bubble2RL = (RelativeLayout) findViewById(R.id.bubble_2_RL);
+        triangle2View = findViewById(R.id.triangle_2_View);
         TextView hashTags_TV = (TextView) findViewById(R.id.hashTags_TV);
         FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.menu_item_camera);
         FloatingActionButton fab_gallery = (FloatingActionButton) findViewById(R.id.menu_item_gallery);
@@ -128,8 +147,10 @@ public class ContestDetails extends AppCompatActivity {
             photoFileString = savedInstanceState.getString(PHOTO_FILE);
         }
 
+        displayWizard();
         googleAnalyticsTrack();
     }
+
 
     private void googleAnalyticsTrack() {
         // Obtain the shared Tracker instance.
@@ -532,5 +553,38 @@ public class ContestDetails extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void displayWizard() {
+        boolean wizardDisplayed = SharedPrefsHelper.getBooleanFromPrefs(this, CONTEST_DETAILS_WIZARD_DISPLAYED);
+        if (!wizardDisplayed) {
+            wizardRL.setVisibility(View.VISIBLE);
+            displayWithAnimation(bubble1RL);
+            displayWithAnimation(triangle1View);
+            message1RL.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.setVisibility(View.GONE);
+                    message2RL.setVisibility(View.VISIBLE);
+                    displayWithAnimation(bubble2RL);
+                    displayWithAnimation(triangle2View);
+                }
+            });
+        }
+        message2RL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wizardRL.setVisibility(View.GONE);
+                //SharedPrefsHelper.storeBooleanInPrefs(ContestDetails.this, true, CONTEST_DETAILS_WIZARD_DISPLAYED);
+            }
+        });
+    }
+
+    private void displayWithAnimation(View view) {
+        AlphaAnimation animation1 = new AlphaAnimation(0.0f, 1.0f);
+        animation1.setDuration(1000);
+        animation1.setStartOffset(100);
+        animation1.setFillAfter(true);
+        view.startAnimation(animation1);
     }
 }

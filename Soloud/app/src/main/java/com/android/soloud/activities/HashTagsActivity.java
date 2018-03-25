@@ -1,7 +1,6 @@
 package com.android.soloud.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,10 +14,10 @@ import android.widget.EditText;
 
 import com.android.soloud.R;
 import com.android.soloud.SoLoudApplication;
+import com.android.soloud.contestDetails.ContestDetails;
 import com.android.soloud.facebookPlaces.CheckInActivity;
 import com.android.soloud.models.Contest;
 import com.android.soloud.models.CurrentState;
-import com.android.soloud.models.TagClass;
 import com.android.soloud.utils.MyStringHelper;
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
@@ -26,8 +25,6 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

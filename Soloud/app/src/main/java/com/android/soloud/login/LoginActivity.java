@@ -79,9 +79,9 @@ public class LoginActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
-        String fb_token = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.FB_TOKEN);
-        String userFbId = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.USER_FB_ID);
-        String soLoudToken = SharedPrefsHelper.getFromPrefs(LoginActivity.this, SharedPrefsHelper.SOLOUD_TOKEN);
+        String fb_token = SharedPrefsHelper.getStringFromPrefs(LoginActivity.this, SharedPrefsHelper.FB_TOKEN);
+        String userFbId = SharedPrefsHelper.getStringFromPrefs(LoginActivity.this, SharedPrefsHelper.USER_FB_ID);
+        String soLoudToken = SharedPrefsHelper.getStringFromPrefs(LoginActivity.this, SharedPrefsHelper.SOLOUD_TOKEN);
 
         loginFailureRequestsCounter = 0;
 
@@ -139,8 +139,8 @@ public class LoginActivity extends AppCompatActivity {
             request.setParameters(parameters);
             request.executeAsync();
 
-            SharedPrefsHelper.storeInPrefs(LoginActivity.this, loginResult.getAccessToken().getToken(), SharedPrefsHelper.FB_TOKEN);
-            SharedPrefsHelper.storeInPrefs(LoginActivity.this, loginResult.getAccessToken().getUserId(), SharedPrefsHelper.USER_FB_ID);
+            SharedPrefsHelper.storeStringInPrefs(LoginActivity.this, loginResult.getAccessToken().getToken(), SharedPrefsHelper.FB_TOKEN);
+            SharedPrefsHelper.storeStringInPrefs(LoginActivity.this, loginResult.getAccessToken().getUserId(), SharedPrefsHelper.USER_FB_ID);
         }
 
         @Override
@@ -182,9 +182,9 @@ public class LoginActivity extends AppCompatActivity {
                             String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
                             String coverUrl = object.getJSONObject("cover").getString("source");
 
-                            SharedPrefsHelper.storeInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
-                            SharedPrefsHelper.storeInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
-                            SharedPrefsHelper.storeInPrefs(LoginActivity.this, coverUrl, SharedPrefsHelper.USER_COVER_URL);
+                            SharedPrefsHelper.storeStringInPrefs(LoginActivity.this, name, SharedPrefsHelper.USER_NAME);
+                            SharedPrefsHelper.storeStringInPrefs(LoginActivity.this, profilePicUrl, SharedPrefsHelper.USER_PROFILE_PICTURE_URL);
+                            SharedPrefsHelper.storeStringInPrefs(LoginActivity.this, coverUrl, SharedPrefsHelper.USER_COVER_URL);
 
                             showProgressDialog();
                             loginToBackend(accessToken.getToken());
@@ -228,7 +228,7 @@ public class LoginActivity extends AppCompatActivity {
             private void parseResponseAndProceed(Response<User> response) {
                 User soLoudUser = response.body();
                 String soLoudToken = soLoudUser.getSoloudToken();
-                SharedPrefsHelper.storeInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
+                SharedPrefsHelper.storeStringInPrefs(LoginActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
                 Intent intent;
                 boolean isWizardAlreadyDisplayed = SharedPrefsHelper.getBooleanFromPrefs(LoginActivity.this, SharedPrefsHelper.WIZARD_DISPLAYED);
                 if (isWizardAlreadyDisplayed) {

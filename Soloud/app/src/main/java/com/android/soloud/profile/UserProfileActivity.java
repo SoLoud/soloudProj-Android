@@ -30,7 +30,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 import static com.android.soloud.activities.MainActivity.USER_PROFILE_SN;
-import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
 public class UserProfileActivity extends AppCompatActivity {
 
@@ -53,7 +52,7 @@ public class UserProfileActivity extends AppCompatActivity {
         expand_Btn.setOnClickListener(onClickListener);
         de.hdodenhof.circleimageview.CircleImageView  user_profile_IV = (CircleImageView) findViewById(R.id.user_profile_IV);
         TextView userName_TV = (TextView) findViewById(R.id.userName);
-        String userName = SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_NAME);
+        String userName = SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.USER_NAME);
         if (userName != null && !userName.isEmpty()){
             userName_TV.setText(userName);
         }else{
@@ -72,7 +71,7 @@ public class UserProfileActivity extends AppCompatActivity {
         initializeChart1();
         initializeChart2();
 
-        Picasso.with(this).load(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_PROFILE_PICTURE_URL)).
+        Picasso.with(this).load(SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.USER_PROFILE_PICTURE_URL)).
                 transform(new CropCircleTransformation()).into(user_profile_IV);
 
         // Obtain the shared Tracker instance.

@@ -294,13 +294,13 @@ public class ProfileTestActivity extends AppCompatActivity implements Observable
     }
 
     private void loadUserProfileIV(){
-        Picasso.with(this).load(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_PROFILE_PICTURE_URL)).placeholder(R.drawable.ic_account_circle_white_24dp).
+        Picasso.with(this).load(SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.USER_PROFILE_PICTURE_URL)).placeholder(R.drawable.ic_account_circle_white_24dp).
                 error(R.drawable.ic_account_circle_white_24dp).transform(new CropCircleTransformation()).into(userIV);
-        userNameTV.setText(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_NAME));
+        userNameTV.setText(SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.USER_NAME));
     }
 
     private void loadUserCover(){
-        Picasso.with(this).load(SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.USER_COVER_URL)).fit().
+        Picasso.with(this).load(SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.USER_COVER_URL)).fit().
                 error(R.drawable.ic_account_circle_white_24dp).into(userCoverIV);
     }
 

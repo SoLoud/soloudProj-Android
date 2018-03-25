@@ -12,15 +12,17 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.soloud.R;
 import com.android.soloud.ServiceGenerator;
 import com.android.soloud.SoLoudApplication;
-import com.android.soloud.activities.ContestDetails;
+import com.android.soloud.contestDetails.ContestDetails;
 import com.android.soloud.login.LoginActivity;
 import com.android.soloud.activities.MainActivity;
 import com.android.soloud.login.LoginApi;
@@ -47,9 +49,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,6 +56,7 @@ import retrofit2.Response;
 import static com.android.soloud.login.LoginActivity.FACEBOOK_PROVIDER;
 import static com.android.soloud.activities.MainActivity.CATEGORY_CONTESTS_SN;
 import static com.android.soloud.fragments.CategoriesFragment.CONTEST_NAME;
+import static com.android.soloud.utils.SharedPrefsHelper.CONTESTS_WIZARD_DISPLAYED;
 
 public class ContestsActivity extends AppCompatActivity implements ObservableScrollViewCallbacks{
 
@@ -72,6 +72,9 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
     private int contestsFailureRequestsCounter;
     private CurrentState currentState;
     private String contestName;
+    private RelativeLayout wizardRL;
+    private RelativeLayout bubbleRL;
+    private View triangleView;
 
 
     @BindView(R.id.progress_wheel) ProgressWheel progressWheel;
@@ -100,6 +103,9 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mActionBarSize = getActionBarHeight();
         mImageView = findViewById(R.id.image);
+        wizardRL = (RelativeLayout) findViewById(R.id.wizard_RL);
+        bubbleRL = (RelativeLayout) findViewById(R.id.bubble_RL);
+        triangleView = findViewById(R.id.triangle_View);
         mOverlayView = findViewById(R.id.overlay);
         listView = (ObservableListView) findViewById(R.id.list);
         listView.setScrollViewCallbacks(ContestsActivity.this);
@@ -159,6 +165,7 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
         }
 
 
+        displayWizard();
         googleAnalyticsTrack();
     }
 
@@ -266,7 +273,7 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
         // Retrofit instance which was created earlier
         ContestsApi contestsApi = ServiceGenerator.createService(ContestsApi.class);
         // Return type as defined in TwitterApi interface
-        String soLoudToken = "Bearer " + SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.SOLOUD_TOKEN);
+        String soLoudToken = "Bearer " + SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.SOLOUD_TOKEN);
         //Observable<List<Contest>> ob = contestsApi.getContestsRX(soLoudToken);
 
         contestsApi.getContestsRX(soLoudToken)
@@ -295,7 +302,7 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
         ContestsApi client = ServiceGenerator.createService(ContestsApi.class);
 
         // Fetch the Contests.
-        String soLoudToken = "Bearer " + SharedPrefsHelper.getFromPrefs(this, SharedPrefsHelper.SOLOUD_TOKEN);
+        String soLoudToken = "Bearer " + SharedPrefsHelper.getStringFromPrefs(this, SharedPrefsHelper.SOLOUD_TOKEN);
         Call<List<Contest>> call = client.getContests(soLoudToken);
         Callback<List<Contest>> contestsCallback = new Callback<List<Contest>>() {
             @Override
@@ -304,6 +311,7 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
                     contestsList = (ArrayList<Contest>) response.body();
                     progressWheel.setVisibility(View.GONE);
                     initializeListView();
+                    displayWizard();
                 } else {
                     // error response, no access to resource?
                     if (response.code() == 401){
@@ -357,7 +365,7 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
                 if (response.isSuccessful()) {
                     User soLoudUser = response.body();
                     String soLoudToken = soLoudUser.getSoloudToken();
-                    SharedPrefsHelper.storeInPrefs(ContestsActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
+                    SharedPrefsHelper.storeStringInPrefs(ContestsActivity.this, soLoudToken, SharedPrefsHelper.SOLOUD_TOKEN);
                     getContestsFromBackend();
 
                 } else {
@@ -473,5 +481,28 @@ public class ContestsActivity extends AppCompatActivity implements ObservableScr
         }
     };
 
+    private void displayWizard() {
+        boolean wizardDisplayed = SharedPrefsHelper.getBooleanFromPrefs(this, CONTESTS_WIZARD_DISPLAYED);
+        if (!wizardDisplayed) {
+            wizardRL.setVisibility(View.VISIBLE);
+            displayWithAnimation(bubbleRL);
+            displayWithAnimation(triangleView);
+            wizardRL.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.setVisibility(View.GONE);
+                    //SharedPrefsHelper.storeBooleanInPrefs(ContestsActivity.this, true, CONTESTS_WIZARD_DISPLAYED);
+                }
+            });
+        }
+    }
+
+    private void displayWithAnimation(View view) {
+        AlphaAnimation animation1 = new AlphaAnimation(0.0f, 1.0f);
+        animation1.setDuration(1000);
+        animation1.setStartOffset(100);
+        animation1.setFillAfter(true);
+        view.startAnimation(animation1);
+    }
 
 }
