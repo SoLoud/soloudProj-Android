@@ -21,6 +21,7 @@ import com.android.soloud.materialnavigationdrawer.elements.listeners.MaterialSe
 import com.android.soloud.profile.ProfileTestActivity;
 import com.android.soloud.profile.UserProfileActivity;
 import com.android.soloud.training.TrainingFragment;
+import com.android.soloud.userProfile.FlexibleSpaceWithImageWithViewPagerTabActivity;
 import com.android.soloud.utils.LogoutHelper;
 import com.android.soloud.utils.SharedPrefsHelper;
 import com.google.android.gms.analytics.HitBuilders;
@@ -62,7 +63,7 @@ public class MainActivity extends MaterialNavigationDrawer{
         profilePicture_IV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ProfileTestActivity.class);
+                Intent intent = new Intent(MainActivity.this, FlexibleSpaceWithImageWithViewPagerTabActivity.class);
                 startActivity(intent);
             }
         });

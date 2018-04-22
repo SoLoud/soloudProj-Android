@@ -137,6 +137,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbarStyle">
         </activity>
+        <activity
+            android:name=".userProfile.FlexibleSpaceWithImageWithViewPagerTabActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/profileTheme">
+        </activity>
 
 
     </application>
